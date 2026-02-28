@@ -2230,8 +2230,9 @@
                     var parsed = JSON.parse(cached);
                     // Only use cache if it has real data
                     if (parsed && (parsed.customers.length > 0 || parsed.estimates.length > 0 || parsed.invoices.length > 0 || parsed.settings.businessName)) {
-                        appData = parsed;
-                        hasCachedData = true;
+                       appData = parsed;
+if (!appData.leads) appData.leads = [];
+hasCachedData = true;
                     }
                 }
             } catch(e) { console.error('Cache read error:', e); }
