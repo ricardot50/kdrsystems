@@ -2248,30 +2248,77 @@
                 .then(function(doc) {
                     if (doc.exists && doc.data().appData) {
                         var serverData = doc.data().appData;
-                        // Only use server data if it has content, OR if we have no cache
+                                              // Only use server data if it has content, OR if we have no cache
                         var serverHasData = serverData.customers.length > 0 || serverData.estimates.length > 0 || serverData.invoices.length > 0 || serverData.settings.businessName;
                         
                         if (serverHasData || !hasCachedData) {
                             // Merge: keep whichever has MORE data
-                            if (serverHasData) {
-                                appData = serverData;
-                                try { localStorage.setItem('kdrsystems_cache_' + currentUserId, JSON.stringify(appData)); } catch(e) {}
-                            }
+                           if (serverHasData) {
+    appData = serverData;
+    if (!appData.leads) appData.leads = [];
+    try { localStorage.setItem('kdrsystems_cache_' + currentUserId, JSON.stringify(appData)); } catch(e) {}
+}
                             populateSettings();
                             if (!dataLoaded) { dataLoaded = true; initApp(); }
                             else { renderAll(); }
                         }
-                    } else if (!hasCachedData) {
-                        // First time user, no cache — use defaults
-                        if (!dataLoaded) { dataLoaded = true; initApp(); }
-                    }
-                })
-                .catch(function(err) {
+                  } else if (!hasCachedData) {
+        if (!dataLoaded) { dataLoaded = true; initApp(); }
+    }
+    startLeadsListener();
+})
+.catch(function(err) {
                     console.error('Load error:', err);
                     if (!dataLoaded) { dataLoaded = true; initApp(); }
                 });
         }
+function startLeadsListener() {
+    if (!currentUserId || !db) return;
+    db.collection('users').doc(currentUserId).collection('leads')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(function(snapshot) {
+            appData.leads = [];
+            snapshot.forEach(function(doc) {
+                appData.leads.push(doc.data());
+            });
+            var leadsTab = document.getElementById('leads');
+            if (leadsTab && leadsTab.classList.contains('active')) {
+                renderLeads();
+                updateLeadCounts();
+            }
+            snapshot.docChanges().forEach(function(change) {
+                if (change.type === 'added' && dataLoaded) {
+                    notifyNewLead(change.doc.data());
+                }
+            });
+        }, function(err) {
+            console.error('Leads listener error:', err);
+        });
+}
 
+function notifyNewLead(lead) {
+    if (appData.notifications) {
+        appData.notifications.unshift({
+            id: 'lead-' + lead.id,
+            type: 'lead',
+            title: 'New Lead',
+            message: (lead.name || 'Someone') + ' requested a free estimate',
+            date: lead.createdAt,
+            read: false
+        });
+        checkNotifications();
+    }
+    if (appData.settings && appData.settings.emailjsPublicKey) {
+        emailjs.init(appData.settings.emailjsPublicKey);
+        emailjs.send(appData.settings.emailjsServiceId, appData.settings.emailjsTemplateId, {
+            to_email: appData.settings.email,
+            to_name: appData.settings.businessName,
+            from_name: lead.name || 'Website Visitor',
+            subject: 'New Lead: ' + (lead.service || 'Free Estimate Request'),
+            message: 'Name: ' + lead.name + '\nPhone: ' + lead.phone + '\nEmail: ' + lead.email + '\nService: ' + lead.service + '\nLocation: ' + lead.address + '\nDetails: ' + lead.message
+        });
+    }
+}
         function renderAll() {
             try {
                 renderTeamMembers();
