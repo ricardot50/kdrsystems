@@ -2215,6 +2215,8 @@
             }
         }
 
+     
+      
         // =============================================
         // DATA: LOAD FROM FIRESTORE (safe)
         // =============================================
@@ -2272,6 +2274,85 @@
                     if (!dataLoaded) { dataLoaded = true; initApp(); }
                 });
         }
+function startLeadsListener() {
+    if (!currentUserId || !db) return;
+    db.collection('users').doc(currentUserId).collection('leads')
+        .orderBy('createdAt', 'desc')
+        .onSnapshot(function(snapshot) {
+            appData.leads = [];
+            snapshot.forEach(function(doc) {
+                appData.leads.push(doc.data());
+            });
+            // Refresh leads tab if it's currently open
+            var leadsTab = document.getElementById('leads');
+            if (leadsTab && leadsTab.classList.contains('active')) {
+                renderLeads();
+                updateLeadCounts();
+            }
+            // Trigger email notification for brand new leads
+            snapshot.docChanges().forEach(function(change) {
+                if (change.type === 'added' && dataLoaded) {
+                    notifyNewLead(change.doc.data());
+                }
+            });
+        }, function(err) {
+            console.error('Leads listener error:', err);
+        });
+}
+
+function notifyNewLead(lead) {
+    // Add notification badge
+    if (appData.notifications) {
+        appData.notifications.unshift({
+            id: 'lead-' + lead.id,
+            type: 'lead',
+            title: 'New Lead',
+            message: (lead.name || 'Someone') + ' requested a free estimate',
+            date: lead.createdAt,
+            read: false
+        });
+        checkNotifications();
+    }
+    // Send email via EmailJS
+    if (appData.settings && appData.settings.emailjsPublicKey) {
+        emailjs.init(appData.settings.emailjsPublicKey);
+        emailjs.send(appData.settings.emailjsServiceId, appData.settings.emailjsTemplateId, {
+            to_email: appData.settings.email,
+            to_name: appData.settings.businessName,
+            from_name: lead.name || 'Website Visitor',
+            subject: 'New Lead: ' + (lead.service || 'Free Estimate Request'),
+            message: 'Name: ' + lead.name + '\nPhone: ' + lead.phone + '\nEmail: ' + lead.email + '\nService: ' + lead.service + '\nLocation: ' + lead.address + '\nDetails: ' + lead.message
+        });
+    }
+}
+        function renderAll() {
+            try {
+                renderTeamMembers();
+                renderExpenses();
+                calculateAll();
+                updateDashboard();
+                renderCalendar();
+                renderDocuments();
+                checkNotifications();
+            } catch(e) { console.error('Render error:', e); }
+        }
+
+        function switchTab(tabName, element) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            
+            document.querySelectorAll('.nav-btn-side').forEach(b => b.classList.remove('active'));
+            if (element) {
+                element.classList.add('active');
+            }
+            
+            if (tabName === 'customers') renderCustomers();
+            if (tabName === 'estimates') renderDocuments();
+            if (tabName === 'materials') renderMaterials();
+            if (tabName === 'templates') renderTemplates();
+            if (tabName === 'schedule') renderCalendar();
+            if (tabName === 'leads') { renderLeads(); updateLeadCounts(); }
+
 
         function renderAll() {
             try {
