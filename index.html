@@ -2093,8 +2093,7 @@
             teamMembers: [],
             expenses: [],
             scheduledJobs: [],
-            notifications: [],
-            leads: [],
+            notifications: [], 
             calculator: {
                 desiredProfit: 0,
                 workingHours: 160,
@@ -2412,7 +2411,9 @@
             var d = JSON.parse(JSON.stringify(data));
             if (d.settings) d.settings.logo = '';
             (d.estimates || []).forEach(function(e) { e.photos = []; });
-            (d.invoices  || []).forEach(function(e) { e.photos = []; });
+           (d.invoices  || []).forEach(function(e) { e.photos = []; });
+            (d.materials || []).forEach(function(m) { m.photo = ''; });
+            d.leads = [];
             return d;
         }
 
@@ -2683,7 +2684,7 @@
                 populateCategoryDropdown();
             }
             if (modalId === 'templateModal') {
-                populateTemplateMaterialsList();
+                populateTempCategoryDropdown();
             }
         }
 
@@ -3081,6 +3082,7 @@
 
         var calcPeriod = 'month'; // 'week', 'month', 'year'
         function setCalcPeriod(p) {
+            var oldPeriod = calcPeriod;
             calcPeriod = p;
             var btns = { week: document.getElementById('periodWeek'), month: document.getElementById('periodMonth'), year: document.getElementById('periodYear') };
             Object.keys(btns).forEach(function(k) {
@@ -3100,7 +3102,7 @@
             var curProfit = parseFloat(document.getElementById('desiredProfit').value) || 0;
             var curHours  = parseFloat(document.getElementById('workingHours').value) || 0;
             var toMonth = { week: 4.33, month: 1, year: 1/12 };
-            if (curProfit > 0) document.getElementById('desiredProfit').value = (curProfit * toMonth[p] / toMonth[calcPeriod === p ? p : 'month']).toFixed(0);
+            if (curProfit > 0) document.getElementById('desiredProfit').value = (curProfit * toMonth[p] / toMonth[oldPeriod].toFixed(0);
             calculateAll();
         }
 
@@ -3130,7 +3132,7 @@
             const monthlyBtn = document.getElementById('monthlyViewBtn');
             const yearlyBtn = document.getElementById('yearlyViewBtn');
             
-            if (appData.calculator.view === 'monthly') {
+           if (!monthlyBtn || !yearlyBtn) return;
                 monthlyBtn.classList.add('btn-primary');
                 monthlyBtn.classList.remove('btn-secondary');
                 yearlyBtn.classList.remove('btn-primary');
@@ -4760,8 +4762,18 @@
             }
             
             if (appData.settings.logo) {
-                displayLogoPreview(appData.settings.logo);
+              displayLogoPreview(appData.settings.logo);
             }
+            if (document.getElementById('desiredProfit'))
+                document.getElementById('desiredProfit').value = appData.calculator.desiredProfit || '';
+            if (document.getElementById('workingHours'))
+                document.getElementById('workingHours').value = appData.calculator.workingHours || 160;
+        }displayLogoPreview(appData.settings.logo);
+            }
+            if (document.getElementById('desiredProfit'))
+                document.getElementById('desiredProfit').value = appData.calculator.desiredProfit || '';
+            if (document.getElementById('workingHours'))
+                document.getElementById('workingHours').value = appData.calculator.workingHours || 160;
         }
 
         function handleDragOver(e) {
