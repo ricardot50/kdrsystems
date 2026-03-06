@@ -4762,14 +4762,8 @@
                 document.getElementById('headerBusinessSubtitle').textContent = appData.settings.businessName;
             }
             
-            if (appData.settings.logo) {
-              displayLogoPreview(appData.settings.logo);
-            }
-            if (document.getElementById('desiredProfit'))
-                document.getElementById('desiredProfit').value = appData.calculator.desiredProfit || '';
-            if (document.getElementById('workingHours'))
-                document.getElementById('workingHours').value = appData.calculator.workingHours || 160;
-        }displayLogoPreview(appData.settings.logo);
+      if (appData.settings.logo) {
+                displayLogoPreview(appData.settings.logo);
             }
             if (document.getElementById('desiredProfit'))
                 document.getElementById('desiredProfit').value = appData.calculator.desiredProfit || '';
