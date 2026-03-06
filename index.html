@@ -1840,8 +1840,7 @@
             // settings() MUST come before getFirestore / enablePersistence
             // experimentalForceLongPolling = true fixes Safari/iOS WebSocket drops
             db = firebase.firestore();
-            db.settings({ experimentalForceLongPolling: true, merge: true });
-
+          db.settings({ experimentalForceLongPolling: true });
             // Offline persistence — caches data on device, syncs when back online
             db.enablePersistence({ synchronizeTabs: false })
                 .catch(function(err) {
@@ -1995,7 +1994,7 @@
             // Force save before logout
             if (currentUserId) {
                 try { localStorage.setItem('kdrsystems_cache_' + currentUserId, JSON.stringify(appData)); } catch(e) {}
-                if (db) db.collection('users').doc(currentUserId).set({ appData: appData }, { merge: true }).catch(function(){});
+                if (db) db.collection('users').doc(currentUserId).set({ appData: _stripImagesForFirestore(appData) }, { merge: true }).catch(function(){});
             }
             if (auth) {
                 auth.signOut().then(function() {
@@ -2003,8 +2002,8 @@
                     dataLoaded = false;
                     document.getElementById('mainApp').style.display = 'none';
                     document.getElementById('loginScreen').style.display = 'flex';
-                    document.getElementById('loginEmail').value = '';
-                    document.getElementById('loginPassword').value = '';
+                    if (document.getElementById('loginEmail')) document.getElementById('loginEmail').value = '';
+                    if (document.getElementById('loginPassword')) document.getElementById('loginPassword').value = '';
                 });
             }
         }
