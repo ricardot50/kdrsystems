@@ -3102,7 +3102,7 @@
             var curProfit = parseFloat(document.getElementById('desiredProfit').value) || 0;
             var curHours  = parseFloat(document.getElementById('workingHours').value) || 0;
             var toMonth = { week: 4.33, month: 1, year: 1/12 };
-            if (curProfit > 0) document.getElementById('desiredProfit').value = (curProfit * toMonth[p] / toMonth[oldPeriod].toFixed(0);
+            if (curProfit > 0) document.getElementById('desiredProfit').value = (curProfit * toMonth[p] / toMonth[oldPeriod]).toFixed(0);
             calculateAll();
         }
 
