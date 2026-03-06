@@ -3128,11 +3128,13 @@
             saveData();
         }
 
-        function updateCalculatorViewButtons() {
+       function updateCalculatorViewButtons() {
             const monthlyBtn = document.getElementById('monthlyViewBtn');
             const yearlyBtn = document.getElementById('yearlyViewBtn');
             
-           if (!monthlyBtn || !yearlyBtn) return;
+            if (!monthlyBtn || !yearlyBtn) return;
+            
+            if (appData.calculator.view === 'monthly') {
                 monthlyBtn.classList.add('btn-primary');
                 monthlyBtn.classList.remove('btn-secondary');
                 yearlyBtn.classList.remove('btn-primary');
@@ -3144,7 +3146,6 @@
                 monthlyBtn.classList.add('btn-secondary');
             }
         }
-
         function saveCalculator() {
             appData.calculator.desiredProfit = parseFloat(document.getElementById('desiredProfit').value) || 0;
             appData.calculator.workingHours = parseFloat(document.getElementById('workingHours').value) || 160;
