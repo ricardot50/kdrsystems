@@ -2549,6 +2549,8 @@
                     }
 
                     // Always process — don't skip own writes, other devices need updates
+                  // Don't overwrite local data if a save is pending
+                    if (_saveTimer) return;
                     var merged = _restoreImages(raw.appData);
                     appData = merged;
                     _lsSave();
