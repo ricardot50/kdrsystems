@@ -4962,11 +4962,14 @@
                         newLeads.push(data);
                     });
                     
-                    // Check for brand new leads to notify
-                    var existingIds = appData.leads.map(function(l) { return l.id; });
+                 // Only notify for truly new leads — track seen IDs in localStorage
+                    var seenKey = 'kdr_seen_leads_' + currentUserId;
+                    var seenIds = JSON.parse(localStorage.getItem(seenKey) || '[]');
+                    var hasNew = false;
                     newLeads.forEach(function(lead) {
-                        if (existingIds.indexOf(lead.id) === -1 && lead.status === 'new') {
-                            // New lead just came in!
+                        if (seenIds.indexOf(lead.id) === -1 && lead.status === 'new') {
+                            seenIds.push(lead.id);
+                            hasNew = true;
                             appData.notifications.push({
                                 id: 'lead-' + lead.id,
                                 type: 'lead',
@@ -4975,11 +4978,10 @@
                                 date: lead.createdAt || new Date().toISOString(),
                                 read: false
                             });
-                            
-                            // Send email notification for new lead
                             sendLeadNotificationEmail(lead);
                         }
                     });
+                    if (hasNew) localStorage.setItem(seenKey, JSON.stringify(seenIds));
                     
                     appData.leads = newLeads;
                     renderLeads();
