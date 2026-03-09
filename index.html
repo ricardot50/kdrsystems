@@ -1809,7 +1809,7 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-       const firebaseConfig = {
+    const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -1843,7 +1843,14 @@
             // settings() MUST come before getFirestore / enablePersistence
             // experimentalForceLongPolling = true fixes Safari/iOS WebSocket drops
             db = firebase.firestore();
-            db.settings({ experimentalForceLongPolling: true });
+            db.settings({ experimentalForceLongPolling: true, merge: true });
+
+            // Offline persistence — caches data on device, syncs when back online
+            db.enablePersistence({ synchronizeTabs: false })
+                .catch(function(err) {
+                    console.warn('Persistence not available:', err.code);
+                    // Not fatal — app still works, just no offline cache
+                });
 
         } catch(e) {
             console.error('Firebase init error:', e);
@@ -1991,7 +1998,7 @@
             // Force save before logout
             if (currentUserId) {
                 try { localStorage.setItem('kdrsystems_cache_' + currentUserId, JSON.stringify(appData)); } catch(e) {}
-                if (db) saveData();
+                if (db) db.collection('users').doc(currentUserId).set({ appData: appData }, { merge: true }).catch(function(){});
             }
             if (auth) {
                 auth.signOut().then(function() {
@@ -1999,8 +2006,8 @@
                     dataLoaded = false;
                     document.getElementById('mainApp').style.display = 'none';
                     document.getElementById('loginScreen').style.display = 'flex';
-                    if (document.getElementById('loginEmail'))    document.getElementById('loginEmail').value    = '';
-                    if (document.getElementById('loginPassword')) document.getElementById('loginPassword').value = '';
+                    document.getElementById('loginEmail').value = '';
+                    document.getElementById('loginPassword').value = '';
                 });
             }
         }
@@ -2090,6 +2097,7 @@
             expenses: [],
             scheduledJobs: [],
             notifications: [],
+            leads: [],
             calculator: {
                 desiredProfit: 0,
                 workingHours: 160,
@@ -2402,201 +2410,91 @@
             return null;
         }
 
-        // ══════════════════════════════════════════════════════════════════
-        // DATA LAYER — Subcollection architecture
-        //
-        // Every record (customer, estimate, material, etc.) is its OWN
-        // Firestore document inside a subcollection. This means:
-        //   • Two devices can add records simultaneously — no conflicts
-        //   • Deleting on one device deletes everywhere instantly
-        //   • No more "whoever saves last wins" overwrite problem
-        //
-        // Firestore structure:
-        //   users/{uid}/customers/{id}
-        //   users/{uid}/estimates/{id}
-        //   users/{uid}/invoices/{id}
-        //   users/{uid}/materials/{id}   (photo stripped, kept in localStorage)
-        //   users/{uid}/templates/{id}
-        //   users/{uid}/terms/{id}
-        //   users/{uid}/scheduledJobs/{id}
-        //   users/{uid}/leads/{id}       (already subcollection)
-        //   users/{uid}/config/main      (settings + calculator + teamMembers + expenses + notifications)
-        // ══════════════════════════════════════════════════════════════════
-
-        var _saveTimer = null; // kept for showSaveStatus debounce only
-        var _listeners = [];   // all active Firestore listeners
-
-        // ── localStorage helpers ─────────────────────────────────────────────
-        var LS_KEY = function() { return 'kdr_v3_' + currentUserId; };
-        function _lsSave() {
-            try { localStorage.setItem(LS_KEY(), JSON.stringify(appData)); } catch(e) {}
-        }
-        function _lsLoad() {
-            var keys = [LS_KEY(), 'kdr_v2_' + currentUserId, 'kdr_' + currentUserId, 'kdrsystems_cache_' + currentUserId];
-            for (var i = 0; i < keys.length; i++) {
-                try {
-                    var raw = localStorage.getItem(keys[i]);
-                    if (raw) { var p = JSON.parse(raw); if (p && p.settings) return p; }
-                } catch(e) {}
-            }
-            return null;
-        }
-
-        // ── Strip images for Firestore (photos stay in localStorage only) ───
-        function _stripPhoto(obj) {
-            var d = JSON.parse(JSON.stringify(obj));
-            if (d.photos) d.photos = [];
-            if (d.photo)  d.photo  = '';
+        // Strip base64 so Firestore doc stays well under 1MB
+        function _stripImagesForFirestore(data) {
+            var d = JSON.parse(JSON.stringify(data));
+            if (d.settings) d.settings.logo = '';
+            (d.estimates || []).forEach(function(e) { e.photos = []; });
+            (d.invoices  || []).forEach(function(e) { e.photos = []; });
             return d;
         }
-        function _restorePhotosFromLS() {
+
+        // Restore local images onto server data after a Firestore sync
+        function _restoreImages(serverData) {
             var local = _lsLoad();
-            if (!local) return;
+            if (!local) return serverData;
+            if (local.settings && local.settings.logo)
+                serverData.settings.logo = local.settings.logo;
             var photoMap = {};
-            (local.estimates || []).forEach(function(e) { if (e.photos && e.photos.length) photoMap['est_'+e.id] = e.photos; });
-            (local.invoices  || []).forEach(function(e) { if (e.photos && e.photos.length) photoMap['inv_'+e.id] = e.photos; });
-            (local.materials || []).forEach(function(m) { if (m.photo) photoMap['mat_'+m.id] = m.photo; });
-            if (local.settings && local.settings.logo) appData.settings.logo = local.settings.logo;
-            appData.estimates.forEach(function(e) { if (photoMap['est_'+e.id]) e.photos = photoMap['est_'+e.id]; });
-            appData.invoices.forEach(function(e)  { if (photoMap['inv_'+e.id]) e.photos = photoMap['inv_'+e.id]; });
-            appData.materials.forEach(function(m) { if (photoMap['mat_'+m.id]) m.photo  = photoMap['mat_'+m.id]; });
+            (local.estimates || []).forEach(function(e) { if (e.photos && e.photos.length) photoMap[e.id] = e.photos; });
+            (local.invoices  || []).forEach(function(e) { if (e.photos && e.photos.length) photoMap[e.id] = e.photos; });
+            (serverData.estimates || []).forEach(function(e) { if (photoMap[e.id]) e.photos = photoMap[e.id]; });
+            (serverData.invoices  || []).forEach(function(e) { if (photoMap[e.id]) e.photos = photoMap[e.id]; });
+            return serverData;
         }
 
-        // ── Individual record saves ──────────────────────────────────────────
-        function _col(name) {
-            return db.collection('users').doc(currentUserId).collection(name);
-        }
-        function _cfg() {
-            return db.collection('users').doc(currentUserId).collection('config').doc('main');
-        }
-
-        function _saveRecord(colName, record) {
-            if (!currentUserId || !db) return;
-            _lsSave();
-            showSaveStatus('saving');
-            _col(colName).doc(record.id).set(_stripPhoto(record))
-                .then(function() { showSaveStatus('saved'); })
-                .catch(function(e) { console.error('Save error:', e); showSaveStatus('error'); });
-        }
-
-        function _deleteRecord(colName, id) {
-            if (!currentUserId || !db) return;
-            _lsSave();
-            _col(colName).doc(id).delete()
-                .catch(function(e) { console.error('Delete error:', e); });
-        }
-
-        function _saveConfig() {
-            if (!currentUserId || !db) return;
-            _lsSave();
-            showSaveStatus('saving');
-            var cfg = {
-                settings:    JSON.parse(JSON.stringify(appData.settings)),
-                calculator:  appData.calculator,
-                teamMembers: appData.teamMembers,
-                expenses:    appData.expenses,
-                notifications: appData.notifications,
-                scheduledJobs: appData.scheduledJobs
-            };
-            cfg.settings.logo = ''; // keep logo in localStorage only
-            _cfg().set(cfg, { merge: true })
-                .then(function() { showSaveStatus('saved'); })
-                .catch(function(e) { console.error('Config save error:', e); showSaveStatus('error'); });
-        }
-
-        // ── saveData — legacy call, saves everything ─────────────────────────
-        // Called in many places; we batch-save all subcollections + config.
-        // Use specific saves (saveCustomer, saveEstimate etc.) for real-time ops.
-        var _fullSaveTimer = null;
+        // ── saveData ─────────────────────────────────────────────────────────
         function saveData() {
             if (!currentUserId) return;
+
+            // 1. localStorage — instant, full data including images
             _lsSave();
             showSaveStatus('saving');
+
             if (!db) { showSaveStatus('saved'); return; }
-            if (_fullSaveTimer) clearTimeout(_fullSaveTimer);
-            _fullSaveTimer = setTimeout(function() {
-                _fullSaveTimer = null;
-                var batch = db.batch();
-                var base = db.collection('users').doc(currentUserId);
 
-                // Save config
-                var cfg = {
-                    settings: JSON.parse(JSON.stringify(appData.settings)),
-                    calculator: appData.calculator,
-                    teamMembers: appData.teamMembers,
-                    expenses: appData.expenses,
-                    notifications: appData.notifications,
-                    scheduledJobs: appData.scheduledJobs
-                };
-                cfg.settings.logo = '';
-                batch.set(base.collection('config').doc('main'), cfg, { merge: true });
-
-                // Save all records in subcollections
-                var cols = [
-                    ['customers',    appData.customers],
-                    ['estimates',    appData.estimates],
-                    ['invoices',     appData.invoices],
-                    ['materials',    appData.materials],
-                    ['templates',    appData.templates],
-                    ['terms',        appData.terms],
-                ];
-                cols.forEach(function(pair) {
-                    var colName = pair[0], arr = pair[1];
-                    arr.forEach(function(rec) {
-                        if (rec && rec.id) batch.set(base.collection(colName).doc(rec.id), _stripPhoto(rec), { merge: true });
-                    });
-                });
-
-                batch.commit()
-                    .then(function() { showSaveStatus('saved'); })
+            // 2. Firestore — debounced 800ms, strips images
+            if (_saveTimer) clearTimeout(_saveTimer);
+            _saveTimer = setTimeout(function() {
+                _saveTimer = null;
+                var payload = { appData: _stripImagesForFirestore(appData) };
+                db.collection('users').doc(currentUserId)
+                    .set(payload, { merge: true })
+                    .then(function() {
+                        showSaveStatus('saved');
+                    })
                     .catch(function(err) {
-                        console.error('Batch save failed:', err);
+                        console.error('Firestore save failed:', err);
                         showSaveStatus('error');
+                        // Auto-retry after 5s
+                        setTimeout(function() {
+                            if (!currentUserId || !db) return;
+                            db.collection('users').doc(currentUserId)
+                                .set({ appData: _stripImagesForFirestore(appData) }, { merge: true })
+                                .then(function() { showSaveStatus('saved'); })
+                                .catch(function(e) { console.error('Retry failed:', e); });
+                        }, 5000);
                     });
             }, 800);
         }
 
-        // Specific save helpers — these are instant, no debounce
-        function saveCustomer(c)    { _saveRecord('customers', c); }
-        function saveEstimate(e)    { _saveRecord('estimates', e); }
-        function saveInvoice(inv)   { _saveRecord('invoices',  inv); }
-        function saveMaterial(m)    { _saveRecord('materials', m); }
-        function saveTemplate(t)    { _saveRecord('templates', t); }
-        function saveTerm(t)        { _saveRecord('terms',     t); }
-        function saveJob(j)         { _saveRecord('scheduledJobs', j); }
-        function deleteCustomerDoc(id)  { _deleteRecord('customers', id); }
-        function deleteEstimateDoc(id)  { _deleteRecord('estimates', id); }
-        function deleteInvoiceDoc(id)   { _deleteRecord('invoices',  id); }
-        function deleteMaterialDoc(id)  { _deleteRecord('materials', id); }
-        function deleteTemplateDoc(id)  { _deleteRecord('templates', id); }
-        function deleteTermDoc(id)      { _deleteRecord('terms',     id); }
-        function deleteJobDoc(id)       { _deleteRecord('scheduledJobs', id); }
-
-        function _flushSave() { if (_fullSaveTimer) { saveData(); } }
-        document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') { _lsSave(); } });
-        window.addEventListener('pagehide',    function() { _lsSave(); });
-        window.addEventListener('beforeunload', function() { _lsSave(); });
-        window.addEventListener('online', function() { if (currentUserId) loadData(); });
-
-        function showSaveStatus(status) {
-            var el = document.getElementById('saveIndicator');
-            if (!el) return;
-            if (status === 'saving') {
-                el.textContent = 'Saving...';
-                el.style.color = '#f59e0b';
-                el.style.display = 'inline';
-            } else if (status === 'saved') {
-                el.textContent = 'Saved ✓';
-                el.style.color = '#22c55e';
-                el.style.display = 'inline';
-                if (_saveTimer) clearTimeout(_saveTimer);
-                _saveTimer = setTimeout(function() { el.style.display = 'none'; }, 2500);
-            } else {
-                el.textContent = 'Retrying...';
-                el.style.color = '#ef4444';
-                el.style.display = 'inline';
+        // ── Lifecycle saves — flush immediately when app goes to background ──
+        function _flushSave() {
+            if (!currentUserId) return;
+            _lsSave(); // always
+            if (db && _saveTimer) {
+                clearTimeout(_saveTimer);
+                _saveTimer = null;
+                db.collection('users').doc(currentUserId)
+                    .set({ appData: _stripImagesForFirestore(appData) }, { merge: true })
+                    .catch(function(e) { console.error('Flush save failed:', e); });
             }
         }
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') _flushSave();
+        });
+        window.addEventListener('pagehide',    _flushSave);
+        window.addEventListener('beforeunload', _flushSave);
+        window.addEventListener('online', function() {
+            // Came back online — push whatever we have
+            if (currentUserId && db) {
+                db.collection('users').doc(currentUserId)
+                    .set({ appData: _stripImagesForFirestore(appData) }, { merge: true })
+                    .then(function() { showSaveStatus('saved'); })
+                    .catch(function() {});
+            }
+        });
 
         function showSaveStatus(status) {
             var el = document.getElementById('saveIndicator');
@@ -2617,99 +2515,55 @@
             }
         }
 
-        // ── loadData — sets up real-time subcollection listeners ────────────
-        var _dataListener = null;
-        var dataLoaded    = false;
-        // Track how many subcollections have loaded at least once
-        var _loadedCols = {};
-        var _REQUIRED_COLS = ['config','customers','estimates','invoices','materials','templates','terms'];
-
-        function _checkAllLoaded() {
-            var done = _REQUIRED_COLS.every(function(c) { return _loadedCols[c]; });
-            if (done && !dataLoaded) {
-                dataLoaded = true;
-                _restorePhotosFromLS();
-                _lsSave();
-                populateSettings();
-                initApp();
-            } else if (done) {
-                _restorePhotosFromLS();
-                _lsSave();
-                populateSettings();
-                renderAll();
-            }
-        }
-
+        // ── loadData ─────────────────────────────────────────────────────────
         function loadData() {
-            if (!currentUserId || !db) {
-                var cached = _lsLoad();
-                if (cached) { appData = cached; }
-                if (!dataLoaded) { dataLoaded = true; initApp(); }
-                return;
-            }
+            if (!currentUserId) return;
 
-            // Step 1: show cached data instantly while Firestore loads
+            // Step 1: Show data instantly from localStorage
             var cached = _lsLoad();
             if (cached) {
                 appData = cached;
                 populateSettings();
                 if (!dataLoaded) { dataLoaded = true; initApp(); }
+                else { renderAll(); }
             }
 
-            // Unsubscribe old listeners
-            _listeners.forEach(function(u) { try { u(); } catch(e) {} });
-            _listeners = [];
-            _loadedCols = {};
+            if (!db) {
+                if (!dataLoaded) { dataLoaded = true; initApp(); }
+                return;
+            }
 
-            var base = db.collection('users').doc(currentUserId);
+            // Step 2: Real-time Firestore listener
+            // Fires immediately on load AND whenever data changes on any device.
+            // With offline persistence enabled this also fires from local IndexedDB.
+            if (_dataListener) { _dataListener(); _dataListener = null; }
 
-            // ── Config listener (settings, calculator, teamMembers, expenses) ──
-            _listeners.push(base.collection('config').doc('main')
-                .onSnapshot(function(doc) {
-                    if (doc.exists) {
-                        var d = doc.data();
-                        if (d.settings)    { var logo = appData.settings.logo; appData.settings = d.settings; appData.settings.logo = logo || d.settings.logo || ''; }
-                        if (d.calculator)  appData.calculator  = d.calculator;
-                        if (d.teamMembers) appData.teamMembers = d.teamMembers;
-                        if (d.expenses)    appData.expenses    = d.expenses;
-                        if (d.notifications) appData.notifications = d.notifications;
-                        if (d.scheduledJobs) appData.scheduledJobs = d.scheduledJobs;
+            _dataListener = db.collection('users').doc(currentUserId)
+                .onSnapshot({ includeMetadataChanges: false }, function(doc) {
+                    if (!doc || !doc.exists) {
+                        if (!dataLoaded) { dataLoaded = true; initApp(); }
+                        return;
                     }
-                    _loadedCols['config'] = true;
-                    _checkAllLoaded();
-                }, function(err) { console.error('Config listener error:', err); _loadedCols['config'] = true; _checkAllLoaded(); })
-            );
 
-            // ── Subcollection listeners ───────────────────────────────────────
-            var colMap = {
-                customers:    'customers',
-                estimates:    'estimates',
-                invoices:     'invoices',
-                materials:    'materials',
-                templates:    'templates',
-                terms:        'terms'
-            };
+                    var raw = doc.data();
+                    if (!raw || !raw.appData || !raw.appData.settings) {
+                        if (!dataLoaded) { dataLoaded = true; initApp(); }
+                        return;
+                    }
 
-            Object.keys(colMap).forEach(function(colName) {
-                var arrName = colMap[colName];
-                _listeners.push(base.collection(colName)
-                    .onSnapshot(function(snapshot) {
-                        // Skip snapshots caused by our own pending writes
-                        if (snapshot.metadata.hasPendingWrites) return;
-                        var arr = [];
-                        snapshot.forEach(function(doc) { arr.push(doc.data()); });
-                        // Sort by id (creation time) to keep order consistent
-                        arr.sort(function(a,b) { return (a.id||'') > (b.id||'') ? 1 : -1; });
-                        appData[arrName] = arr;
-                        _loadedCols[colName] = true;
-                        _checkAllLoaded();
-                    }, function(err) {
-                        console.error(colName + ' listener error:', err);
-                        _loadedCols[colName] = true;
-                        _checkAllLoaded();
-                    })
-                );
-            });
+                    // Always process — don't skip own writes, other devices need updates
+                    var merged = _restoreImages(raw.appData);
+                    appData = merged;
+                    _lsSave();
+                    populateSettings();
+                    if (!dataLoaded) { dataLoaded = true; initApp(); }
+                    else { renderAll(); }
+
+                }, function(err) {
+                    console.error('Firestore listener error:', err.code, err.message);
+                    // Still boot from localStorage if we have it
+                    if (!dataLoaded) { dataLoaded = true; initApp(); }
+                });
         }
 
         var _renderTimer = null;
@@ -2832,7 +2686,7 @@
                 populateCategoryDropdown();
             }
             if (modalId === 'templateModal') {
-                populateTempCategoryDropdown();
+                populateTemplateMaterialsList();
             }
         }
 
@@ -3230,7 +3084,6 @@
 
         var calcPeriod = 'month'; // 'week', 'month', 'year'
         function setCalcPeriod(p) {
-            var oldPeriod = calcPeriod;
             calcPeriod = p;
             var btns = { week: document.getElementById('periodWeek'), month: document.getElementById('periodMonth'), year: document.getElementById('periodYear') };
             Object.keys(btns).forEach(function(k) {
@@ -3250,8 +3103,7 @@
             var curProfit = parseFloat(document.getElementById('desiredProfit').value) || 0;
             var curHours  = parseFloat(document.getElementById('workingHours').value) || 0;
             var toMonth = { week: 4.33, month: 1, year: 1/12 };
-            if (curProfit > 0) document.getElementById('desiredProfit').value = Math.round(curProfit * toMonth[oldPeriod] / toMonth[p]);
-            if (curHours  > 0) document.getElementById('workingHours').value  = Math.round(curHours  * toMonth[oldPeriod] / toMonth[p]);
+            if (curProfit > 0) document.getElementById('desiredProfit').value = (curProfit * toMonth[p] / toMonth[calcPeriod === p ? p : 'month']).toFixed(0);
             calculateAll();
         }
 
@@ -3280,7 +3132,7 @@
         function updateCalculatorViewButtons() {
             const monthlyBtn = document.getElementById('monthlyViewBtn');
             const yearlyBtn = document.getElementById('yearlyViewBtn');
-            if (!monthlyBtn || !yearlyBtn) return;
+            
             if (appData.calculator.view === 'monthly') {
                 monthlyBtn.classList.add('btn-primary');
                 monthlyBtn.classList.remove('btn-secondary');
@@ -3305,15 +3157,14 @@
         // Customers
         document.getElementById('customerForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            var c = {
+            appData.customers.push({
                 id: Date.now().toString(),
                 name: document.getElementById('custName').value,
                 email: document.getElementById('custEmail').value,
                 phone: document.getElementById('custPhone').value,
                 address: document.getElementById('custAddress').value
-            };
-            appData.customers.push(c);
-            saveCustomer(c);
+            });
+            saveData();
             this.reset();
             closeModal('customerModal');
             renderCustomers();
@@ -3341,7 +3192,7 @@
         function deleteCustomer(id) {
             kdrConfirm('Delete customer?', 'This cannot be undone.', 'Delete', function() {
                 appData.customers = appData.customers.filter(function(c) { return c.id !== id; });
-                deleteCustomerDoc(id);
+                saveData();
                 renderCustomers();
             });
         }
@@ -3373,19 +3224,24 @@
             };
             
             if (editId) {
+                // Edit existing material
                 var mat = appData.materials.find(function(m) { return m.id === editId; });
                 if (mat) {
-                    mat.name = matData.name; mat.category = matData.category;
-                    mat.description = matData.description; mat.cost = matData.cost;
-                    mat.unit = matData.unit; mat.markup = matData.markup;
+                    mat.name = matData.name;
+                    mat.category = matData.category;
+                    mat.description = matData.description;
+                    mat.cost = matData.cost;
+                    mat.unit = matData.unit;
+                    mat.markup = matData.markup;
                     mat.photo = matData.photo || mat.photo;
-                    saveMaterial(mat);
                 }
             } else {
+                // Add new
                 matData.id = Date.now().toString();
                 appData.materials.push(matData);
-                saveMaterial(matData);
             }
+            
+            saveData();
             this.reset();
             document.getElementById('matEditId').value = '';
             currentMatPhoto = '';
@@ -3588,7 +3444,7 @@
         function deleteMaterial(id) {
             kdrConfirm('Delete material?', 'This cannot be undone.', 'Delete', function() {
                 appData.materials = appData.materials.filter(function(m) { return m.id !== id; });
-                deleteMaterialDoc(id);
+                saveData();
                 renderMaterials();
             });
         }
@@ -4988,7 +4844,7 @@
                 jobNotificationHours: parseInt(document.getElementById('jobNotificationHours').value) || 24
             };
             
-            _saveConfig();
+            saveData();
             document.getElementById('headerBusinessSubtitle').textContent = appData.settings.businessName || 'Business Management System';
             toast('Settings saved ✓');
         }
@@ -5095,28 +4951,24 @@
                         newLeads.push(data);
                     });
                     
-                    var seenKey = 'kdr_seen_leads_' + currentUserId;
-                    var seenIds = [];
-                    try { seenIds = JSON.parse(localStorage.getItem(seenKey) || '[]'); } catch(e) {}
-                    var hadNew = false;
+                    // Check for brand new leads to notify
+                    var existingIds = appData.leads.map(function(l) { return l.id; });
                     newLeads.forEach(function(lead) {
-                        if (seenIds.indexOf(lead.id) === -1) {
-                            seenIds.push(lead.id);
-                            hadNew = true;
-                            if (lead.status === 'new') {
-                                appData.notifications.push({
-                                    id: 'lead-' + lead.id,
-                                    type: 'lead',
-                                    title: 'New Lead',
-                                    message: (lead.name || 'Someone') + ' submitted a service request' + (lead.service ? ' for ' + lead.service : ''),
-                                    date: lead.createdAt || new Date().toISOString(),
-                                    read: false
-                                });
-                                sendLeadNotificationEmail(lead);
-                            }
+                        if (existingIds.indexOf(lead.id) === -1 && lead.status === 'new') {
+                            // New lead just came in!
+                            appData.notifications.push({
+                                id: 'lead-' + lead.id,
+                                type: 'lead',
+                                title: 'New Lead',
+                                message: (lead.name || 'Someone') + ' submitted a service request' + (lead.service ? ' for ' + lead.service : ''),
+                                date: lead.createdAt || new Date().toISOString(),
+                                read: false
+                            });
+                            
+                            // Send email notification for new lead
+                            sendLeadNotificationEmail(lead);
                         }
                     });
-                    if (hadNew) { try { localStorage.setItem(seenKey, JSON.stringify(seenIds)); } catch(e) {} }
                     
                     appData.leads = newLeads;
                     renderLeads();
@@ -5431,9 +5283,9 @@
             };
             appData.customers.push(newCustomer);
             saveCustomer(newCustomer);
-            
             updateLeadStatus(leadId, 'converted');
             renderCustomers();
+            updateDashboard();
             toast((lead.name||'Lead') + ' added to Customers ✓');
         }
         
