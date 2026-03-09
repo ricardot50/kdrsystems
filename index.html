@@ -1842,7 +1842,7 @@
             // settings() MUST come before getFirestore / enablePersistence
             // experimentalForceLongPolling = true fixes Safari/iOS WebSocket drops
             db = firebase.firestore();
-            db.settings({ experimentalForceLongPolling: true, merge: true });
+           db.settings({ experimentalForceLongPolling: true });
 
             // Offline persistence — caches data on device, syncs when back online
             db.enablePersistence({ synchronizeTabs: false })
