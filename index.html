@@ -5421,17 +5421,18 @@
                 return;
             }
             
-            appData.customers.push({
+            var newCustomer = {
                 id: Date.now().toString(),
                 name: lead.name || 'New Customer',
                 email: lead.email || '',
                 phone: lead.phone || '',
                 address: lead.address || '',
                 notes: (lead.service ? 'Service: ' + lead.service + '\n' : '') + (lead.message || '')
-            });
+            };
+            appData.customers.push(newCustomer);
+            saveCustomer(newCustomer);
             
             updateLeadStatus(leadId, 'converted');
-            saveData();
             renderCustomers();
             toast((lead.name||'Lead') + ' added to Customers ✓');
         }
