@@ -3128,10 +3128,10 @@
             saveData();
         }
 
-        function updateCalculatorViewButtons() {
+      function updateCalculatorViewButtons() {
             const monthlyBtn = document.getElementById('monthlyViewBtn');
             const yearlyBtn = document.getElementById('yearlyViewBtn');
-            
+            if (!monthlyBtn || !yearlyBtn) return;
             if (appData.calculator.view === 'monthly') {
                 monthlyBtn.classList.add('btn-primary');
                 monthlyBtn.classList.remove('btn-secondary');
