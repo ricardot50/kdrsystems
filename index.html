@@ -1912,18 +1912,20 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block mb-1 font-semibold">Total Contract Price <span class="text-red-500">*</span></label>
-                                <input type="number" id="contractPrice" placeholder="0.00" step="0.01" required>
+                                <input type="number" id="contractPrice" placeholder="0.00" step="0.01" required oninput="recalcContractDeposits()">
                             </div>
                             <div>
                                 <label class="block mb-1">Payment Schedule</label>
-                                <select id="contractPaySchedule">
-                                    <option value="30-30-40">30% deposit / 30% at start / 40% completion</option>
-                                    <option value="50-50">50% deposit / 50% completion</option>
-                                    <option value="100">100% upon completion</option>
-                                    <option value="custom">Custom (see notes)</option>
+                                <select id="contractPaySchedule" onchange="recalcContractDeposits()">
+                                    <option value="30-30-40">30% / 30% / 40%</option>
+                                    <option value="50-50">50% / 50%</option>
+                                    <option value="100">100% on completion</option>
+                                    <option value="custom">Custom amounts</option>
                                 </select>
                             </div>
                         </div>
+                        <!-- Deposit breakdown — shown/hidden based on schedule -->
+                        <div id="depositBreakdown" class="mt-4 space-y-3"></div>
                     </div>
 
                     <!-- Timeline -->
@@ -1938,7 +1940,7 @@
                         </div>
                     </div>
 
-                    <!-- Warranty & Terms -->
+                    <!-- Warranty -->
                     <div>
                         <label class="block mb-1">Workmanship Warranty</label>
                         <select id="contractWarranty">
@@ -1948,9 +1950,21 @@
                             <option value="none">No Warranty</option>
                         </select>
                     </div>
+
+                    <!-- Additional Notes -->
                     <div>
-                        <label class="block mb-1">Additional Notes / Terms</label>
-                        <textarea id="contractNotes" rows="3" placeholder="Permit fees, HOA approvals, access requirements, etc."></textarea>
+                        <label class="block mb-1">Additional Notes / Special Instructions</label>
+                        <textarea id="contractNotes" rows="3" placeholder="Permit fees, HOA approvals, access requirements, subcontractor info, etc."></textarea>
+                    </div>
+
+                    <!-- Standard Terms — fully editable -->
+                    <div style="background:#f8f9fb;border:1px solid #e2e8f0;border-radius:10px;padding:18px;">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold" style="font-size:15px;color:#1e293b;">📄 Standard Terms & Conditions</h4>
+                            <button type="button" class="btn-secondary text-xs py-1 px-3" onclick="resetContractTerms()">Reset to Default</button>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-3">These appear at the bottom of the contract the customer sees. Edit freely for each job.</p>
+                        <textarea id="contractTerms" rows="10" style="font-size:13px;line-height:1.6;font-family:monospace;"></textarea>
                     </div>
 
                     <div class="flex gap-3 pt-2">
@@ -1984,7 +1998,7 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-       const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -5687,12 +5701,106 @@
         // CONTRACTS FEATURE
         // =============================================
 
+        var DEFAULT_CONTRACT_TERMS = [
+            '1. Any changes to the agreed scope of work require a written Change Order signed by both parties before work begins.',
+            '2. Contractor maintains General Liability Insurance and Workers\' Compensation Insurance. Certificates available upon request.',
+            '3. Customer is responsible for obtaining HOA approvals, property surveys, and locating underground utilities (call 811 before dig).',
+            '4. Final payment is due upon completion and before the final walkthrough. Work may be paused if scheduled payments are not received on time.',
+            '5. Workmanship warranty covers defects in labor and installation only. It does not cover damage from weather, acts of nature, normal wear and tear, or modifications made by others.',
+            '6. Contractor will remove all debris and excess materials from the job site upon completion.',
+            '7. Contractor is not responsible for damage to underground utilities, irrigation lines, or cables not marked or disclosed by the Customer.',
+            '8. This agreement constitutes the entire contract between the parties. Any verbal agreements not written here are not binding.',
+            '9. In the event of a dispute, both parties agree to attempt resolution through good-faith negotiation before pursuing legal action.',
+            '10. Customer grants Contractor permission to take before/after photos of the property for portfolio and marketing use unless otherwise noted.'
+        ].join('\n\n');
+
+        function resetContractTerms() {
+            var el = document.getElementById('contractTerms');
+            if (el) el.value = DEFAULT_CONTRACT_TERMS;
+        }
+
+        function recalcContractDeposits() {
+            var price = parseFloat(document.getElementById('contractPrice').value) || 0;
+            var schedule = document.getElementById('contractPaySchedule').value;
+            var container = document.getElementById('depositBreakdown');
+            if (!container) return;
+
+            if (schedule === '30-30-40') {
+                var d1 = (price * 0.30).toFixed(2);
+                var d2 = (price * 0.30).toFixed(2);
+                var d3 = (price * 0.40).toFixed(2);
+                container.innerHTML =
+                    '<div style="background:#fff;border-radius:8px;padding:14px;border:1px solid #d1fae5;">' +
+                        '<p class="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Payment Breakdown — edit amounts as needed</p>' +
+                        '<div class="grid grid-cols-3 gap-3">' +
+                            '<div><label class="block mb-1 text-xs font-semibold" style="color:#15803d;">Deposit (at signing)</label><div style="display:flex;align-items:center;border:1px solid #d1fae5;border-radius:8px;background:#f0fdf4;overflow:hidden;"><span style="padding:0 8px;color:#64748b;font-size:14px;">$</span><input type="number" id="dep1Amount" value="' + d1 + '" step="0.01" style="border:none;background:transparent;padding:10px 8px 10px 0;width:100%;font-weight:700;color:#15803d;font-size:14px;"></div><input type="text" id="dep1Label" value="Due at signing" style="margin-top:4px;font-size:11px;padding:5px 8px;"></div>' +
+                            '<div><label class="block mb-1 text-xs font-semibold" style="color:#f59e0b;">Progress Payment</label><div style="display:flex;align-items:center;border:1px solid #fde68a;border-radius:8px;background:#fffbeb;overflow:hidden;"><span style="padding:0 8px;color:#64748b;font-size:14px;">$</span><input type="number" id="dep2Amount" value="' + d2 + '" step="0.01" style="border:none;background:transparent;padding:10px 8px 10px 0;width:100%;font-weight:700;color:#f59e0b;font-size:14px;"></div><input type="text" id="dep2Label" value="Due at project start" style="margin-top:4px;font-size:11px;padding:5px 8px;"></div>' +
+                            '<div><label class="block mb-1 text-xs font-semibold" style="color:#3b82f6;">Final Payment</label><div style="display:flex;align-items:center;border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;overflow:hidden;"><span style="padding:0 8px;color:#64748b;font-size:14px;">$</span><input type="number" id="dep3Amount" value="' + d3 + '" step="0.01" style="border:none;background:transparent;padding:10px 8px 10px 0;width:100%;font-weight:700;color:#3b82f6;font-size:14px;"></div><input type="text" id="dep3Label" value="Due upon completion" style="margin-top:4px;font-size:11px;padding:5px 8px;"></div>' +
+                        '</div>' +
+                    '</div>';
+            } else if (schedule === '50-50') {
+                var h1 = (price * 0.50).toFixed(2);
+                var h2 = (price * 0.50).toFixed(2);
+                container.innerHTML =
+                    '<div style="background:#fff;border-radius:8px;padding:14px;border:1px solid #d1fae5;">' +
+                        '<p class="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Payment Breakdown — edit amounts as needed</p>' +
+                        '<div class="grid grid-cols-2 gap-3">' +
+                            '<div><label class="block mb-1 text-xs font-semibold" style="color:#15803d;">Deposit (at signing)</label><div style="display:flex;align-items:center;border:1px solid #d1fae5;border-radius:8px;background:#f0fdf4;overflow:hidden;"><span style="padding:0 8px;color:#64748b;font-size:14px;">$</span><input type="number" id="dep1Amount" value="' + h1 + '" step="0.01" style="border:none;background:transparent;padding:10px 8px 10px 0;width:100%;font-weight:700;color:#15803d;font-size:14px;"></div><input type="text" id="dep1Label" value="Due at signing" style="margin-top:4px;font-size:11px;padding:5px 8px;"></div>' +
+                            '<div><label class="block mb-1 text-xs font-semibold" style="color:#3b82f6;">Final Payment</label><div style="display:flex;align-items:center;border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;overflow:hidden;"><span style="padding:0 8px;color:#64748b;font-size:14px;">$</span><input type="number" id="dep2Amount" value="' + h2 + '" step="0.01" style="border:none;background:transparent;padding:10px 8px 10px 0;width:100%;font-weight:700;color:#3b82f6;font-size:14px;"></div><input type="text" id="dep2Label" value="Due upon completion" style="margin-top:4px;font-size:11px;padding:5px 8px;"></div>' +
+                        '</div>' +
+                    '</div>';
+            } else if (schedule === 'custom') {
+                container.innerHTML =
+                    '<div style="background:#fff;border-radius:8px;padding:14px;border:1px solid #e2e8f0;" id="customPayRows">' +
+                        '<p class="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">Custom Payment Schedule</p>' +
+                        '<div id="customDepositRows" class="space-y-2"></div>' +
+                        '<button type="button" class="btn-secondary text-xs mt-2" onclick="addCustomDepositRow()">+ Add Payment</button>' +
+                    '</div>';
+                addCustomDepositRow('', 'Due at signing');
+                addCustomDepositRow('', 'Due upon completion');
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        function addCustomDepositRow(amount, label) {
+            var container = document.getElementById('customDepositRows');
+            if (!container) return;
+            var row = document.createElement('div');
+            row.className = 'flex gap-2 items-center custom-dep-row';
+            row.innerHTML = '<div style="display:flex;align-items:center;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;flex:1;"><span style="padding:0 8px;color:#64748b;">$</span><input type="number" class="custom-dep-amount" placeholder="0.00" step="0.01" value="' + (amount||'') + '" style="border:none;padding:9px 8px 9px 0;width:100%;font-weight:700;font-size:14px;"></div>' +
+                '<input type="text" class="custom-dep-label" placeholder="e.g. Due at start" value="' + (label||'') + '" style="flex:2;padding:9px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;">' +
+                '<button type="button" onclick="this.closest(\'.custom-dep-row\').remove()" style="color:#ef4444;background:none;border:none;font-size:18px;cursor:pointer;padding:0 4px;line-height:1;">×</button>';
+            container.appendChild(row);
+        }
+
+        function getDepositData() {
+            var schedule = document.getElementById('contractPaySchedule').value;
+            var deposits = [];
+            if (schedule === '30-30-40' || schedule === '50-50') {
+                var amounts = document.querySelectorAll('#depositBreakdown input[id^="dep"][id$="Amount"]');
+                var labels  = document.querySelectorAll('#depositBreakdown input[id^="dep"][id$="Label"]');
+                amounts.forEach(function(inp, i) {
+                    deposits.push({ amount: parseFloat(inp.value)||0, label: labels[i] ? labels[i].value : '' });
+                });
+            } else if (schedule === 'custom') {
+                document.querySelectorAll('.custom-dep-row').forEach(function(row) {
+                    var amt = row.querySelector('.custom-dep-amount');
+                    var lbl = row.querySelector('.custom-dep-label');
+                    if (amt && lbl) deposits.push({ amount: parseFloat(amt.value)||0, label: lbl.value });
+                });
+            }
+            return deposits;
+        }
+
         function openContractModal(editId) {
             var form = document.getElementById('contractForm');
             form.reset();
             document.getElementById('contractEditId').value = '';
             document.getElementById('contractModalTitle').textContent = 'New Contract';
             document.getElementById('contractDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('contractTerms').value = DEFAULT_CONTRACT_TERMS;
+            document.getElementById('depositBreakdown').innerHTML = '';
             populateCustomerSelect('contractCustomer');
 
             if (editId) {
@@ -5716,7 +5824,26 @@
                     document.getElementById('contractEndDate').value = c.endDate || '';
                     document.getElementById('contractWarranty').value = c.warranty || '1 year';
                     document.getElementById('contractNotes').value = c.notes || '';
+                    document.getElementById('contractTerms').value = c.terms || DEFAULT_CONTRACT_TERMS;
+                    // Re-render deposits then restore saved values
+                    recalcContractDeposits();
+                    if (c.deposits && c.deposits.length) {
+                        var schedule = c.paySchedule;
+                        if (schedule === '30-30-40' || schedule === '50-50') {
+                            c.deposits.forEach(function(dep, i) {
+                                var aEl = document.getElementById('dep' + (i+1) + 'Amount');
+                                var lEl = document.getElementById('dep' + (i+1) + 'Label');
+                                if (aEl) aEl.value = dep.amount;
+                                if (lEl) lEl.value = dep.label;
+                            });
+                        } else if (schedule === 'custom') {
+                            var container = document.getElementById('customDepositRows');
+                            if (container) { container.innerHTML = ''; c.deposits.forEach(function(dep){ addCustomDepositRow(dep.amount, dep.label); }); }
+                        }
+                    }
                 }
+            } else {
+                recalcContractDeposits();
             }
             openModal('contractModal');
         }
@@ -5749,6 +5876,8 @@
                 endDate: document.getElementById('contractEndDate').value,
                 warranty: document.getElementById('contractWarranty').value,
                 notes: document.getElementById('contractNotes').value,
+                terms: document.getElementById('contractTerms').value,
+                deposits: getDepositData(),
                 status: editId ? (appData.contracts.find(function(c){ return c.id === editId; }) || {}).status || 'pending' : 'pending',
                 signature: editId ? (appData.contracts.find(function(c){ return c.id === editId; }) || {}).signature || null : null,
                 signedBy: editId ? (appData.contracts.find(function(c){ return c.id === editId; }) || {}).signedBy || null : null,
@@ -5838,16 +5967,23 @@
             var dep50 = (price * 0.50).toFixed(2);
 
             var payBreakdown = '';
-            if (c.paySchedule === '30-30-40') {
+            if (c.deposits && c.deposits.length) {
+                payBreakdown = '<div style="margin-top:12px;background:#f8f9fb;border-radius:8px;padding:12px;font-size:13px;">';
+                c.deposits.forEach(function(dep, i) {
+                    var isLast = i === c.deposits.length - 1;
+                    payBreakdown += '<div style="display:flex;justify-content:space-between;padding:5px 0;' + (!isLast ? 'border-bottom:1px solid #eee;' : '') + '"><span>' + (dep.label || 'Payment ' + (i+1)) + '</span><span style="font-weight:700;">$' + parseFloat(dep.amount||0).toFixed(2) + '</span></div>';
+                });
+                payBreakdown += '</div>';
+            } else if (c.paySchedule === '30-30-40') {
                 payBreakdown = '<div style="margin-top:12px;background:#f8f9fb;border-radius:8px;padding:12px;font-size:13px;">' +
-                    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;"><span>Deposit (30%) — due at signing</span><span style="font-weight:700;">$' + dep30 + '</span></div>' +
-                    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;"><span>Progress (30%) — due at start</span><span style="font-weight:700;">$' + mid30 + '</span></div>' +
-                    '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Final (40%) — due at completion</span><span style="font-weight:700;">$' + fin40 + '</span></div>' +
+                    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;"><span>Deposit (30%) — due at signing</span><span style="font-weight:700;">$' + (price*0.30).toFixed(2) + '</span></div>' +
+                    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;"><span>Progress (30%) — due at start</span><span style="font-weight:700;">$' + (price*0.30).toFixed(2) + '</span></div>' +
+                    '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Final (40%) — due at completion</span><span style="font-weight:700;">$' + (price*0.40).toFixed(2) + '</span></div>' +
                 '</div>';
             } else if (c.paySchedule === '50-50') {
                 payBreakdown = '<div style="margin-top:12px;background:#f8f9fb;border-radius:8px;padding:12px;font-size:13px;">' +
-                    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;"><span>Deposit (50%) — due at signing</span><span style="font-weight:700;">$' + dep50 + '</span></div>' +
-                    '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Final (50%) — due at completion</span><span style="font-weight:700;">$' + dep50 + '</span></div>' +
+                    '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #eee;"><span>Deposit (50%) — due at signing</span><span style="font-weight:700;">$' + (price*0.50).toFixed(2) + '</span></div>' +
+                    '<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>Final (50%) — due at completion</span><span style="font-weight:700;">$' + (price*0.50).toFixed(2) + '</span></div>' +
                 '</div>';
             }
 
@@ -5913,14 +6049,7 @@
                         '</div>' +
                     '</div>' +
                     (c.notes ? '<div style="padding:14px;background:#f9f9f9;border-left:4px solid #ff6b35;border-radius:4px;margin-bottom:16px;font-size:13px;color:#333;"><strong>Notes:</strong> ' + c.notes + '</div>' : '') +
-                    '<div style="padding:16px;border:1px solid #e5e5e5;border-radius:10px;font-size:12px;color:#64748b;margin-bottom:16px;">' +
-                        '<p style="font-weight:700;color:#333;font-size:13px;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;">Standard Terms</p>' +
-                        '<p style="margin:0 0 6px;">• Any changes to scope require a signed Change Order before work begins.</p>' +
-                        '<p style="margin:0 0 6px;">• Contractor maintains General Liability and Workers\' Compensation insurance.</p>' +
-                        '<p style="margin:0 0 6px;">• Customer is responsible for HOA approvals and utility locating (call 811).</p>' +
-                        '<p style="margin:0 0 6px;">• Final payment is due upon completion before final walkthrough.</p>' +
-                        '<p style="margin:0;">• Warranty covers workmanship defects only, not weather damage or acts of nature.</p>' +
-                    '</div>' +
+                    (c.terms ? '<div style="padding:16px;border:1px solid #e5e5e5;border-radius:10px;font-size:12px;color:#64748b;margin-bottom:16px;"><p style="font-weight:700;color:#333;font-size:13px;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;">Terms & Conditions</p><p style="margin:0;white-space:pre-wrap;line-height:1.7;">' + c.terms + '</p></div>' : '') +
                     sigHtml +
                     '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #eee;">' +
                         (!c.signature ? '<button class="btn-primary" onclick="openContractSignModal(\'' + c.id + '\')">Approve & Sign</button>' : '') +
