@@ -1340,6 +1340,7 @@
             </div>
             <div class="p-6">
                 <form id="estimateForm" class="space-y-4">
+                    <input type="hidden" id="estEditId" value="">
                     <div class="grid grid-cols-2 gap-4">
                         <select id="estCustomer" required>
                             <option value="">Select Customer</option>
@@ -1447,11 +1448,15 @@
                     <div>
                         <label class="block mb-2">Property / Job Photos (optional)</label>
                         <div id="estPhotosPreview" class="flex flex-wrap gap-2 mb-2"></div>
+                        <div class="flex flex-wrap gap-2 items-center">
                         <label class="btn-secondary text-sm cursor-pointer inline-block">
                             Add Photos
                             <input type="file" accept="image/*" multiple class="hidden" onchange="handleEstPhotos(event)">
                         </label>
-                        <p class="text-xs text-gray-700 mt-1">Upload up to 5 photos of the property or job site</p>
+                        <button type="button" class="btn-secondary text-sm" onclick="openLayoutModal('estimate', document.getElementById('estEditId') ? document.getElementById('estEditId').value : null)">📐 Draw Layout</button>
+                        </div>
+                        <div id="estLayoutThumbs" class="flex flex-wrap gap-2 mt-2"></div>
+                        <p class="text-xs text-gray-700 mt-1">Upload up to 5 photos · draw fence layout diagrams</p>
                     </div>
                     
                     <div class="flex gap-3">
@@ -1967,6 +1972,16 @@
                         <textarea id="contractTerms" rows="10" style="font-size:13px;line-height:1.6;font-family:monospace;"></textarea>
                     </div>
 
+                    <!-- Layout Attachment -->
+                    <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:14px;">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold" style="font-size:14px;color:#0369a1;">📐 Job Layout / Sketch</h4>
+                            <button type="button" class="btn-secondary text-xs py-1 px-3" onclick="openLayoutModal('contract', document.getElementById('contractEditId').value)">Open Drawing Tool</button>
+                        </div>
+                        <div id="contractLayoutThumbs" class="flex flex-wrap gap-2"></div>
+                        <p class="text-xs text-gray-500 mt-1">Draw fence lines, gate positions, property corners — attaches to the contract PDF the customer sees.</p>
+                    </div>
+
                     <div class="flex gap-3 pt-2">
                         <button type="submit" class="btn-primary flex-1">Save Contract</button>
                         <button type="button" class="btn-secondary flex-1" onclick="closeModal('contractModal')">Cancel</button>
@@ -1982,6 +1997,86 @@
             <div id="contractViewContent" class="p-6"></div>
         </div>
     </div>
+
+    <!-- Layout Drawing Modal -->
+    <div id="layoutModal" class="modal">
+        <div class="modal-content" style="max-width:900px;">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold">📐 Job Layout Sketch</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Draw the fence layout, property lines, gate positions — attach it to a contract or estimate</p>
+                </div>
+                <button onclick="closeModal('layoutModal')" style="font-size:22px;background:none;border:none;color:#94a3b8;cursor:pointer;">×</button>
+            </div>
+
+            <!-- Toolbar -->
+            <div style="background:#f8f9fb;border-bottom:1px solid #e5e5e5;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+                <!-- Tools -->
+                <div style="display:flex;gap:4px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:3px;">
+                    <button id="tool-pen"      onclick="setLayoutTool('pen')"      title="Pen" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:#ff6b35;color:#fff;">✏️</button>
+                    <button id="tool-line"     onclick="setLayoutTool('line')"     title="Straight Line" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">╱</button>
+                    <button id="tool-rect"     onclick="setLayoutTool('rect')"     title="Rectangle" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">▭</button>
+                    <button id="tool-arrow"    onclick="setLayoutTool('arrow')"    title="Arrow" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">➜</button>
+                    <button id="tool-text"     onclick="setLayoutTool('text')"     title="Add Label" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700;background:transparent;">T</button>
+                    <button id="tool-eraser"   onclick="setLayoutTool('eraser')"   title="Eraser" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">⌫</button>
+                </div>
+
+                <!-- Colors -->
+                <div style="display:flex;gap:4px;align-items:center;">
+                    <span style="font-size:11px;color:#94a3b8;font-weight:600;">COLOR</span>
+                    <input type="color" id="layoutColor" value="#1e293b" style="width:32px;height:32px;border:none;padding:0;border-radius:6px;cursor:pointer;background:none;">
+                    <button onclick="setLayoutColor('#1e293b')" style="width:22px;height:22px;border-radius:50%;background:#1e293b;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;cursor:pointer;"></button>
+                    <button onclick="setLayoutColor('#ff6b35')" style="width:22px;height:22px;border-radius:50%;background:#ff6b35;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;cursor:pointer;"></button>
+                    <button onclick="setLayoutColor('#ef4444')" style="width:22px;height:22px;border-radius:50%;background:#ef4444;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;cursor:pointer;"></button>
+                    <button onclick="setLayoutColor('#22c55e')" style="width:22px;height:22px;border-radius:50%;background:#22c55e;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;cursor:pointer;"></button>
+                    <button onclick="setLayoutColor('#3b82f6')" style="width:22px;height:22px;border-radius:50%;background:#3b82f6;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;cursor:pointer;"></button>
+                    <button onclick="setLayoutColor('#f59e0b')" style="width:22px;height:22px;border-radius:50%;background:#f59e0b;border:2px solid #fff;box-shadow:0 0 0 1px #ccc;cursor:pointer;"></button>
+                    <button onclick="setLayoutColor('#ffffff')" style="width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #ccc;cursor:pointer;"></button>
+                </div>
+
+                <!-- Stroke width -->
+                <div style="display:flex;gap:4px;align-items:center;">
+                    <span style="font-size:11px;color:#94a3b8;font-weight:600;">SIZE</span>
+                    <button onclick="setLayoutStroke(2)"  id="stroke-2"  style="width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;"><div style="width:16px;height:2px;background:#333;border-radius:2px;"></div></button>
+                    <button onclick="setLayoutStroke(4)"  id="stroke-4"  style="width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:#ff6b35;cursor:pointer;display:flex;align-items:center;justify-content:center;"><div style="width:16px;height:4px;background:#fff;border-radius:2px;"></div></button>
+                    <button onclick="setLayoutStroke(8)"  id="stroke-8"  style="width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;"><div style="width:16px;height:8px;background:#333;border-radius:2px;"></div></button>
+                    <button onclick="setLayoutStroke(14)" id="stroke-14" style="width:28px;height:28px;border-radius:6px;border:1px solid #e2e8f0;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;"><div style="width:16px;height:12px;background:#333;border-radius:2px;"></div></button>
+                </div>
+
+                <!-- Actions -->
+                <div style="display:flex;gap:6px;margin-left:auto;">
+                    <button onclick="layoutUndo()" class="btn-secondary text-xs py-1 px-3">↩ Undo</button>
+                    <button onclick="layoutClear()" class="btn-secondary text-xs py-1 px-3">Clear</button>
+                    <button onclick="layoutAddGrid()" class="btn-secondary text-xs py-1 px-3">Grid</button>
+                </div>
+            </div>
+
+            <!-- Canvas -->
+            <div style="background:#fff;position:relative;overflow:hidden;" id="layoutCanvasWrap">
+                <canvas id="layoutCanvas" style="display:block;touch-action:none;cursor:crosshair;width:100%;"></canvas>
+                <input type="text" id="layoutTextInput" placeholder="Type label, press Enter" style="display:none;position:absolute;border:2px solid #ff6b35;border-radius:6px;padding:4px 8px;font-size:14px;font-weight:600;background:#fff;z-index:10;min-width:120px;">
+            </div>
+
+            <!-- Saved layouts + attach panel -->
+            <div style="background:#f8f9fb;border-top:1px solid #e5e5e5;padding:14px 16px;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        <button class="btn-secondary text-sm" onclick="saveLayoutDrawing()">💾 Save Drawing</button>
+                        <select id="layoutAttachTarget" style="padding:8px 12px;font-size:13px;border-radius:8px;border:1px solid #e2e8f0;max-width:220px;">
+                            <option value="">Attach to...</option>
+                        </select>
+                        <button class="btn-primary text-sm" onclick="attachLayoutToDoc()">Attach ✓</button>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <span style="font-size:12px;color:#94a3b8;">Saved layouts:</span>
+                        <div id="savedLayoutThumbs" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+                    </div>
+                </div>
+                <p id="layoutStatusMsg" style="font-size:12px;color:#22c55e;margin:6px 0 0;display:none;font-weight:600;"></p>
+            </div>
+        </div>
+    </div>
+
     </div> <!-- end mainApp -->
 
     <!-- Firebase SDK -->
@@ -1998,7 +2093,7 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -2006,7 +2101,6 @@
   messagingSenderId: "436571279407",
   appId: "1:436571279407:web:eeb521438b8ff87cd6b6da"
 };
-
 
         // Block app from starting if config is still placeholder
         (function() {
@@ -2275,6 +2369,7 @@
             estimates: [],
             invoices: [],
             contracts: [],
+            layouts: [],
             materials: [],
             templates: [],
             terms: [],
@@ -2618,6 +2713,7 @@
             (d.invoices  || []).forEach(function(e) { e.photos = []; });
             (d.materials || []).forEach(function(m) { m.photo  = ''; });
             (d.contracts || []).forEach(function(c) { c.signature = null; });
+            (d.layouts   || []).forEach(function(l) { l.dataUrl = ''; });
             d.leads = [];
             return d;
         }
@@ -4686,6 +4782,7 @@
                     (doc.notes ? '<div style="margin-top:20px;padding:14px;background:#f9f9f9;border-left:4px solid #ff6b35;border-radius:4px;"><p style="margin:0;font-size:14px;color:#333;"><strong>Notes:</strong> ' + doc.notes + '</p></div>' : '') +
                     (doc.terms ? '<div style="margin-top:14px;padding:14px;border:1px solid #eee;border-radius:8px;"><p style="font-size:12px;font-weight:700;color:#222;margin:0 0 6px;text-transform:uppercase;">Terms & Conditions' + (doc.termsName ? ' (' + doc.termsName + ')' : '') + '</p><p style="font-size:12px;color:#333;margin:0;white-space:pre-wrap;">' + doc.terms + '</p></div>' : '') +
                     (doc.photos && doc.photos.length > 0 ? '<div style="margin-top:16px;"><p style="font-size:13px;font-weight:700;color:#ff6b35;margin:0 0 8px;">Property / Job Photos</p><div style="display:flex;flex-wrap:wrap;gap:8px;">' + doc.photos.map(function(p, i) { return '<img src="' + p + '" alt="Photo" style="height:100px;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)">'; }).join('') + '</div></div>' : '') +
+                    buildLayoutsHtml(doc.layouts) +
                     sigHtml +
                     (doc.activity && doc.activity.length > 0 ? '<div style="margin-top:20px;padding:16px;background:#f9f9f9;border-radius:8px;border:1px solid #eee;"><p style="font-size:13px;font-weight:700;color:#333;margin:0 0 10px;">Activity</p>' + doc.activity.map(function(a) { var d = new Date(a.date); return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;"><span style="font-size:13px;color:#333;">' + a.action + '</span><span style="font-size:12px;color:#666;">' + d.toLocaleDateString() + '</span></div>'; }).join('') + '</div>' : '') +
                     '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #eee;">' +
@@ -5697,6 +5794,348 @@
             toast('Code copied ✓');
         }
     
+            toast('Code copied ✓');
+        }
+    
+        // =============================================
+        // LAYOUT DRAWING TOOL
+        // =============================================
+
+        var _layoutTool    = 'pen';
+        var _layoutColor   = '#1e293b';
+        var _layoutStroke  = 4;
+        var _layoutDrawing = false;
+        var _layoutStartX  = 0;
+        var _layoutStartY  = 0;
+        var _layoutHistory = [];
+        var _layoutCtx     = null;
+        var _layoutCanvas  = null;
+        var _layoutAttachFor = { type: null, id: null };
+
+        function openLayoutModal(attachType, attachId) {
+            _layoutAttachFor = { type: attachType || null, id: attachId || null };
+            openModal('layoutModal');
+            setTimeout(function() { initLayoutCanvas(); populateLayoutAttachTarget(); renderSavedLayoutThumbs(); }, 80);
+        }
+
+        function initLayoutCanvas() {
+            _layoutCanvas = document.getElementById('layoutCanvas');
+            if (!_layoutCanvas) return;
+            var wrap = document.getElementById('layoutCanvasWrap');
+            var w = wrap ? wrap.offsetWidth : 800;
+            _layoutCanvas.width  = w;
+            _layoutCanvas.height = Math.round(w * 0.56);
+            _layoutCtx = _layoutCanvas.getContext('2d');
+            _layoutCtx.fillStyle = '#ffffff';
+            _layoutCtx.fillRect(0, 0, _layoutCanvas.width, _layoutCanvas.height);
+            _layoutHistory = [];
+            _pushLayoutHistory();
+            bindLayoutCanvas();
+        }
+
+        function _pushLayoutHistory() {
+            if (!_layoutCtx || !_layoutCanvas) return;
+            _layoutHistory.push(_layoutCtx.getImageData(0, 0, _layoutCanvas.width, _layoutCanvas.height));
+            if (_layoutHistory.length > 40) _layoutHistory.shift();
+        }
+
+        function layoutUndo() {
+            if (_layoutHistory.length <= 1) return;
+            _layoutHistory.pop();
+            _layoutCtx.putImageData(_layoutHistory[_layoutHistory.length - 1], 0, 0);
+        }
+
+        function layoutClear() {
+            if (!_layoutCtx || !_layoutCanvas) return;
+            _layoutCtx.fillStyle = '#ffffff';
+            _layoutCtx.fillRect(0, 0, _layoutCanvas.width, _layoutCanvas.height);
+            _pushLayoutHistory();
+        }
+
+        function layoutAddGrid() {
+            if (!_layoutCtx || !_layoutCanvas) return;
+            var step = 40;
+            _layoutCtx.save();
+            _layoutCtx.strokeStyle = '#e2e8f0';
+            _layoutCtx.lineWidth = 1;
+            for (var x = 0; x <= _layoutCanvas.width; x += step) {
+                _layoutCtx.beginPath(); _layoutCtx.moveTo(x, 0); _layoutCtx.lineTo(x, _layoutCanvas.height); _layoutCtx.stroke();
+            }
+            for (var y = 0; y <= _layoutCanvas.height; y += step) {
+                _layoutCtx.beginPath(); _layoutCtx.moveTo(0, y); _layoutCtx.lineTo(_layoutCanvas.width, y); _layoutCtx.stroke();
+            }
+            _layoutCtx.restore();
+            _pushLayoutHistory();
+        }
+
+        function setLayoutTool(tool) {
+            _layoutTool = tool;
+            ['pen','line','rect','arrow','text','eraser'].forEach(function(t) {
+                var btn = document.getElementById('tool-' + t);
+                if (btn) { btn.style.background = t === tool ? '#ff6b35' : 'transparent'; btn.style.color = t === tool ? '#fff' : '#374151'; }
+            });
+            if (_layoutCanvas) _layoutCanvas.style.cursor = tool === 'text' ? 'text' : tool === 'eraser' ? 'cell' : 'crosshair';
+        }
+
+        function setLayoutColor(hex) {
+            _layoutColor = hex;
+            var inp = document.getElementById('layoutColor');
+            if (inp) inp.value = hex;
+        }
+
+        function setLayoutStroke(w) {
+            _layoutStroke = w;
+            [2,4,8,14].forEach(function(s) {
+                var btn = document.getElementById('stroke-' + s);
+                if (btn) { btn.style.background = s === w ? '#ff6b35' : '#fff'; }
+            });
+        }
+
+        function _getPos(e, canvas) {
+            var r = canvas.getBoundingClientRect();
+            var scaleX = canvas.width  / r.width;
+            var scaleY = canvas.height / r.height;
+            var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            var clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: (clientX - r.left) * scaleX, y: (clientY - r.top) * scaleY };
+        }
+
+        function bindLayoutCanvas() {
+            var c = _layoutCanvas;
+            if (!c) return;
+            var _snap = null;
+
+            function startDraw(e) {
+                if (_layoutTool === 'text') { handleTextTool(e); return; }
+                e.preventDefault();
+                _layoutDrawing = true;
+                var pos = _getPos(e, c);
+                _layoutStartX = pos.x; _layoutStartY = pos.y;
+                _snap = _layoutCtx.getImageData(0, 0, c.width, c.height);
+                if (_layoutTool === 'pen' || _layoutTool === 'eraser') {
+                    _layoutCtx.beginPath();
+                    _layoutCtx.moveTo(pos.x, pos.y);
+                }
+            }
+
+            function doDraw(e) {
+                if (!_layoutDrawing) return;
+                e.preventDefault();
+                var pos = _getPos(e, c);
+                _layoutCtx.lineCap = 'round';
+                _layoutCtx.lineJoin = 'round';
+                if (_layoutTool === 'pen') {
+                    _layoutCtx.strokeStyle = _layoutColor;
+                    _layoutCtx.lineWidth = _layoutStroke;
+                    _layoutCtx.lineTo(pos.x, pos.y);
+                    _layoutCtx.stroke();
+                } else if (_layoutTool === 'eraser') {
+                    _layoutCtx.strokeStyle = '#ffffff';
+                    _layoutCtx.lineWidth = _layoutStroke * 5;
+                    _layoutCtx.lineTo(pos.x, pos.y);
+                    _layoutCtx.stroke();
+                } else if (_snap) {
+                    _layoutCtx.putImageData(_snap, 0, 0);
+                    _layoutCtx.strokeStyle = _layoutColor;
+                    _layoutCtx.lineWidth = _layoutStroke;
+                    if (_layoutTool === 'line') {
+                        _layoutCtx.beginPath();
+                        _layoutCtx.moveTo(_layoutStartX, _layoutStartY);
+                        _layoutCtx.lineTo(pos.x, pos.y);
+                        _layoutCtx.stroke();
+                    } else if (_layoutTool === 'rect') {
+                        _layoutCtx.beginPath();
+                        _layoutCtx.strokeRect(_layoutStartX, _layoutStartY, pos.x - _layoutStartX, pos.y - _layoutStartY);
+                    } else if (_layoutTool === 'arrow') {
+                        drawArrow(_layoutCtx, _layoutStartX, _layoutStartY, pos.x, pos.y);
+                    }
+                }
+            }
+
+            function endDraw() {
+                if (!_layoutDrawing) return;
+                _layoutDrawing = false;
+                _snap = null;
+                _pushLayoutHistory();
+            }
+
+            c.onmousedown = startDraw; c.onmousemove = doDraw; c.onmouseup = endDraw; c.onmouseleave = endDraw;
+            c.ontouchstart = startDraw; c.ontouchmove = doDraw; c.ontouchend = endDraw;
+        }
+
+        function drawArrow(ctx, x1, y1, x2, y2) {
+            var headLen = 14;
+            var angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI/6), y2 - headLen * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI/6), y2 - headLen * Math.sin(angle + Math.PI/6));
+            ctx.closePath(); ctx.fillStyle = ctx.strokeStyle; ctx.fill();
+        }
+
+        function handleTextTool(e) {
+            var pos = _getPos(e, _layoutCanvas);
+            var inp = document.getElementById('layoutTextInput');
+            var wrap = document.getElementById('layoutCanvasWrap');
+            if (!inp || !wrap) return;
+            var r = _layoutCanvas.getBoundingClientRect();
+            var wrapR = wrap.getBoundingClientRect();
+            var scaleX = r.width  / _layoutCanvas.width;
+            var scaleY = r.height / _layoutCanvas.height;
+            inp.style.left   = (r.left - wrapR.left + pos.x * scaleX) + 'px';
+            inp.style.top    = (r.top  - wrapR.top  + pos.y * scaleY - 14) + 'px';
+            inp.style.color  = _layoutColor;
+            inp.style.fontSize = Math.round((_layoutStroke + 1) * 3.5 + 10) + 'px';
+            inp.style.display = 'block';
+            inp.value = ''; inp.focus();
+            inp.onkeydown = function(ev) {
+                if (ev.key === 'Enter') {
+                    var txt = inp.value.trim(); inp.style.display = 'none';
+                    if (!txt) return;
+                    _layoutCtx.font = 'bold ' + inp.style.fontSize + ' Inter, Arial, sans-serif';
+                    _layoutCtx.fillStyle = _layoutColor;
+                    _layoutCtx.fillText(txt, pos.x, pos.y);
+                    _pushLayoutHistory();
+                }
+                if (ev.key === 'Escape') inp.style.display = 'none';
+            };
+            inp.onblur = function() { inp.style.display = 'none'; };
+        }
+
+        function saveLayoutDrawing() {
+            if (!_layoutCanvas) return null;
+            var dataUrl = _layoutCanvas.toDataURL('image/png');
+            var name = 'Layout ' + new Date().toLocaleDateString();
+            if (!appData.layouts) appData.layouts = [];
+            var layout = { id: Date.now().toString(), name: name, dataUrl: dataUrl, attachedTo: [] };
+            appData.layouts.push(layout);
+            saveData(); renderSavedLayoutThumbs();
+            var msg = document.getElementById('layoutStatusMsg');
+            if (msg) { msg.textContent = 'Layout saved ✓'; msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; }, 2500); }
+            return layout.id;
+        }
+
+        function attachLayoutToDoc() {
+            var sel = document.getElementById('layoutAttachTarget');
+            if (!sel || !sel.value) { toast('Select a contract or estimate to attach to'); return; }
+            var parts = sel.value.split('::');
+            var docType = parts[0]; var docId = parts[1];
+            var lid = saveLayoutDrawing();
+            var layout = (appData.layouts || []).find(function(l){ return l.id === lid; });
+            if (!layout) return;
+            layout.attachedTo.push({ type: docType, id: docId });
+            if (docType === 'contract') {
+                var c = (appData.contracts || []).find(function(x){ return x.id === docId; });
+                if (c) { if (!c.layouts) c.layouts = []; c.layouts.push(lid); }
+                saveData(); updateContractLayoutThumbs(docId);
+            } else {
+                var est = (appData.estimates || []).find(function(x){ return x.id === docId; });
+                if (est) { if (!est.layouts) est.layouts = []; est.layouts.push(lid); }
+                saveData(); updateEstLayoutThumbs(docId);
+            }
+            var msg = document.getElementById('layoutStatusMsg');
+            if (msg) { msg.textContent = 'Attached to ' + docType + ' ✓'; msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; }, 2500); }
+            toast('Layout attached ✓');
+        }
+
+        function populateLayoutAttachTarget() {
+            var sel = document.getElementById('layoutAttachTarget');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Attach to...</option>';
+            (appData.contracts || []).slice().reverse().forEach(function(c) {
+                var opt = document.createElement('option');
+                opt.value = 'contract::' + c.id;
+                opt.textContent = 'Contract — ' + c.customerName + ' #' + c.id.slice(-4);
+                if (_layoutAttachFor.type === 'contract' && _layoutAttachFor.id === c.id) opt.selected = true;
+                sel.appendChild(opt);
+            });
+            (appData.estimates || []).slice().reverse().forEach(function(e) {
+                var opt = document.createElement('option');
+                opt.value = 'estimate::' + e.id;
+                opt.textContent = 'Estimate — ' + e.customerName + ' #' + e.id.slice(-4);
+                if (_layoutAttachFor.type === 'estimate' && _layoutAttachFor.id === e.id) opt.selected = true;
+                sel.appendChild(opt);
+            });
+        }
+
+        function renderSavedLayoutThumbs() {
+            var container = document.getElementById('savedLayoutThumbs');
+            if (!container) return;
+            var layouts = (appData.layouts || []).slice().reverse().slice(0, 10);
+            if (!layouts.length) { container.innerHTML = '<span style="font-size:12px;color:#cbd5e1;">None saved yet</span>'; return; }
+            container.innerHTML = layouts.map(function(l) {
+                return '<div style="position:relative;" title="' + l.name + '">' +
+                    '<img src="' + l.dataUrl + '" onclick="loadLayoutIntoCanvas(\'' + l.id + '\')" style="height:44px;width:72px;object-fit:cover;border-radius:6px;border:2px solid #e2e8f0;cursor:pointer;">' +
+                    '<button onclick="deleteLayout(\'' + l.id + '\')" style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:9px;line-height:16px;cursor:pointer;padding:0;">×</button>' +
+                '</div>';
+            }).join('');
+        }
+
+        function loadLayoutIntoCanvas(lid) {
+            var l = (appData.layouts || []).find(function(x){ return x.id === lid; });
+            if (!l || !_layoutCtx || !_layoutCanvas) return;
+            var img = new Image();
+            img.onload = function() { _layoutCtx.clearRect(0,0,_layoutCanvas.width,_layoutCanvas.height); _layoutCtx.drawImage(img, 0, 0, _layoutCanvas.width, _layoutCanvas.height); _pushLayoutHistory(); };
+            img.src = l.dataUrl;
+        }
+
+        function deleteLayout(lid) {
+            appData.layouts = (appData.layouts || []).filter(function(l){ return l.id !== lid; });
+            (appData.contracts || []).forEach(function(c){ c.layouts = (c.layouts||[]).filter(function(id){ return id !== lid; }); });
+            (appData.estimates || []).forEach(function(e){ e.layouts = (e.layouts||[]).filter(function(id){ return id !== lid; }); });
+            saveData(); renderSavedLayoutThumbs();
+        }
+
+        function updateContractLayoutThumbs(contractId) {
+            var el = document.getElementById('contractLayoutThumbs');
+            if (!el) return;
+            var c = (appData.contracts || []).find(function(x){ return x.id === contractId; });
+            if (!c || !c.layouts || !c.layouts.length) { el.innerHTML = ''; return; }
+            el.innerHTML = c.layouts.map(function(lid) {
+                var l = (appData.layouts||[]).find(function(x){ return x.id === lid; });
+                if (!l) return '';
+                return '<div style="position:relative;"><img src="' + l.dataUrl + '" style="height:52px;width:84px;object-fit:cover;border-radius:6px;border:2px solid #bae6fd;" title="' + l.name + '">' +
+                    '<button onclick="removeLayoutFromDoc(\'contract\',\'' + contractId + '\',\'' + lid + '\')" style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:9px;cursor:pointer;line-height:16px;padding:0;">×</button></div>';
+            }).join('');
+        }
+
+        function updateEstLayoutThumbs(estimateId) {
+            var el = document.getElementById('estLayoutThumbs');
+            if (!el) return;
+            var est = (appData.estimates||[]).find(function(x){ return x.id === estimateId; });
+            if (!est || !est.layouts || !est.layouts.length) { el.innerHTML = ''; return; }
+            el.innerHTML = est.layouts.map(function(lid) {
+                var l = (appData.layouts||[]).find(function(x){ return x.id === lid; });
+                if (!l) return '';
+                return '<div style="position:relative;"><img src="' + l.dataUrl + '" style="height:52px;width:84px;object-fit:cover;border-radius:6px;border:2px solid #fed7c5;" title="' + l.name + '">' +
+                    '<button onclick="removeLayoutFromDoc(\'estimate\',\'' + estimateId + '\',\'' + lid + '\')" style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:9px;cursor:pointer;line-height:16px;padding:0;">×</button></div>';
+            }).join('');
+        }
+
+        function removeLayoutFromDoc(docType, docId, lid) {
+            if (docType === 'contract') {
+                var c = (appData.contracts||[]).find(function(x){ return x.id === docId; });
+                if (c) c.layouts = (c.layouts||[]).filter(function(id){ return id !== lid; });
+                saveData(); updateContractLayoutThumbs(docId);
+            } else {
+                var est = (appData.estimates||[]).find(function(x){ return x.id === docId; });
+                if (est) est.layouts = (est.layouts||[]).filter(function(id){ return id !== lid; });
+                saveData(); updateEstLayoutThumbs(docId);
+            }
+        }
+
+        function buildLayoutsHtml(docLayouts) {
+            if (!docLayouts || !docLayouts.length) return '';
+            var imgs = docLayouts.map(function(lid) {
+                var l = (appData.layouts||[]).find(function(x){ return x.id === lid; });
+                if (!l) return '';
+                return '<div style="margin:6px 0;"><img src="' + l.dataUrl + '" alt="Layout: ' + l.name + '" style="max-width:100%;border-radius:10px;border:2px solid #e5e5e5;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#94a3b8;margin:3px 0 0;">' + l.name + '</p></div>';
+            }).filter(Boolean).join('');
+            if (!imgs) return '';
+            return '<div style="margin-top:16px;padding:16px;background:#f8f9fb;border-radius:10px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:#ff6b35;margin:0 0 10px;">📐 Job Layout / Sketch</p>' + imgs + '</div>';
+        }
+
         // =============================================
         // CONTRACTS FEATURE
         // =============================================
@@ -6050,6 +6489,7 @@
                     '</div>' +
                     (c.notes ? '<div style="padding:14px;background:#f9f9f9;border-left:4px solid #ff6b35;border-radius:4px;margin-bottom:16px;font-size:13px;color:#333;"><strong>Notes:</strong> ' + c.notes + '</div>' : '') +
                     (c.terms ? '<div style="padding:16px;border:1px solid #e5e5e5;border-radius:10px;font-size:12px;color:#64748b;margin-bottom:16px;"><p style="font-weight:700;color:#333;font-size:13px;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;">Terms & Conditions</p><p style="margin:0;white-space:pre-wrap;line-height:1.7;">' + c.terms + '</p></div>' : '') +
+                    buildLayoutsHtml(c.layouts) +
                     sigHtml +
                     '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #eee;">' +
                         (!c.signature ? '<button class="btn-primary" onclick="openContractSignModal(\'' + c.id + '\')">Approve & Sign</button>' : '') +
