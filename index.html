@@ -6575,6 +6575,7 @@
             }
 
             saveData();
+            _saveRecord('contracts', contract); // ✅ also write directly to Firestore doc
             closeModal('contractModal');
             renderContracts();
             toast((editId ? 'Contract updated' : 'Contract created') + ' ✓');
@@ -6958,7 +6959,8 @@
         function deleteContract(id) {
             kdrConfirm('Delete this contract?', 'This cannot be undone.', 'Delete', function() {
                 appData.contracts = (appData.contracts || []).filter(function(c){ return c.id !== id; });
-                saveData();
+                _deleteRecord('contracts', id); // ✅ delete from Firestore so it doesn't come back on refresh
+                _lsSave();
                 renderContracts();
                 toast('Contract deleted');
             });
