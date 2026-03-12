@@ -583,6 +583,38 @@
             .stat-card .text-4xl { font-size: 1.2rem; }
             .stat-card p.text-sm { font-size: 11px; }
         }
+
+        /* ── Address Autocomplete ─────────────────── */
+        .addr-drop {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0; right: 0;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+            z-index: 9999;
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: 3px;
+        }
+        .addr-drop.open { display: block; }
+        .addr-option {
+            padding: 9px 14px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.4;
+        }
+        .addr-option:last-child { border-bottom: none; }
+        .addr-option:hover { background: #f8f9fb; }
+        .addr-option .addr-icon { color: #ff6b35; font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+        .addr-option .addr-main { font-weight: 600; color: #1e293b; }
+        .addr-option .addr-sub  { font-size: 11px; color: #94a3b8; margin-top: 1px; }
     </style>
 </head>
 <body>
@@ -1341,7 +1373,10 @@
                     <input type="text" id="custName" placeholder="Customer Name" required>
                     <input type="email" id="custEmail" placeholder="Email">
                     <input type="tel" id="custPhone" placeholder="Phone">
-                    <textarea id="custAddress" rows="2" placeholder="Address"></textarea>
+                    <div class="addr-wrap" style="position:relative;">
+                        <input type="text" id="custAddress" placeholder="Start typing address..." autocomplete="off" oninput="addrAutoComplete(this)" onblur="addrBlur(this)">
+                        <div class="addr-drop" id="custAddress_drop"></div>
+                    </div>
                     <div class="flex gap-3">
                         <button type="submit" class="btn-primary flex-1">Add Customer</button>
                         <button type="button" class="btn-secondary flex-1" onclick="closeModal('customerModal')">Cancel</button>
@@ -1816,7 +1851,10 @@
                     </div>
                     <div>
                         <label class="block mb-1 text-sm font-medium">City / Town</label>
-                        <input type="text" id="newLeadCity" placeholder="Toms River, Brick...">
+                        <div class="addr-wrap" style="position:relative;">
+                            <input type="text" id="newLeadCity" placeholder="Start typing address or city..." autocomplete="off" oninput="addrAutoComplete(this)" onblur="addrBlur(this)">
+                            <div class="addr-drop" id="newLeadCity_drop"></div>
+                        </div>
                     </div>
                     <div>
                         <label class="block mb-1 text-sm font-medium">Notes</label>
@@ -1966,7 +2004,10 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block mb-1">Job Address / Property</label>
-                                <input type="text" id="contractAddress" placeholder="123 Main St, Toms River NJ">
+                                <div class="addr-wrap" style="position:relative;">
+                                    <input type="text" id="contractAddress" placeholder="Start typing address..." autocomplete="off" oninput="addrAutoComplete(this)" onblur="addrBlur(this)">
+                                    <div class="addr-drop" id="contractAddress_drop"></div>
+                                </div>
                             </div>
                             <div>
                                 <label class="block mb-1">Contract Date</label>
@@ -2194,6 +2235,88 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
+        // =============================================
+        // ADDRESS AUTOCOMPLETE (Nominatim / OpenStreetMap)
+        // Restricted to New Jersey — free, no API key needed
+        // =============================================
+        var _addrTimers = {};
+        var _addrCache  = {};
+
+        // NJ county bounding box (covers all of NJ generously)
+        var _NJ_VIEWBOX = '-75.6,38.7,-73.8,41.4'; // west,south,east,north
+
+        function addrAutoComplete(inp) {
+            var id  = inp.id;
+            var val = inp.value.trim();
+            var drop = document.getElementById(id + '_drop');
+            if (!drop) return;
+
+            if (val.length < 3) { drop.classList.remove('open'); return; }
+
+            clearTimeout(_addrTimers[id]);
+            _addrTimers[id] = setTimeout(function() {
+                _fetchAddr(val, drop, inp);
+            }, 320); // debounce 320ms so we don't spam on every keystroke
+        }
+
+        function _fetchAddr(query, drop, inp) {
+            var q = encodeURIComponent(query + ', New Jersey, USA');
+            var url = 'https://nominatim.openstreetmap.org/search' +
+                '?q=' + q +
+                '&format=json' +
+                '&addressdetails=1' +
+                '&limit=7' +
+                '&viewbox=' + _NJ_VIEWBOX +
+                '&bounded=1' +
+                '&countrycodes=us';
+
+            // Show loading state
+            drop.innerHTML = '<div class="addr-option"><span class="addr-icon">⏳</span><span style="color:#94a3b8;font-size:13px;">Searching...</span></div>';
+            drop.classList.add('open');
+
+            fetch(url, { headers: { 'Accept-Language': 'en' } })
+                .then(function(r) { return r.json(); })
+                .then(function(results) {
+                    if (!results || !results.length) {
+                        drop.innerHTML = '<div class="addr-option"><span class="addr-icon">📍</span><span style="color:#94a3b8;">No NJ addresses found — try a different search</span></div>';
+                        return;
+                    }
+                    drop.innerHTML = results.map(function(r) {
+                        var a    = r.address || {};
+                        var road = a.road || a.pedestrian || '';
+                        var num  = a.house_number ? a.house_number + ' ' : '';
+                        var main = (num + road) || r.display_name.split(',')[0];
+                        var city = a.city || a.town || a.village || a.county || '';
+                        var zip  = a.postcode || '';
+                        var sub  = [city, 'NJ', zip].filter(Boolean).join(', ');
+                        var full = (num + road + (city ? ', ' + city : '') + ', NJ' + (zip ? ' ' + zip : '')).trim();
+                        if (!full || full === ', NJ') full = r.display_name.split(',').slice(0,3).join(',').trim();
+                        return '<div class="addr-option" onmousedown="pickAddr(\'' + inp.id + '\',\'' + full.replace(/'/g, "\\'") + '\')">' +
+                            '<span class="addr-icon">📍</span>' +
+                            '<div><div class="addr-main">' + main + '</div><div class="addr-sub">' + sub + '</div></div>' +
+                        '</div>';
+                    }).join('');
+                })
+                .catch(function() {
+                    drop.innerHTML = '<div class="addr-option"><span style="color:#ef4444;font-size:13px;">⚠ Lookup unavailable — type address manually</span></div>';
+                });
+        }
+
+        function pickAddr(fieldId, fullAddr) {
+            var inp  = document.getElementById(fieldId);
+            var drop = document.getElementById(fieldId + '_drop');
+            if (inp)  inp.value = fullAddr;
+            if (drop) drop.classList.remove('open');
+        }
+
+        function addrBlur(inp) {
+            // Small delay so onmousedown on option fires first
+            setTimeout(function() {
+                var drop = document.getElementById(inp.id + '_drop');
+                if (drop) drop.classList.remove('open');
+            }, 200);
+        }
+
         // =============================================
         // FIREBASE CONFIG — PASTE YOUR CONFIG HERE
         // =============================================
@@ -4332,31 +4455,18 @@
                         (svc.templateDescription ? '<div class="px-3 pb-2 text-xs text-gray-700">Customer sees: "' + svc.templateName + '"</div>' : '') +
                     '</div>';
                 } else {
-                    // Build material options for the lookup dropdown
-                    var matOptions = '<option value="">🔍 Pick from materials...</option>' +
-                        (appData.materials || []).map(function(m) {
-                            return '<option value="' + m.id + '" data-name="' + m.name.replace(/"/g,'&quot;') + '" data-cost="' + (m.cost||0) + '" data-markup="' + (m.markup||0) + '" data-unit="' + (m.unit||'') + '">' +
-                                m.name + (m.unit ? ' / ' + m.unit : '') + '  —  $' + parseFloat(m.cost||0).toFixed(2) +
-                            '</option>';
-                        }).join('');
-
-                    return '<div class="border rounded-lg overflow-hidden" style="background:#fff;">' +
-                        // Material lookup row
-                        '<div style="background:#f8f9fb;padding:8px 10px;border-bottom:1px solid #e5e5e5;display:flex;gap:8px;align-items:center;">' +
-                            '<span style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;">Material Lookup</span>' +
-                            '<select style="flex:1;font-size:12px;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;" onchange="fillLineFromMaterial(this,' + sIdx + ')">' + matOptions + '</select>' +
+                    var lineTotal = ((svc.qty||1) * (svc.rate||0) * (1 + (svc.markup||0)/100)).toFixed(2);
+                    return '<div class="grid grid-cols-12 gap-2 items-center" style="position:relative;">' +
+                        '<div class="col-span-5" style="position:relative;">' +
+                            '<input type="text" value="' + (svc.description || '').replace(/"/g, '&quot;') + '" placeholder="Type to search materials or describe..." class="p-2 border rounded text-sm w-full" data-s="' + sIdx + '" data-f="description" oninput="onEstLineDescInput(this,' + sIdx + ')" onchange="updEstCustom(this)" autocomplete="off">' +
+                            '<div id="matSuggest_' + sIdx + '" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:999;max-height:180px;overflow-y:auto;margin-top:2px;"></div>' +
                         '</div>' +
-                        // Line fields
-                        '<div class="grid grid-cols-12 gap-2 items-center p-2">' +
-                            '<input type="text" value="' + (svc.description || '').replace(/"/g, '&quot;') + '" placeholder="Description" class="col-span-5 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="description" onchange="updEstCustom(this)">' +
-                            '<input type="number" value="' + (svc.qty || 1) + '" step="0.01" placeholder="Qty" class="col-span-2 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="qty" onchange="updEstCustom(this)">' +
-                            '<input type="number" value="' + (svc.rate || '') + '" step="0.01" placeholder="Rate $" class="col-span-2 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="rate" onchange="updEstCustom(this)">' +
-                            '<input type="number" value="' + (svc.markup || 0) + '" step="0.01" placeholder="Markup%" class="col-span-1 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="markup" onchange="updEstCustom(this)">' +
-                            '<button type="button" class="btn-danger text-sm col-span-2 p-2" onclick="removeEstService(' + sIdx + ')">✕</button>' +
-                        '</div>' +
-                        // Live line total hint
-                        '<div style="padding:2px 10px 6px;text-align:right;font-size:11px;color:#64748b;">' +
-                            'Line total: <strong>$' + ((svc.qty||1) * (svc.rate||0) * (1 + (svc.markup||0)/100)).toFixed(2) + '</strong>' +
+                        '<input type="number" value="' + (svc.qty || 1) + '" step="0.01" placeholder="Qty" class="col-span-2 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="qty" onchange="updEstCustom(this)">' +
+                        '<input type="number" value="' + (svc.rate || '') + '" step="0.01" placeholder="Rate $" class="col-span-2 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="rate" onchange="updEstCustom(this)">' +
+                        '<input type="number" value="' + (svc.markup || 0) + '" step="0.01" placeholder="Markup%" class="col-span-1 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="markup" onchange="updEstCustom(this)">' +
+                        '<div class="col-span-2 flex flex-col items-end gap-1">' +
+                            '<button type="button" class="btn-danger text-sm w-full p-2" onclick="removeEstService(' + sIdx + ')">✕</button>' +
+                            '<span style="font-size:10px;color:#94a3b8;white-space:nowrap;">$' + lineTotal + '</span>' +
                         '</div>' +
                     '</div>';
                 }
@@ -4376,14 +4486,49 @@
             calculateEstimate();
         }
 
-        function fillLineFromMaterial(sel, sIdx) {
-            var opt = sel.options[sel.selectedIndex];
-            if (!opt || !opt.value) return;
-            // Fill the service entry
-            estServices[sIdx].description = opt.dataset.name || opt.textContent.split('—')[0].trim();
-            estServices[sIdx].rate        = parseFloat(opt.dataset.cost)   || 0;
-            estServices[sIdx].markup      = parseFloat(opt.dataset.markup) || 0;
-            // Re-render so the inputs reflect the new values
+        function onEstLineDescInput(inp, sIdx) {
+            var q = inp.value.trim().toLowerCase();
+            estServices[sIdx].description = inp.value;
+            var drop = document.getElementById('matSuggest_' + sIdx);
+            if (!drop) return;
+            if (q.length < 1) { drop.style.display = 'none'; return; }
+
+            var matches = (appData.materials || []).filter(function(m) {
+                return m.name.toLowerCase().indexOf(q) >= 0;
+            }).slice(0, 8);
+
+            if (!matches.length) { drop.style.display = 'none'; return; }
+
+            drop.innerHTML = matches.map(function(m) {
+                return '<div onclick="pickMatSuggestion(' + sIdx + ',\'' + m.id + '\')" ' +
+                    'style="padding:8px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f1f5f9;font-size:13px;" ' +
+                    'onmouseenter="this.style.background=\'#f8f9fb\'" onmouseleave="this.style.background=\'#fff\'">' +
+                    '<span>' + m.name + (m.unit ? ' <span style="color:#94a3b8;font-size:11px;">/ ' + m.unit + '</span>' : '') + '</span>' +
+                    '<span style="font-weight:700;color:#ff6b35;font-size:12px;">$' + parseFloat(m.cost||0).toFixed(2) + (m.markup ? ' + ' + m.markup + '%' : '') + '</span>' +
+                    '</div>';
+            }).join('');
+
+            drop.style.display = 'block';
+
+            // Close if clicking outside
+            setTimeout(function() {
+                document.addEventListener('click', function closeDrop(e) {
+                    if (!drop.contains(e.target) && e.target !== inp) {
+                        drop.style.display = 'none';
+                        document.removeEventListener('click', closeDrop);
+                    }
+                });
+            }, 0);
+        }
+
+        function pickMatSuggestion(sIdx, matId) {
+            var m = (appData.materials || []).find(function(x) { return x.id === matId; });
+            if (!m) return;
+            estServices[sIdx].description = m.name;
+            estServices[sIdx].rate        = parseFloat(m.cost)   || 0;
+            estServices[sIdx].markup      = parseFloat(m.markup) || 0;
+            var drop = document.getElementById('matSuggest_' + sIdx);
+            if (drop) drop.style.display = 'none';
             renderEstimateServices();
         }
 
