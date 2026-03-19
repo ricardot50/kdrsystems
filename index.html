@@ -767,6 +767,9 @@
                     <button class="nav-btn-side w-full text-left" onclick="switchTab('calculator', this)">
                         Profitability
                     </button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('qtycalc', this)">
+                        🧱 Qty Calculator
+                    </button>
                     <button class="nav-btn-side w-full text-left" onclick="switchTab('settings', this)">
                          Settings
                     </button>
@@ -1192,6 +1195,128 @@
                         </div>
                         
                         <button class="btn-primary w-full" onclick="saveCalculator()">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quantity Calculator -->
+            <div id="qtycalc" class="tab-content">
+                <h2 class="text-3xl font-bold mb-1">🧱 Fence Quantity Calculator</h2>
+                <p class="text-sm text-gray-700 mb-6">Pick your material, enter your measured linear feet — get an exact material list instantly.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- LEFT: Inputs -->
+                    <div class="space-y-4">
+
+                        <!-- Material Selector -->
+                        <div class="card" style="border:2px solid #ff6b35;">
+                            <h3 class="font-bold text-base mb-3">🪵 Select Fence Material</h3>
+                            <p class="text-xs text-gray-700 mb-3">Choosing a material auto-sets the correct span size, post type, rail count, and more.</p>
+                            <div id="qtyMaterialGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;"></div>
+                            <!-- Material info badge -->
+                            <div id="qtyMatInfo" style="margin-top:12px;padding:10px 14px;background:#f8f9fb;border-radius:8px;border-left:3px solid #ff6b35;display:none;">
+                                <p style="font-size:12px;font-weight:700;color:#ff6b35;margin:0 0 4px;" id="qtyMatInfoTitle"></p>
+                                <p style="font-size:12px;color:#475569;margin:0;" id="qtyMatInfoDesc"></p>
+                            </div>
+                        </div>
+
+                        <!-- Span Override -->
+                        <div class="card">
+                            <h3 class="font-bold text-base mb-2">⚙️ Section Span</h3>
+                            <p class="text-xs text-gray-700 mb-3">Auto-set by material — override if your supplier uses a different width</p>
+                            <div style="display:flex;gap:0;border:1px solid #e5e5e5;border-radius:8px;overflow:hidden;">
+                                <button id="span6btn" onclick="setSpan(6)" style="flex:1;padding:10px 4px;font-size:13px;font-weight:700;border:none;background:#ff6b35;color:#fff;cursor:pointer;">6 ft</button>
+                                <button id="span8btn" onclick="setSpan(8)" style="flex:1;padding:10px 4px;font-size:13px;font-weight:700;border:none;background:#f8f9fb;color:#94a3b8;cursor:pointer;">8 ft</button>
+                                <button id="span10btn" onclick="setSpan(10)" style="flex:1;padding:10px 4px;font-size:13px;font-weight:700;border:none;background:#f8f9fb;color:#94a3b8;cursor:pointer;">10 ft</button>
+                            </div>
+                        </div>
+
+                        <!-- Sides / Runs -->
+                        <div class="card">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-bold text-base">📏 Property Measurements</h3>
+                                <button class="btn-secondary text-xs py-1 px-3" onclick="addQtySide()">+ Add Side</button>
+                            </div>
+                            <p class="text-xs text-gray-700 mb-3">Enter each side of the property. Decimals OK — e.g. 47.5 ft</p>
+                            <div id="qtySidesList" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Options -->
+                        <div class="card">
+                            <h3 class="font-bold text-base mb-3">🔩 Options</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" id="qtyShareCorners" onchange="calcQty()" style="width:18px;height:18px;accent-color:#ff6b35;" checked>
+                                    <label for="qtyShareCorners" style="font-size:13px;color:#374151;">Sides share corner posts (closed perimeter)</label>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" id="qtyIncludeCaps" onchange="calcQty()" style="width:18px;height:18px;accent-color:#ff6b35;" checked>
+                                    <label for="qtyIncludeCaps" style="font-size:13px;color:#374151;">Include post caps (1 per post)</label>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block mb-1" style="font-size:13px;"># of Gates</label>
+                                        <input type="number" id="qtyGates" placeholder="0" min="0" step="1" value="0" onchange="calcQty()">
+                                    </div>
+                                    <div>
+                                        <label class="block mb-1" style="font-size:13px;">Fence Height</label>
+                                        <select id="qtyFenceHeight" onchange="calcQty()">
+                                            <option value="4">4 ft</option>
+                                            <option value="5">5 ft</option>
+                                            <option value="6" selected>6 ft</option>
+                                            <option value="8">8 ft</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary w-full" onclick="calcQty()" style="font-size:15px;padding:14px;">🔢 Calculate Materials</button>
+                    </div>
+
+                    <!-- RIGHT: Results -->
+                    <div class="space-y-4">
+                        <div id="qtyResultCard" style="display:none;">
+                            <!-- Main totals -->
+                            <div class="card" style="background:#0f172a;border:none;margin-bottom:16px;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                                    <h3 style="color:#fff;font-size:14px;font-weight:600;margin:0;">📦 Total Materials Needed</h3>
+                                    <span style="background:#ff6b35;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;" id="resMaterialBadge">—</span>
+                                </div>
+                                <!-- dynamic count boxes -->
+                                <div id="resCountBoxes" style="display:grid;gap:8px;margin-bottom:16px;"></div>
+                                <div style="border-top:1px solid #1e293b;padding-top:14px;">
+                                    <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:#94a3b8;font-size:13px;">Total Linear Feet</span><span style="color:#fff;font-weight:600;font-size:13px;" id="resTotalFt">0 ft</span></div>
+                                    <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:#94a3b8;font-size:13px;">Section Span</span><span style="color:#fff;font-weight:600;font-size:13px;" id="resSpan">—</span></div>
+                                    <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:#94a3b8;font-size:13px;">Fence Height</span><span style="color:#fff;font-weight:600;font-size:13px;" id="resHeight">—</span></div>
+                                    <div style="display:flex;justify-content:space-between;padding:5px 0;"><span style="color:#94a3b8;font-size:13px;">Gates</span><span style="color:#fff;font-weight:600;font-size:13px;" id="resGates">0</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Per-side breakdown -->
+                            <div class="card" style="margin-bottom:16px;">
+                                <h3 class="font-bold text-base mb-3">📋 Per-Side Breakdown</h3>
+                                <div id="resSideBreakdown" class="space-y-2"></div>
+                            </div>
+
+                            <!-- Material-specific full list -->
+                            <div class="card" style="margin-bottom:16px;border-color:#e2e8f0;">
+                                <h3 class="font-bold text-base mb-3">📝 Full Material List</h3>
+                                <div id="resFullList" class="space-y-2"></div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="card" style="background:#fef7f4;border-color:#fed7c5;">
+                                <h3 style="color:#ff6b35;font-weight:700;font-size:14px;margin-bottom:10px;">💡 Notes &amp; Recommendations</h3>
+                                <div id="resAiNotes" class="text-sm text-gray-700 space-y-1"></div>
+                            </div>
+                        </div>
+
+                        <div id="qtyEmptyState" class="card" style="text-align:center;padding:48px 24px;">
+                            <div style="font-size:52px;margin-bottom:12px;">📐</div>
+                            <p style="color:#1e293b;font-size:15px;font-weight:700;margin:0 0 6px;">Select a material to get started</p>
+                            <p style="color:#64748b;font-size:13px;">Pick your fence type on the left, enter your measurements, and hit Calculate.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2323,7 +2448,7 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-       const firebaseConfig = {
+      const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -5020,80 +5145,135 @@
             var bizName = appData.settings.businessName || 'KDRSYSTEMS';
             var s = appData.settings;
 
+            // Line items — premium card-style rows
             var itemsHtml = doc.lineItems.map(function(item, idx) {
-                var bg = idx % 2 === 0 ? '#fff' : '#fafafa';
-                var descHtml = '<span style="font-weight:600;text-transform:uppercase;">' + item.description + '</span>';
-                if (item.detail) descHtml += '<br><span style="font-weight:400;font-size:12px;color:#666;">' + item.detail + '</span>';
-                return '<tr style="background:' + bg + ';">' +
-                    '<td style="padding:14px 20px;border-bottom:1px solid #eee;color:#000;font-size:14px;">' + descHtml + '</td>' +
-                    '<td style="padding:14px 20px;text-align:right;border-bottom:1px solid #eee;font-weight:700;color:#000;font-size:14px;">$' + item.amount + '</td>' +
-                '</tr>';
+                var descHtml = '<div style="font-weight:700;font-size:14px;color:#0f172a;letter-spacing:-0.01em;">' + item.description + '</div>';
+                if (item.detail) descHtml += '<div style="font-size:12px;color:#64748b;margin-top:3px;font-weight:400;">' + item.detail + '</div>';
+                return '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:14px 0;border-bottom:1px solid #f1f5f9;">' +
+                    '<div style="flex:1;padding-right:16px;">' + descHtml + '</div>' +
+                    '<div style="font-weight:800;font-size:15px;color:#ff6b35;white-space:nowrap;">$' + item.amount + '</div>' +
+                '</div>';
             }).join('');
 
             var sigHtml = '';
             if (doc.signature) {
-                sigHtml = '<div style="margin-top:24px;padding:24px;background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;text-align:center;">' +
-                    '<p style="font-size:16px;font-weight:700;color:#15803d;margin:0 0 8px;">✓ Estimate Approved & Signed</p>' +
-                    '<img src="' + doc.signature + '" alt="Signature" style="max-height:80px;background:white;border-radius:6px;padding:4px;margin:8px 0;">' +
-                    '<p style="font-size:13px;color:#333;margin:4px 0 0;">Signed by: ' + (doc.signedBy || 'Customer') + '</p>' +
-                    '<p style="font-size:12px;color:#666;margin:2px 0 0;">Date: ' + (doc.signedDate || 'N/A') + '</p>' +
+                sigHtml = '<div style="margin-top:24px;padding:20px;background:#f0fdf4;border:2px solid #22c55e;border-radius:14px;text-align:center;">' +
+                    '<div style="display:inline-flex;align-items:center;gap:8px;background:#22c55e;color:#fff;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:14px;">✓ APPROVED & SIGNED</div>' +
+                    '<br><img src="' + doc.signature + '" alt="Signature" style="max-height:70px;background:white;border-radius:8px;padding:6px;border:1px solid #e5e5e5;margin-bottom:10px;">' +
+                    '<div style="font-size:13px;color:#15803d;font-weight:600;">' + (doc.signedBy || 'Customer') + '</div>' +
+                    '<div style="font-size:12px;color:#86efac;margin-top:2px;">' + (doc.signedDate || '') + '</div>' +
                 '</div>';
             }
 
-            var html = '' +
-                '<div style="background:#ff6b35;border-radius:12px 12px 0 0;padding:28px;text-align:center;">' +
-                    (s.logo ? '<img src="' + s.logo + '" alt="Logo" style="max-height:70px;margin:0 auto 10px;display:block;border-radius:8px;">' : '') +
-                    '<h1 style="color:#000;margin:0;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + bizName + '</h1>' +
-                    '<p style="color:#000;margin:4px 0 0;font-size:12px;font-weight:600;">"YOUR PROPERTY, OUR EXPERIENCE"</p>' +
-                    '<div style="margin-top:8px;">' +
-                        (s.phone ? '<span style="color:#000;font-size:13px;font-weight:600;">' + s.phone + '</span>' : '') +
-                        (s.phone && s.email ? '<span style="color:#000;font-size:13px;margin:0 8px;">|</span>' : '') +
-                        (s.email ? '<span style="color:#000;font-size:13px;font-weight:600;">' + s.email + '</span>' : '') +
-                    '</div>' +
-                '</div>' +
-                '<div style="background:#fff;padding:30px;border-radius:0 0 12px 12px;">' +
-                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:10px;">' +
+            // Build the top accent bar color based on status
+            var statusColor = {pending:'#f59e0b',sent:'#3b82f6',approved:'#22c55e',signed:'#22c55e'}[doc.status] || '#ff6b35';
+
+            var html =
+                // ── Premium Header ──
+                '<div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-radius:16px 16px 0 0;padding:32px 30px 28px;position:relative;overflow:hidden;">' +
+                    '<div style="position:absolute;top:-30px;right:-30px;width:160px;height:160px;background:rgba(255,107,53,0.12);border-radius:50%;"></div>' +
+                    '<div style="position:absolute;bottom:-40px;left:60px;width:100px;height:100px;background:rgba(255,107,53,0.06);border-radius:50%;"></div>' +
+                    '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;position:relative;">' +
                         '<div>' +
-                            '<h2 style="color:#222;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;">ESTIMATE</h2>' +
-                            '<p style="color:#333;font-size:13px;margin:4px 0 0;">#' + doc.id.slice(-6) + '</p>' +
-                            '<span style="display:inline-block;margin-top:4px;padding:2px 10px;background:#fff5f0;border:1px solid #ff6b35;border-radius:20px;font-size:11px;font-weight:700;color:#ff6b35;text-transform:uppercase;">' + doc.status + '</span>' +
+                            (s.logo ? '<img src="' + s.logo + '" alt="Logo" style="max-height:56px;margin-bottom:12px;display:block;border-radius:8px;border:2px solid rgba(255,255,255,0.1);">' : '') +
+                            '<div style="color:#fff;font-size:22px;font-weight:900;letter-spacing:-0.03em;">' + bizName + '</div>' +
+                            '<div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:3px;">' + (s.address||'') + '</div>' +
+                            '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:12px;">' +
+                                (s.phone ? '<span style="color:#ff6b35;font-size:12px;font-weight:600;">📞 ' + s.phone + '</span>' : '') +
+                                (s.email ? '<span style="color:rgba(255,255,255,0.6);font-size:12px;">✉ ' + s.email + '</span>' : '') +
+                            '</div>' +
                         '</div>' +
                         '<div style="text-align:right;">' +
-                            '<p style="color:#333;font-size:13px;margin:0;">Date: <strong style="color:#222;">' + doc.date + '</strong></p>' +
+                            '<div style="background:#ff6b35;color:#fff;font-size:11px;font-weight:800;letter-spacing:2px;padding:4px 12px;border-radius:6px;display:inline-block;margin-bottom:8px;">ESTIMATE</div>' +
+                            '<div style="color:rgba(255,255,255,0.4);font-size:11px;font-weight:600;letter-spacing:1px;">#' + doc.id.slice(-6).toUpperCase() + '</div>' +
+                            '<div style="color:rgba(255,255,255,0.6);font-size:12px;margin-top:6px;">' + doc.date + '</div>' +
+                            '<div style="margin-top:8px;display:inline-block;padding:3px 12px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:' + statusColor + '22;color:' + statusColor + ';border:1px solid ' + statusColor + '66;">' + doc.status + '</div>' +
                         '</div>' +
                     '</div>' +
-                    '<div style="margin-bottom:20px;padding:18px;background:#f9f9f9;border-radius:10px;border-left:4px solid #ff6b35;">' +
-                        '<p style="color:#333;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;font-weight:700;">TO:</p>' +
-                        '<p style="font-weight:700;color:#222;font-size:17px;margin:0;">' + doc.customerName + '</p>' +
-                        (doc.customerEmail ? '<p style="color:#333;font-size:13px;margin:3px 0 0;">' + doc.customerEmail + '</p>' : '') +
-                        (doc.customerPhone ? '<p style="color:#333;font-size:13px;margin:2px 0 0;">' + doc.customerPhone + '</p>' : '') +
-                        (doc.customerAddress ? '<p style="color:#333;font-size:13px;margin:2px 0 0;">' + doc.customerAddress + '</p>' : '') +
+                '</div>' +
+
+                // ── Body ──
+                '<div style="background:#fff;padding:28px 30px;border-radius:0 0 16px 16px;border:1px solid #e8e8ec;border-top:none;">' +
+
+                    // Prepared For
+                    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">' +
+                        '<div style="padding:18px;background:#f8f9fb;border-radius:12px;">' +
+                            '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;margin-bottom:8px;">Prepared For</div>' +
+                            '<div style="font-size:16px;font-weight:800;color:#0f172a;">' + doc.customerName + '</div>' +
+                            (doc.customerAddress ? '<div style="font-size:12px;color:#64748b;margin-top:4px;">' + doc.customerAddress + '</div>' : '') +
+                            (doc.customerPhone ? '<div style="font-size:12px;color:#64748b;margin-top:2px;">📞 ' + doc.customerPhone + '</div>' : '') +
+                            (doc.customerEmail ? '<div style="font-size:12px;color:#64748b;margin-top:2px;">✉ ' + doc.customerEmail + '</div>' : '') +
+                        '</div>' +
+                        '<div style="padding:18px;background:#fef7f4;border-radius:12px;border:1px solid #fed7c5;">' +
+                            '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#ff6b35;margin-bottom:8px;">Estimate Details</div>' +
+                            '<div style="display:flex;flex-direction:column;gap:5px;">' +
+                                '<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#64748b;">Estimate #</span><span style="font-weight:700;color:#0f172a;">' + doc.id.slice(-6).toUpperCase() + '</span></div>' +
+                                '<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#64748b;">Date Issued</span><span style="font-weight:700;color:#0f172a;">' + doc.date + '</span></div>' +
+                                '<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#64748b;">Valid For</span><span style="font-weight:700;color:#0f172a;">30 Days</span></div>' +
+                                '<div style="display:flex;justify-content:space-between;font-size:12px;"><span style="color:#64748b;">Status</span><span style="font-weight:700;color:#ff6b35;text-transform:capitalize;">' + doc.status + '</span></div>' +
+                            '</div>' +
+                        '</div>' +
                     '</div>' +
-                    '<table style="width:100%;border-collapse:collapse;margin:16px 0;">' +
-                        '<tr style="background:#ff6b35;">' +
-                            '<th style="padding:12px 20px;text-align:left;font-size:12px;color:#000;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">SERVICE</th>' +
-                            '<th style="padding:12px 20px;text-align:right;font-size:12px;color:#000;font-weight:700;text-transform:uppercase;">AMOUNT</th>' +
-                        '</tr>' +
+
+                    // Services
+                    '<div style="margin-bottom:24px;">' +
+                        '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:2px solid #0f172a;margin-bottom:4px;">' +
+                            '<span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#0f172a;">Service / Description</span>' +
+                            '<span style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#0f172a;">Amount</span>' +
+                        '</div>' +
                         itemsHtml +
-                    '</table>' +
-                    '<div style="display:flex;justify-content:flex-end;margin-top:10px;">' +
-                        '<div style="width:260px;">' +
-                            '<div style="display:flex;justify-content:space-between;padding:8px 14px;"><span style="color:#333;font-weight:600;font-size:13px;">SUBTOTAL</span><span style="color:#222;font-size:13px;">$' + doc.total + '</span></div>' +
-                            '<div style="display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #eee;"><span style="color:#333;font-weight:600;font-size:13px;">DISCOUNT</span><span style="color:#222;font-size:13px;">$0</span></div>' +
-                            '<div style="display:flex;justify-content:space-between;padding:14px;background:#ff6b35;border-radius:8px;margin-top:8px;"><span style="color:#000;font-weight:800;font-size:16px;">TOTAL</span><span style="color:#000;font-weight:800;font-size:22px;">$' + doc.total + '</span></div>' +
+                    '</div>' +
+
+                    // Total block
+                    '<div style="display:flex;justify-content:flex-end;margin-bottom:24px;">' +
+                        '<div style="min-width:260px;">' +
+                            '<div style="background:#0f172a;border-radius:14px;padding:20px 24px;">' +
+                                '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                                    '<span style="color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;">ESTIMATE TOTAL</span>' +
+                                    '<span style="color:#ff6b35;font-size:28px;font-weight:900;letter-spacing:-0.03em;">$' + doc.total + '</span>' +
+                                '</div>' +
+                                '<div style="margin-top:8px;font-size:11px;color:rgba(255,255,255,0.3);">All prices are in USD. Valid for 30 days from date issued.</div>' +
+                            '</div>' +
                         '</div>' +
                     '</div>' +
-                    (doc.notes ? '<div style="margin-top:20px;padding:14px;background:#f9f9f9;border-left:4px solid #ff6b35;border-radius:4px;"><p style="margin:0;font-size:14px;color:#333;"><strong>Notes:</strong> ' + doc.notes + '</p></div>' : '') +
-                    (doc.terms ? '<div style="margin-top:14px;padding:14px;border:1px solid #eee;border-radius:8px;"><p style="font-size:12px;font-weight:700;color:#222;margin:0 0 6px;text-transform:uppercase;">Terms & Conditions' + (doc.termsName ? ' (' + doc.termsName + ')' : '') + '</p><p style="font-size:12px;color:#333;margin:0;white-space:pre-wrap;">' + doc.terms + '</p></div>' : '') +
-                    (doc.photos && doc.photos.length > 0 ? '<div style="margin-top:16px;"><p style="font-size:13px;font-weight:700;color:#ff6b35;margin:0 0 8px;">Property / Job Photos</p><div style="display:flex;flex-wrap:wrap;gap:8px;">' + doc.photos.map(function(p, i) { return '<img src="' + p + '" alt="Photo" style="height:100px;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)">'; }).join('') + '</div></div>' : '') +
+
+                    // Notes
+                    (doc.notes ? '<div style="margin-bottom:16px;padding:16px 20px;background:#f8f9fb;border-radius:12px;border-left:4px solid #ff6b35;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#ff6b35;margin-bottom:6px;">Notes</div><p style="margin:0;font-size:13px;color:#475569;line-height:1.6;">' + doc.notes + '</p></div>' : '') +
+
+                    // Terms
+                    (doc.terms ? '<div style="margin-bottom:16px;padding:16px 20px;border:1px solid #e8e8ec;border-radius:12px;"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:6px;">Terms &amp; Conditions' + (doc.termsName ? ' — ' + doc.termsName : '') + '</div><p style="margin:0;font-size:12px;color:#64748b;white-space:pre-wrap;line-height:1.6;">' + doc.terms + '</p></div>' : '') +
+
+                    // Photos
+                    (doc.photos && doc.photos.length > 0 ?
+                        '<div style="margin-bottom:20px;">' +
+                            '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:10px;">Job / Property Photos</div>' +
+                            '<div style="display:flex;flex-wrap:wrap;gap:8px;">' +
+                                doc.photos.map(function(p){ return '<img src="' + p + '" alt="Photo" style="height:90px;border-radius:10px;border:2px solid #e8e8ec;cursor:pointer;object-fit:cover;" onclick="window.open(this.src)">'; }).join('') +
+                            '</div>' +
+                        '</div>' : '') +
+
+                    // Layouts
                     buildLayoutsHtml(doc.layouts) +
+
+                    // Signature
                     sigHtml +
-                    (doc.activity && doc.activity.length > 0 ? '<div style="margin-top:20px;padding:16px;background:#f9f9f9;border-radius:8px;border:1px solid #eee;"><p style="font-size:13px;font-weight:700;color:#333;margin:0 0 10px;">Activity</p>' + doc.activity.map(function(a) { var d = new Date(a.date); return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;"><span style="font-size:13px;color:#333;">' + a.action + '</span><span style="font-size:12px;color:#666;">' + d.toLocaleDateString() + '</span></div>'; }).join('') + '</div>' : '') +
-                    '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid #eee;">' +
-                        '<button class="btn-secondary" onclick="refreshEstimate(\'' + doc.id + '\')">Refresh Status</button>' +
-                        (!doc.signature ? '<button class="btn-primary" onclick="openSignatureModal(\'' + doc.id + '\')">Approve & Sign</button>' : '') +
-                        '<button class="btn-secondary" onclick="editDocument(\'' + doc.id + '\', \'estimate\'); closeModal(\'invoiceViewModal\');">Edit</button>' +
-                        '<button class="btn-secondary" onclick="sendDocument(\'' + doc.id + '\')">Send</button>' +
+
+                    // Activity log
+                    (doc.activity && doc.activity.length > 0 ?
+                        '<div style="margin-top:20px;padding:16px 20px;background:#f8f9fb;border-radius:12px;">' +
+                            '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin-bottom:10px;">Activity</div>' +
+                            doc.activity.map(function(a){
+                                var d = new Date(a.date);
+                                return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #e8e8ec;font-size:13px;"><span style="color:#475569;">' + a.action + '</span><span style="color:#94a3b8;font-size:11px;">' + d.toLocaleDateString() + '</span></div>';
+                            }).join('') +
+                        '</div>' : '') +
+
+                    // Action buttons
+                    '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid #f1f5f9;">' +
+                        '<button class="btn-secondary" onclick="refreshEstimate(\'' + doc.id + '\')">🔄 Refresh</button>' +
+                        (!doc.signature ? '<button class="btn-primary" onclick="openSignatureModal(\'' + doc.id + '\')">✍️ Approve &amp; Sign</button>' : '') +
+                        '<button class="btn-secondary" onclick="editDocument(\'' + doc.id + '\', \'estimate\'); closeModal(\'invoiceViewModal\');">✏️ Edit</button>' +
+                        '<button class="btn-secondary" onclick="sendDocument(\'' + doc.id + '\')">📧 Send</button>' +
                         '<button class="btn-secondary" onclick="convertToInvoice(\'' + doc.id + '\'); closeModal(\'invoiceViewModal\');">→ Invoice</button>' +
                         '<button class="btn-secondary" onclick="closeModal(\'invoiceViewModal\')">Close</button>' +
                     '</div>' +
@@ -7349,6 +7529,410 @@
                 if (changed) { saveData(); renderContracts(); }
             });
         }, 35000);
+
+        // ── Fence Quantity Calculator ──────────────────────────────────────
+        // Material presets — span, post type, rails, caps, extras, notes
+        var QTY_MATERIALS = [
+            {
+                id: 'vinyl_privacy',
+                label: 'Vinyl Privacy',
+                emoji: '🏠',
+                color: '#3b82f6',
+                span: 8,
+                postType: '5×5 Vinyl Post',
+                postSize: '5x5',
+                rails: 3,        // rails per panel (top, mid, bottom for 6ft)
+                hasCaps: true,
+                capLabel: 'Post Caps',
+                hasPickets: false,
+                panelLabel: 'Panels (8 ft)',
+                desc: 'Standard 8 ft wide panels. 5×5 posts, 3 rails. Posts set in concrete.',
+                availableSpans: [6, 8],
+                notes: ['Panels are pre-assembled — order whole panels only, no partial panels.', 'Expansion gap required: leave 1/4" between panel and post per manufacturer spec.', 'Post depth: bury 1/3 of total post length (8 ft fence = 10 ft post, 3.5 ft in ground).']
+            },
+            {
+                id: 'vinyl_picket',
+                label: 'Vinyl Picket',
+                emoji: '🌿',
+                color: '#22c55e',
+                span: 8,
+                postType: '4×4 Vinyl Post',
+                postSize: '4x4',
+                rails: 2,
+                hasCaps: true,
+                capLabel: 'Post Caps',
+                hasPickets: false,
+                panelLabel: 'Panels (8 ft)',
+                desc: 'Open-style picket panels, 8 ft wide. 4×4 posts, 2 rails.',
+                availableSpans: [6, 8],
+                notes: ['Decorative open-top design — 2 rails standard for fences under 5 ft.', 'Caps included — 1 flat cap or finial per post.']
+            },
+            {
+                id: 'wood_privacy',
+                label: 'Wood Privacy',
+                emoji: '🪵',
+                color: '#a16207',
+                span: 8,
+                postType: '4×4 Pressure-Treated Post',
+                postSize: '4x4',
+                rails: 3,
+                hasCaps: false,
+                capLabel: null,
+                hasPickets: true,
+                picketWidth: 5.5,   // inches — standard 1×6 board actual width
+                picketSpacing: 0,   // inches gap between pickets (0 = solid)
+                panelLabel: 'Sections (8 ft)',
+                desc: 'Built-in-place. 8 ft post spacing. 4×4 PT posts, 2×4 rails, 1×6 pickets.',
+                availableSpans: [6, 8],
+                notes: ['Rails: use 3 rails for 6 ft fences, 2 rails for 4 ft fences.', 'Order 10% extra pickets for waste and cuts.', 'Use pressure-treated lumber for all ground-contact posts.', 'Dig post holes 30–36 inches deep in most soil types.']
+            },
+            {
+                id: 'wood_shadowbox',
+                label: 'Wood Shadow Box',
+                emoji: '🔲',
+                color: '#92400e',
+                span: 8,
+                postType: '4×4 Pressure-Treated Post',
+                postSize: '4x4',
+                rails: 3,
+                hasCaps: false,
+                capLabel: null,
+                hasPickets: true,
+                picketWidth: 5.5,
+                picketSpacing: 2.75, // pickets alternate both sides — effective spacing each side
+                panelLabel: 'Sections (8 ft)',
+                desc: 'Alternating pickets on both sides. Requires ~1.5× picket count of solid fence.',
+                availableSpans: [8],
+                notes: ['Shadow box uses pickets on both sides of the rail, alternating.', 'Order approximately 1.5× the picket count of a solid fence.', '3 rails required for 6 ft height.']
+            },
+            {
+                id: 'chain_link',
+                label: 'Chain Link',
+                emoji: '🔗',
+                color: '#64748b',
+                span: 10,
+                postType: '1-5/8" Galv. Line Post',
+                postSize: '1-5/8"',
+                rails: 1,   // top rail only
+                hasCaps: false,
+                capLabel: null,
+                hasPickets: false,
+                isFabric: true,   // chain link is sold by linear foot (50 ft rolls)
+                panelLabel: 'Line Posts (10 ft OC)',
+                desc: 'Line posts every 10 ft. Terminal/corner posts at ends & corners. Fabric sold in 50 ft rolls.',
+                availableSpans: [8, 10],
+                notes: ['Fabric: sold in 50 ft rolls — round up to nearest 50 ft.', 'Terminal posts (2.5"–3" OD) needed at all ends, corners, and gates — heavier than line posts.', 'Top rail runs continuously — order total linear feet ÷ 21 ft pipe lengths.', 'Tension wire at bottom optional but recommended for pets/security.', 'Post depth: 18 inches minimum, 24 inches in loose soil.']
+            },
+            {
+                id: 'aluminum',
+                label: 'Aluminum',
+                emoji: '⚙️',
+                color: '#475569',
+                span: 6,
+                postType: '2" Alum. Post',
+                postSize: '2"',
+                rails: 3,
+                hasCaps: false,
+                capLabel: null,
+                hasPickets: false,
+                panelLabel: 'Panels (6 ft)',
+                desc: 'Pre-assembled aluminum panels, 6 ft wide. 72" post centers. 3 rails standard.',
+                availableSpans: [6],
+                notes: ['Panels are factory-assembled — 6 ft sections are standard industry-wide.', 'No caps needed — posts have integrated pressed tops.', 'Ideal for pool fencing; check local pool code for required height (usually 4–4.5 ft).', 'Post depth: 24 inches in concrete for 4 ft fence; 30 inches for 5–6 ft.']
+            },
+            {
+                id: 'split_rail',
+                label: 'Split Rail',
+                emoji: '🌲',
+                color: '#16a34a',
+                span: 8,
+                postType: 'Round Rail Post (3.5" dia)',
+                postSize: '3.5"',
+                rails: 2,   // 2-rail or 3-rail
+                hasCaps: false,
+                capLabel: null,
+                hasPickets: false,
+                panelLabel: 'Sections (8 ft)',
+                desc: '2-rail or 3-rail. Posts every 8 ft. Rails are 11 ft long (overlap in post).',
+                availableSpans: [8, 10],
+                notes: ['Rails are 11 ft long — they overlap inside the post, so 8 ft OC post spacing works.', '2-rail: decorative/farm use. 3-rail: better animal containment.', 'Posts have pre-drilled holes (mortised) — order matching 2-hole or 3-hole posts.', 'No concrete needed for line posts — driven or tamped gravel base.']
+            }
+        ];
+
+        var qtySpan = 8;
+        var qtySides = [];
+        var qtyActiveMaterial = null;
+
+        function initQtyMaterialGrid() {
+            var grid = document.getElementById('qtyMaterialGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+            QTY_MATERIALS.forEach(function(mat) {
+                var btn = document.createElement('button');
+                btn.id = 'matbtn_' + mat.id;
+                btn.style.cssText = 'padding:10px 8px;border:2px solid #e5e5e5;border-radius:10px;background:#fff;cursor:pointer;text-align:center;transition:all 0.15s;font-size:12px;font-weight:600;color:#475569;display:flex;flex-direction:column;align-items:center;gap:4px;';
+                btn.innerHTML = '<span style="font-size:22px;">' + mat.emoji + '</span><span>' + mat.label + '</span>';
+                btn.onclick = function() { selectQtyMaterial(mat.id); };
+                grid.appendChild(btn);
+            });
+        }
+
+        function selectQtyMaterial(id) {
+            qtyActiveMaterial = QTY_MATERIALS.find(function(m){ return m.id === id; });
+            if (!qtyActiveMaterial) return;
+            // Update button styles
+            QTY_MATERIALS.forEach(function(m) {
+                var b = document.getElementById('matbtn_' + m.id);
+                if (!b) return;
+                if (m.id === id) {
+                    b.style.border = '2px solid ' + qtyActiveMaterial.color;
+                    b.style.background = qtyActiveMaterial.color + '18';
+                    b.style.color = qtyActiveMaterial.color;
+                } else {
+                    b.style.border = '2px solid #e5e5e5';
+                    b.style.background = '#fff';
+                    b.style.color = '#475569';
+                }
+            });
+            // Show info
+            var infoBox = document.getElementById('qtyMatInfo');
+            var infoTitle = document.getElementById('qtyMatInfoTitle');
+            var infoDesc = document.getElementById('qtyMatInfoDesc');
+            if (infoBox) { infoBox.style.display = 'block'; infoBox.style.borderLeftColor = qtyActiveMaterial.color; }
+            if (infoTitle) infoTitle.textContent = qtyActiveMaterial.emoji + ' ' + qtyActiveMaterial.label + ' — Standard span: ' + qtyActiveMaterial.span + ' ft';
+            if (infoDesc) infoDesc.textContent = qtyActiveMaterial.desc;
+            // Auto-set span
+            setSpan(qtyActiveMaterial.span);
+            // Update caps checkbox label
+            var capsLabel = document.querySelector('label[for="qtyIncludeCaps"]');
+            if (capsLabel) capsLabel.textContent = qtyActiveMaterial.hasCaps ? 'Include post caps (1 per post)' : 'Post caps (not standard for this material)';
+            var capsCheck = document.getElementById('qtyIncludeCaps');
+            if (capsCheck) { capsCheck.checked = qtyActiveMaterial.hasCaps; capsCheck.disabled = !qtyActiveMaterial.hasCaps; }
+            calcQty();
+        }
+
+        function setSpan(s) {
+            qtySpan = s;
+            ['6','8','10'].forEach(function(v) {
+                var btn = document.getElementById('span'+v+'btn');
+                if (!btn) return;
+                btn.style.background = (parseInt(v) === s) ? '#ff6b35' : '#f8f9fb';
+                btn.style.color = (parseInt(v) === s) ? '#fff' : '#94a3b8';
+            });
+            calcQty();
+        }
+
+        function initQtySides() {
+            if (qtySides.length === 0) {
+                qtySides = [
+                    {id:1,label:'Side A',ft:''},
+                    {id:2,label:'Side B',ft:''},
+                    {id:3,label:'Side C',ft:''},
+                    {id:4,label:'Side D',ft:''}
+                ];
+            }
+            renderQtySides();
+        }
+
+        function renderQtySides() {
+            var el = document.getElementById('qtySidesList');
+            if (!el) return;
+            el.innerHTML = '';
+            qtySides.forEach(function(side, i) {
+                var row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:center;gap:8px;';
+                row.innerHTML =
+                    '<div style="width:56px;font-size:12px;font-weight:700;color:#475569;flex-shrink:0;">' + side.label + '</div>' +
+                    '<input type="number" placeholder="e.g. 47.5" min="0" step="0.1" value="' + (side.ft||'') + '" style="flex:1;" ' +
+                    'oninput="qtySides['+i+'].ft=this.value;calcQty();">' +
+                    '<span style="font-size:12px;color:#94a3b8;flex-shrink:0;">ft</span>' +
+                    (qtySides.length > 1 ? '<button onclick="removeQtySide('+i+')" style="background:none;border:none;color:#ef4444;font-size:18px;cursor:pointer;padding:0 2px;line-height:1;">×</button>' : '<span style="width:22px;"></span>');
+                el.appendChild(row);
+            });
+        }
+
+        function addQtySide() {
+            var labels = ['Side A','Side B','Side C','Side D','Side E','Side F','Side G','Side H'];
+            qtySides.push({id:Date.now(), label: labels[qtySides.length] || ('Side '+(qtySides.length+1)), ft:''});
+            renderQtySides();
+        }
+
+        function removeQtySide(i) {
+            qtySides.splice(i,1);
+            renderQtySides();
+            calcQty();
+        }
+
+        function calcQty() {
+            if (!qtyActiveMaterial) {
+                document.getElementById('qtyResultCard').style.display = 'none';
+                document.getElementById('qtyEmptyState').style.display = 'block';
+                return;
+            }
+            var mat = qtyActiveMaterial;
+            var shareCorners = document.getElementById('qtyShareCorners') && document.getElementById('qtyShareCorners').checked;
+            var includeCaps = mat.hasCaps && document.getElementById('qtyIncludeCaps') && document.getElementById('qtyIncludeCaps').checked;
+            var gates = parseInt((document.getElementById('qtyGates')||{}).value||0)||0;
+            var fenceHeight = parseInt((document.getElementById('qtyFenceHeight')||{}).value||6)||6;
+            var span = qtySpan;
+
+            var sides = qtySides.filter(function(s){ return parseFloat(s.ft) > 0; });
+            if (!sides.length) {
+                document.getElementById('qtyResultCard').style.display = 'none';
+                document.getElementById('qtyEmptyState').style.display = 'block';
+                return;
+            }
+
+            var totalFt = 0;
+            var sideData = [];
+            sides.forEach(function(s) {
+                var ft = parseFloat(s.ft);
+                totalFt += ft;
+                var sections = Math.ceil(ft / span);
+                var posts = sections + 1;
+                sideData.push({label:s.label, ft:ft, sections:sections, posts:posts});
+            });
+
+            var totalSections = sideData.reduce(function(a,b){ return a+b.sections; },0);
+            var totalPosts = sideData.reduce(function(a,b){ return a+b.posts; },0);
+
+            if (shareCorners && sides.length > 1) totalPosts -= sides.length;
+
+            var netSections = Math.max(0, totalSections - gates);
+            var netPosts = totalPosts;
+            var netCaps = includeCaps ? netPosts : 0;
+
+            // Rails calculation — varies by height for some materials
+            var railsPerSection = mat.rails;
+            if ((mat.id === 'wood_privacy' || mat.id === 'wood_shadowbox') && fenceHeight <= 4) railsPerSection = 2;
+            if ((mat.id === 'wood_privacy' || mat.id === 'wood_shadowbox') && fenceHeight >= 8) railsPerSection = 4;
+            var totalRails = netSections * railsPerSection;
+
+            // Pickets for wood fences
+            var totalPickets = 0;
+            if (mat.hasPickets) {
+                var picketWidthIn = mat.picketWidth || 5.5;
+                var spacingIn = mat.picketSpacing || 0;
+                var picketsPerFt = 12 / (picketWidthIn + spacingIn);
+                var fencePickets = Math.ceil(totalFt * picketsPerFt);
+                totalPickets = mat.id === 'wood_shadowbox' ? Math.ceil(fencePickets * 1.55) : Math.ceil(fencePickets * 1.1);
+            }
+
+            // Chain link: fabric rolls (50 ft each) and top rail
+            var fabricRolls = 0, topRailPipes = 0, terminalPosts = 0;
+            if (mat.isFabric) {
+                fabricRolls = Math.ceil(totalFt / 50);
+                topRailPipes = Math.ceil(totalFt / 21);
+                terminalPosts = sides.length * 2; // 2 terminal per run (end posts)
+                if (shareCorners) terminalPosts = Math.max(4, sides.length * 2 - sides.length); // rough
+                terminalPosts += gates * 2;
+            }
+
+            var concrete = netPosts; // 1 bag per post
+
+            // --- RENDER ---
+            document.getElementById('resMaterialBadge').textContent = mat.emoji + ' ' + mat.label;
+            document.getElementById('resTotalFt').textContent = totalFt.toFixed(1) + ' ft';
+            document.getElementById('resSpan').textContent = span + ' ft sections';
+            document.getElementById('resHeight').textContent = fenceHeight + ' ft';
+            document.getElementById('resGates').textContent = gates;
+
+            // Count boxes (dynamic based on material)
+            var boxes = [];
+            if (mat.isFabric) {
+                boxes.push({label:'Line Posts', val:netPosts, sub: span+' ft OC'});
+                boxes.push({label:'Terminal Posts', val:terminalPosts, sub:'ends/corners/gates'});
+                boxes.push({label:'Fabric Rolls', val:fabricRolls, sub:'50 ft each'});
+            } else {
+                boxes.push({label: mat.panelLabel, val: netSections, sub: span+' ft each'});
+                boxes.push({label:'Posts', val:netPosts, sub:mat.postType});
+                if (netCaps > 0) boxes.push({label:mat.capLabel, val:netCaps, sub:'1 per post'});
+            }
+            var cols = boxes.length <= 2 ? 2 : 3;
+            var boxesEl = document.getElementById('resCountBoxes');
+            boxesEl.style.gridTemplateColumns = 'repeat('+cols+',1fr)';
+            boxesEl.innerHTML = boxes.map(function(b){
+                return '<div style="background:#1e293b;border-radius:10px;padding:14px 8px;text-align:center;">' +
+                    '<p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 5px;">' + b.label + '</p>' +
+                    '<p style="color:#ff6b35;font-size:32px;font-weight:800;margin:0;line-height:1;">' + b.val + '</p>' +
+                    '<p style="color:#64748b;font-size:10px;margin:4px 0 0;">' + b.sub + '</p>' +
+                '</div>';
+            }).join('');
+
+            // Per-side breakdown
+            var breakEl = document.getElementById('resSideBreakdown');
+            breakEl.innerHTML = '';
+            sideData.forEach(function(s) {
+                var row = document.createElement('div');
+                row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8f9fb;border-radius:8px;font-size:13px;';
+                row.innerHTML = '<span style="font-weight:600;color:#0f172a;">' + s.label +
+                    ' <span style="color:#94a3b8;font-weight:400;">(' + s.ft + ' ft)</span></span>' +
+                    '<span style="display:flex;gap:14px;">' +
+                    '<span><strong>' + s.sections + '</strong> ' + (mat.isFabric ? 'spans' : 'sections') + '</span>' +
+                    '<span><strong>' + s.posts + '</strong> posts</span>' +
+                    '</span>';
+                breakEl.appendChild(row);
+            });
+            if (shareCorners && sides.length > 1) {
+                var nr = document.createElement('div');
+                nr.style.cssText = 'font-size:11px;color:#94a3b8;padding:4px 4px 0;';
+                nr.textContent = '− ' + sides.length + ' shared corner posts subtracted (closed perimeter)';
+                breakEl.appendChild(nr);
+            }
+
+            // Full material list
+            var fullItems = [];
+            if (mat.isFabric) {
+                fullItems.push({qty:netPosts, item:'Line Posts (' + mat.postType + ')'});
+                fullItems.push({qty:terminalPosts, item:'Terminal/Corner Posts (2.5" or 3" OD galvanized)'});
+                fullItems.push({qty:fabricRolls, item:'Chain Link Fabric Rolls (50 ft × ' + fenceHeight + ' ft high)'});
+                fullItems.push({qty:topRailPipes, item:'Top Rail Pipe (21 ft lengths)'});
+                fullItems.push({qty:concrete, item:'Bags of Concrete (one per post)'});
+                if (gates > 0) fullItems.push({qty:gates, item:'Gate Frames + Gate Hardware'});
+            } else {
+                fullItems.push({qty:netSections, item: mat.panelLabel.replace('('+span+' ft)','').trim() + ' (' + span + ' ft wide × ' + fenceHeight + ' ft high)'});
+                fullItems.push({qty:netPosts, item: mat.postType + (mat.postSize ? ' (' + mat.postSize + ')' : '')});
+                if (totalRails > 0 && mat.hasPickets) fullItems.push({qty:totalRails, item: '2×4 Rails (8 ft lengths)'});
+                if (totalPickets > 0) fullItems.push({qty:totalPickets, item: '1×6 Pickets (' + fenceHeight + ' ft + 2" below grade) — includes 10–55% overage'});
+                if (netCaps > 0) fullItems.push({qty:netCaps, item: mat.capLabel + ' (flat or finial, to match post size)'});
+                fullItems.push({qty:concrete, item: 'Bags of Concrete (80 lb each, 1 per post hole)'});
+                if (gates > 0) fullItems.push({qty:gates, item: 'Gate Panels + Hinges + Latch'});
+            }
+
+            var listEl = document.getElementById('resFullList');
+            listEl.innerHTML = fullItems.map(function(item){
+                return '<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid #f1f5f9;">' +
+                    '<div style="min-width:48px;text-align:center;background:#ff6b35;color:#fff;font-size:15px;font-weight:800;border-radius:8px;padding:4px 6px;">' + item.qty + '</div>' +
+                    '<div style="font-size:13px;color:#1e293b;">' + item.item + '</div>' +
+                '</div>';
+            }).join('');
+
+            // Notes
+            var notes = [];
+            var leftover = totalFt % span;
+            if (leftover > 0 && leftover < span * 0.5 && !mat.isFabric) {
+                notes.push('⚠️ Last section cut: ~' + leftover.toFixed(1) + ' ft. Order whole panels — cut on site.');
+            }
+            if (gates > 0) notes.push('🚪 ' + gates + ' gate(s): panels reduced by ' + gates + ', gate posts counted in post total.');
+            if (netPosts > 30) notes.push('📦 Large job. Order 5–10% extra posts and caps for breakage/adjustments.');
+            mat.notes.forEach(function(n){ notes.push('💡 ' + n); });
+
+            var notesEl = document.getElementById('resAiNotes');
+            notesEl.innerHTML = notes.map(function(n){ return '<p style="margin:0 0 7px;line-height:1.4;">' + n + '</p>'; }).join('');
+
+            document.getElementById('qtyResultCard').style.display = 'block';
+            document.getElementById('qtyEmptyState').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initQtyMaterialGrid();
+            initQtySides();
+            var origSwitch = window.switchTab;
+            window.switchTab = function(tab, btn) {
+                if (typeof origSwitch === 'function') origSwitch(tab, btn);
+                if (tab === 'qtycalc') { initQtyMaterialGrid(); initQtySides(); }
+            };
+        });
 
         // ── Toast & Confirm helpers ─────────────────────────────────────────
         var _toastTimer = null;
