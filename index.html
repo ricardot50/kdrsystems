@@ -1271,6 +1271,41 @@
                             </div>
                         </div>
 
+                        <!-- Draw Mode toggle -->
+                        <div class="card" style="border:1px solid #e2e8f0;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <div>
+                                    <h3 class="font-bold text-base">🖊️ Draw Property Shape</h3>
+                                    <p class="text-xs text-gray-700 mt-1">Click points to trace your property — auto-counts corners, calculates footage</p>
+                                </div>
+                                <button id="qtyDrawToggle" onclick="toggleQtyDraw()" class="btn-secondary text-sm">Enable Drawing</button>
+                            </div>
+                            <div id="qtyDrawPanel" style="display:none;margin-top:12px;">
+                                <div style="background:#f8f9fb;border-radius:8px;padding:8px;margin-bottom:8px;font-size:12px;color:#475569;line-height:1.6;">
+                                    <strong>How to use:</strong> Click on the canvas to place corner points. Each segment between points is one fence run. Right-click or click "Gate Here" to mark a gate at the last segment. Click "Close Shape" to finish the perimeter.
+                                </div>
+                                <!-- Draw canvas -->
+                                <div style="position:relative;background:#fff;border:2px solid #e2e8f0;border-radius:10px;overflow:hidden;cursor:crosshair;" id="qtyDrawWrap">
+                                    <canvas id="qtyDrawCanvas" style="display:block;width:100%;touch-action:none;"></canvas>
+                                    <!-- hover preview line drawn in JS -->
+                                </div>
+                                <!-- Draw toolbar -->
+                                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center;">
+                                    <button onclick="qtyDrawGate()" class="btn-secondary text-xs py-1 px-3" title="Mark last segment as a gate">🚪 Gate Here</button>
+                                    <button onclick="qtyDrawClose()" class="btn-primary text-xs py-1 px-3">⬡ Close Shape</button>
+                                    <button onclick="qtyDrawUndo()" class="btn-secondary text-xs py-1 px-3">↩ Undo Point</button>
+                                    <button onclick="qtyDrawReset()" class="btn-secondary text-xs py-1 px-3">🗑 Reset</button>
+                                    <div style="margin-left:auto;font-size:12px;color:#64748b;" id="qtyDrawStatus">Click to place first point</div>
+                                </div>
+                                <!-- ft per pixel scale -->
+                                <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+                                    <label style="font-size:12px;color:#475569;white-space:nowrap;">Scale: 1 grid square =</label>
+                                    <input type="number" id="qtyDrawScale" value="10" min="1" max="200" step="1" style="width:64px;padding:4px 8px;font-size:13px;" oninput="qtyDrawRedraw()">
+                                    <span style="font-size:12px;color:#475569;">ft</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <button class="btn-primary w-full" onclick="calcQty()" style="font-size:15px;padding:14px;">🔢 Calculate Materials</button>
                     </div>
 
@@ -2286,11 +2321,12 @@
             <div style="background:#f8f9fb;border-bottom:1px solid #e5e5e5;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
                 <!-- Tools -->
                 <div style="display:flex;gap:4px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:3px;">
-                    <button id="tool-pen"      onclick="setLayoutTool('pen')"      title="Pen" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:#ff6b35;color:#fff;">✏️</button>
-                    <button id="tool-line"     onclick="setLayoutTool('line')"     title="Straight Line" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">╱</button>
+                    <button id="tool-pen"      onclick="setLayoutTool('pen')"      title="Freehand" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:#ff6b35;color:#fff;">✏️</button>
+                    <button id="tool-line"     onclick="setLayoutTool('line')"     title="Straight Line (hold Shift = axis-lock)" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">╱</button>
+                    <button id="tool-fence"    onclick="setLayoutTool('fence')"    title="Fence Line (thick, with post dots)" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:800;background:transparent;">🪧</button>
                     <button id="tool-rect"     onclick="setLayoutTool('rect')"     title="Rectangle" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">▭</button>
-                    <button id="tool-arrow"    onclick="setLayoutTool('arrow')"    title="Arrow" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">➜</button>
-                    <button id="tool-text"     onclick="setLayoutTool('text')"     title="Add Label" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700;background:transparent;">T</button>
+                    <button id="tool-arrow"    onclick="setLayoutTool('arrow')"    title="Arrow / Dimension" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">➜</button>
+                    <button id="tool-text"     onclick="setLayoutTool('text')"     title="Add Text Label" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:700;background:transparent;">T</button>
                     <button id="tool-eraser"   onclick="setLayoutTool('eraser')"   title="Eraser" style="width:34px;height:34px;border:none;border-radius:6px;cursor:pointer;font-size:16px;background:transparent;">⌫</button>
                 </div>
 
@@ -2332,16 +2368,22 @@
 
             <!-- Saved layouts + attach panel -->
             <div style="background:#f8f9fb;border-top:1px solid #e5e5e5;padding:14px 16px;">
+                <!-- Auto-attach banner (shows when opened from estimate/contract) -->
+                <div id="layoutAutoAttachBanner" style="display:none;background:#fef7f4;border:1px solid #fed7c5;border-radius:8px;padding:10px 14px;margin-bottom:10px;display:none;align-items:center;justify-content:space-between;gap:10px;">
+                    <span style="font-size:13px;color:#0f172a;font-weight:600;" id="layoutAutoAttachLabel">Attaching to: —</span>
+                    <button class="btn-primary text-sm" onclick="saveAndAutoAttach()" style="white-space:nowrap;">💾 Save &amp; Attach to Estimate</button>
+                </div>
+                <!-- Manual attach row -->
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
                     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                        <button class="btn-secondary text-sm" onclick="saveLayoutDrawing()">💾 Save Drawing</button>
+                        <button class="btn-secondary text-sm" onclick="saveLayoutDrawing()">💾 Save Only</button>
                         <select id="layoutAttachTarget" style="padding:8px 12px;font-size:13px;border-radius:8px;border:1px solid #e2e8f0;max-width:220px;">
                             <option value="">Attach to...</option>
                         </select>
                         <button class="btn-primary text-sm" onclick="attachLayoutToDoc()">Attach ✓</button>
                     </div>
                     <div style="display:flex;gap:8px;align-items:center;">
-                        <span style="font-size:12px;color:#94a3b8;">Saved layouts:</span>
+                        <span style="font-size:12px;color:#94a3b8;">Saved:</span>
                         <div id="savedLayoutThumbs" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
                     </div>
                 </div>
@@ -2448,7 +2490,7 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-      const firebaseConfig = {
+    const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -6324,12 +6366,63 @@
         var _layoutHistory = [];
         var _layoutCtx     = null;
         var _layoutCanvas  = null;
+        var _layoutCtx     = null;
+        var _layoutDrawing = false;
+        var _layoutTool    = 'pen';
+        var _layoutColor   = '#1e293b';
+        var _layoutStroke  = 4;
+        var _layoutStartX  = 0, _layoutStartY = 0;
+        var _layoutHistory = [];
         var _layoutAttachFor = { type: null, id: null };
+        var _shiftDown = false;
+
+        document.addEventListener('keydown', function(e){ if(e.key==='Shift') _shiftDown=true; });
+        document.addEventListener('keyup',   function(e){ if(e.key==='Shift') _shiftDown=false; });
 
         function openLayoutModal(attachType, attachId) {
             _layoutAttachFor = { type: attachType || null, id: attachId || null };
             openModal('layoutModal');
-            setTimeout(function() { initLayoutCanvas(); populateLayoutAttachTarget(); renderSavedLayoutThumbs(); }, 80);
+            setTimeout(function() {
+                initLayoutCanvas();
+                populateLayoutAttachTarget();
+                renderSavedLayoutThumbs();
+                // Show auto-attach banner if context known
+                var banner = document.getElementById('layoutAutoAttachBanner');
+                var label  = document.getElementById('layoutAutoAttachLabel');
+                var btn    = banner ? banner.querySelector('button') : null;
+                if (banner && attachType && attachId) {
+                    var docList = attachType === 'estimate' ? (appData.estimates||[]) : (appData.contracts||[]);
+                    var docObj  = docList.find(function(x){ return x.id === attachId; });
+                    var docName = docObj ? docObj.customerName : ('ID ' + attachId.slice(-4));
+                    banner.style.display = 'flex';
+                    if (label) label.textContent = 'Will attach to: ' + (attachType==='estimate'?'Estimate':'Contract') + ' — ' + docName;
+                    if (btn) btn.textContent = '💾 Save & Attach to ' + (attachType==='estimate'?'Estimate':'Contract');
+                } else {
+                    banner.style.display = 'none';
+                }
+            }, 80);
+        }
+
+        function saveAndAutoAttach() {
+            if (!_layoutAttachFor.type || !_layoutAttachFor.id) { toast('No estimate/contract context — use the manual attach below'); return; }
+            var lid = saveLayoutDrawing();
+            var layout = (appData.layouts||[]).find(function(l){ return l.id === lid; });
+            if (!layout) return;
+            var docType = _layoutAttachFor.type, docId = _layoutAttachFor.id;
+            layout.attachedTo = layout.attachedTo || [];
+            layout.attachedTo.push({ type: docType, id: docId });
+            if (docType === 'contract') {
+                var c = (appData.contracts||[]).find(function(x){ return x.id === docId; });
+                if (c) { if (!c.layouts) c.layouts=[]; c.layouts.push(lid); }
+                saveData(); updateContractLayoutThumbs(docId);
+            } else {
+                var est = (appData.estimates||[]).find(function(x){ return x.id === docId; });
+                if (est) { if (!est.layouts) est.layouts=[]; est.layouts.push(lid); }
+                saveData(); updateEstLayoutThumbs(docId);
+            }
+            var msg = document.getElementById('layoutStatusMsg');
+            if (msg) { msg.textContent = '✓ Layout saved and attached!'; msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; },3000); }
+            toast('Layout attached to ' + docType + ' ✓');
         }
 
         function initLayoutCanvas() {
@@ -6370,13 +6463,12 @@
             if (!_layoutCtx || !_layoutCanvas) return;
             var step = 40;
             _layoutCtx.save();
-            _layoutCtx.strokeStyle = '#e2e8f0';
-            _layoutCtx.lineWidth = 1;
+            _layoutCtx.strokeStyle = '#e2e8f0'; _layoutCtx.lineWidth = 1;
             for (var x = 0; x <= _layoutCanvas.width; x += step) {
-                _layoutCtx.beginPath(); _layoutCtx.moveTo(x, 0); _layoutCtx.lineTo(x, _layoutCanvas.height); _layoutCtx.stroke();
+                _layoutCtx.beginPath(); _layoutCtx.moveTo(x,0); _layoutCtx.lineTo(x,_layoutCanvas.height); _layoutCtx.stroke();
             }
             for (var y = 0; y <= _layoutCanvas.height; y += step) {
-                _layoutCtx.beginPath(); _layoutCtx.moveTo(0, y); _layoutCtx.lineTo(_layoutCanvas.width, y); _layoutCtx.stroke();
+                _layoutCtx.beginPath(); _layoutCtx.moveTo(0,y); _layoutCtx.lineTo(_layoutCanvas.width,y); _layoutCtx.stroke();
             }
             _layoutCtx.restore();
             _pushLayoutHistory();
@@ -6384,11 +6476,11 @@
 
         function setLayoutTool(tool) {
             _layoutTool = tool;
-            ['pen','line','rect','arrow','text','eraser'].forEach(function(t) {
+            ['pen','line','fence','rect','arrow','text','eraser'].forEach(function(t) {
                 var btn = document.getElementById('tool-' + t);
-                if (btn) { btn.style.background = t === tool ? '#ff6b35' : 'transparent'; btn.style.color = t === tool ? '#fff' : '#374151'; }
+                if (btn) { btn.style.background = t===tool?'#ff6b35':'transparent'; btn.style.color = t===tool?'#fff':'#374151'; }
             });
-            if (_layoutCanvas) _layoutCanvas.style.cursor = tool === 'text' ? 'text' : tool === 'eraser' ? 'cell' : 'crosshair';
+            if (_layoutCanvas) _layoutCanvas.style.cursor = tool==='text'?'text':tool==='eraser'?'cell':'crosshair';
         }
 
         function setLayoutColor(hex) {
@@ -6401,22 +6493,34 @@
             _layoutStroke = w;
             [2,4,8,14].forEach(function(s) {
                 var btn = document.getElementById('stroke-' + s);
-                if (btn) { btn.style.background = s === w ? '#ff6b35' : '#fff'; }
+                if (btn) btn.style.background = s===w ? '#ff6b35' : '#fff';
             });
         }
 
         function _getPos(e, canvas) {
             var r = canvas.getBoundingClientRect();
-            var scaleX = canvas.width  / r.width;
+            var scaleX = canvas.width / r.width;
             var scaleY = canvas.height / r.height;
             var clientX = e.touches ? e.touches[0].clientX : e.clientX;
             var clientY = e.touches ? e.touches[0].clientY : e.clientY;
             return { x: (clientX - r.left) * scaleX, y: (clientY - r.top) * scaleY };
         }
 
+        function _axisSnap(x1, y1, x2, y2) {
+            // Snap to horizontal or vertical depending on which delta is larger
+            var dx = Math.abs(x2-x1), dy = Math.abs(y2-y1);
+            if (dx > dy) return { x: x2, y: y1 };
+            return { x: x1, y: y2 };
+        }
+
         function bindLayoutCanvas() {
             var c = _layoutCanvas;
             if (!c) return;
+            // Remove old handlers by cloning
+            var newC = c.cloneNode(true);
+            c.parentNode.replaceChild(newC, c);
+            _layoutCanvas = newC;
+            c = newC;
             var _snap = null;
 
             function startDraw(e) {
@@ -6435,19 +6539,21 @@
             function doDraw(e) {
                 if (!_layoutDrawing) return;
                 e.preventDefault();
-                var pos = _getPos(e, c);
-                _layoutCtx.lineCap = 'round';
-                _layoutCtx.lineJoin = 'round';
+                var raw = _getPos(e, c);
+                var pos = raw;
+                // Shift-lock for line/fence/arrow
+                if (_shiftDown && (_layoutTool==='line'||_layoutTool==='fence'||_layoutTool==='arrow')) {
+                    pos = _axisSnap(_layoutStartX, _layoutStartY, raw.x, raw.y);
+                }
+                _layoutCtx.lineCap = 'round'; _layoutCtx.lineJoin = 'round';
                 if (_layoutTool === 'pen') {
                     _layoutCtx.strokeStyle = _layoutColor;
                     _layoutCtx.lineWidth = _layoutStroke;
-                    _layoutCtx.lineTo(pos.x, pos.y);
-                    _layoutCtx.stroke();
+                    _layoutCtx.lineTo(pos.x, pos.y); _layoutCtx.stroke();
                 } else if (_layoutTool === 'eraser') {
                     _layoutCtx.strokeStyle = '#ffffff';
                     _layoutCtx.lineWidth = _layoutStroke * 5;
-                    _layoutCtx.lineTo(pos.x, pos.y);
-                    _layoutCtx.stroke();
+                    _layoutCtx.lineTo(pos.x, pos.y); _layoutCtx.stroke();
                 } else if (_snap) {
                     _layoutCtx.putImageData(_snap, 0, 0);
                     _layoutCtx.strokeStyle = _layoutColor;
@@ -6455,18 +6561,40 @@
                     if (_layoutTool === 'line') {
                         _layoutCtx.beginPath();
                         _layoutCtx.moveTo(_layoutStartX, _layoutStartY);
-                        _layoutCtx.lineTo(pos.x, pos.y);
-                        _layoutCtx.stroke();
+                        _layoutCtx.lineTo(pos.x, pos.y); _layoutCtx.stroke();
+                    } else if (_layoutTool === 'fence') {
+                        // Thick line with post dots
+                        _layoutCtx.save();
+                        _layoutCtx.strokeStyle = _layoutColor;
+                        _layoutCtx.lineWidth = Math.max(_layoutStroke, 4);
+                        _layoutCtx.setLineDash([]);
+                        _layoutCtx.beginPath();
+                        _layoutCtx.moveTo(_layoutStartX, _layoutStartY);
+                        _layoutCtx.lineTo(pos.x, pos.y); _layoutCtx.stroke();
+                        // Post dots every ~40px
+                        var dx = pos.x - _layoutStartX, dy = pos.y - _layoutStartY;
+                        var len = Math.sqrt(dx*dx+dy*dy);
+                        if (len > 0) {
+                            var step = 40, n = Math.max(2, Math.round(len/step));
+                            for (var k=0; k<=n; k++) {
+                                var px = _layoutStartX + dx*(k/n), py = _layoutStartY + dy*(k/n);
+                                _layoutCtx.beginPath();
+                                _layoutCtx.arc(px, py, Math.max(_layoutStroke, 4), 0, Math.PI*2);
+                                _layoutCtx.fillStyle = _layoutColor;
+                                _layoutCtx.fill();
+                            }
+                        }
+                        _layoutCtx.restore();
                     } else if (_layoutTool === 'rect') {
                         _layoutCtx.beginPath();
-                        _layoutCtx.strokeRect(_layoutStartX, _layoutStartY, pos.x - _layoutStartX, pos.y - _layoutStartY);
+                        _layoutCtx.strokeRect(_layoutStartX, _layoutStartY, pos.x-_layoutStartX, pos.y-_layoutStartY);
                     } else if (_layoutTool === 'arrow') {
                         drawArrow(_layoutCtx, _layoutStartX, _layoutStartY, pos.x, pos.y);
                     }
                 }
             }
 
-            function endDraw() {
+            function endDraw(e) {
                 if (!_layoutDrawing) return;
                 _layoutDrawing = false;
                 _snap = null;
@@ -6479,12 +6607,12 @@
 
         function drawArrow(ctx, x1, y1, x2, y2) {
             var headLen = 14;
-            var angle = Math.atan2(y2 - y1, x2 - x1);
-            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+            var angle = Math.atan2(y2-y1, x2-x1);
+            ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(x2, y2);
-            ctx.lineTo(x2 - headLen * Math.cos(angle - Math.PI/6), y2 - headLen * Math.sin(angle - Math.PI/6));
-            ctx.lineTo(x2 - headLen * Math.cos(angle + Math.PI/6), y2 - headLen * Math.sin(angle + Math.PI/6));
+            ctx.lineTo(x2-headLen*Math.cos(angle-Math.PI/6), y2-headLen*Math.sin(angle-Math.PI/6));
+            ctx.lineTo(x2-headLen*Math.cos(angle+Math.PI/6), y2-headLen*Math.sin(angle+Math.PI/6));
             ctx.closePath(); ctx.fillStyle = ctx.strokeStyle; ctx.fill();
         }
 
@@ -6495,26 +6623,31 @@
             if (!inp || !wrap) return;
             var r = _layoutCanvas.getBoundingClientRect();
             var wrapR = wrap.getBoundingClientRect();
-            var scaleX = r.width  / _layoutCanvas.width;
+            var scaleX = r.width / _layoutCanvas.width;
             var scaleY = r.height / _layoutCanvas.height;
-            inp.style.left   = (r.left - wrapR.left + pos.x * scaleX) + 'px';
-            inp.style.top    = (r.top  - wrapR.top  + pos.y * scaleY - 14) + 'px';
-            inp.style.color  = _layoutColor;
-            inp.style.fontSize = Math.round((_layoutStroke + 1) * 3.5 + 10) + 'px';
+            var left = (r.left - wrapR.left + pos.x * scaleX);
+            var top  = (r.top  - wrapR.top  + pos.y * scaleY - 18);
+            inp.style.left    = Math.max(0, Math.min(left, wrap.offsetWidth - 160)) + 'px';
+            inp.style.top     = Math.max(0, top) + 'px';
+            inp.style.color   = _layoutColor;
+            inp.style.fontSize= Math.round((_layoutStroke+1)*3.5+12) + 'px';
             inp.style.display = 'block';
             inp.value = ''; inp.focus();
+            var _textPos = { x: pos.x, y: pos.y };
             inp.onkeydown = function(ev) {
                 if (ev.key === 'Enter') {
-                    var txt = inp.value.trim(); inp.style.display = 'none';
+                    var txt = inp.value.trim(); inp.style.display='none';
                     if (!txt) return;
-                    _layoutCtx.font = 'bold ' + inp.style.fontSize + ' Inter, Arial, sans-serif';
+                    var fSize = parseInt(inp.style.fontSize)||16;
+                    _layoutCtx.font = 'bold ' + fSize + 'px Inter, Arial, sans-serif';
                     _layoutCtx.fillStyle = _layoutColor;
-                    _layoutCtx.fillText(txt, pos.x, pos.y);
+                    _layoutCtx.fillText(txt, _textPos.x, _textPos.y + fSize*0.35);
                     _pushLayoutHistory();
                 }
-                if (ev.key === 'Escape') inp.style.display = 'none';
+                if (ev.key === 'Escape') inp.style.display='none';
+                ev.stopPropagation();
             };
-            inp.onblur = function() { inp.style.display = 'none'; };
+            inp.onblur = function() { setTimeout(function(){ inp.style.display='none'; }, 150); };
         }
 
         function saveLayoutDrawing() {
@@ -6526,7 +6659,7 @@
             appData.layouts.push(layout);
             saveData(); renderSavedLayoutThumbs();
             var msg = document.getElementById('layoutStatusMsg');
-            if (msg) { msg.textContent = 'Layout saved ✓'; msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; }, 2500); }
+            if (msg) { msg.textContent='Layout saved ✓'; msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; },2500); }
             return layout.id;
         }
 
@@ -6536,20 +6669,20 @@
             var parts = sel.value.split('::');
             var docType = parts[0]; var docId = parts[1];
             var lid = saveLayoutDrawing();
-            var layout = (appData.layouts || []).find(function(l){ return l.id === lid; });
+            var layout = (appData.layouts||[]).find(function(l){ return l.id === lid; });
             if (!layout) return;
             layout.attachedTo.push({ type: docType, id: docId });
             if (docType === 'contract') {
-                var c = (appData.contracts || []).find(function(x){ return x.id === docId; });
-                if (c) { if (!c.layouts) c.layouts = []; c.layouts.push(lid); }
+                var c = (appData.contracts||[]).find(function(x){ return x.id === docId; });
+                if (c) { if (!c.layouts) c.layouts=[]; c.layouts.push(lid); }
                 saveData(); updateContractLayoutThumbs(docId);
             } else {
-                var est = (appData.estimates || []).find(function(x){ return x.id === docId; });
-                if (est) { if (!est.layouts) est.layouts = []; est.layouts.push(lid); }
+                var est = (appData.estimates||[]).find(function(x){ return x.id === docId; });
+                if (est) { if (!est.layouts) est.layouts=[]; est.layouts.push(lid); }
                 saveData(); updateEstLayoutThumbs(docId);
             }
             var msg = document.getElementById('layoutStatusMsg');
-            if (msg) { msg.textContent = 'Attached to ' + docType + ' ✓'; msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; }, 2500); }
+            if (msg) { msg.textContent='Attached to '+docType+' ✓'; msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; },2500); }
             toast('Layout attached ✓');
         }
 
@@ -6557,18 +6690,18 @@
             var sel = document.getElementById('layoutAttachTarget');
             if (!sel) return;
             sel.innerHTML = '<option value="">Attach to...</option>';
-            (appData.contracts || []).slice().reverse().forEach(function(c) {
+            (appData.contracts||[]).slice().reverse().forEach(function(c) {
                 var opt = document.createElement('option');
                 opt.value = 'contract::' + c.id;
                 opt.textContent = 'Contract — ' + c.customerName + ' #' + c.id.slice(-4);
-                if (_layoutAttachFor.type === 'contract' && _layoutAttachFor.id === c.id) opt.selected = true;
+                if (_layoutAttachFor.type==='contract' && _layoutAttachFor.id===c.id) opt.selected = true;
                 sel.appendChild(opt);
             });
-            (appData.estimates || []).slice().reverse().forEach(function(e) {
+            (appData.estimates||[]).slice().reverse().forEach(function(e) {
                 var opt = document.createElement('option');
                 opt.value = 'estimate::' + e.id;
                 opt.textContent = 'Estimate — ' + e.customerName + ' #' + e.id.slice(-4);
-                if (_layoutAttachFor.type === 'estimate' && _layoutAttachFor.id === e.id) opt.selected = true;
+                if (_layoutAttachFor.type==='estimate' && _layoutAttachFor.id===e.id) opt.selected = true;
                 sel.appendChild(opt);
             });
         }
@@ -6576,8 +6709,8 @@
         function renderSavedLayoutThumbs() {
             var container = document.getElementById('savedLayoutThumbs');
             if (!container) return;
-            var layouts = (appData.layouts || []).slice().reverse().slice(0, 10);
-            if (!layouts.length) { container.innerHTML = '<span style="font-size:12px;color:#cbd5e1;">None saved yet</span>'; return; }
+            var layouts = (appData.layouts||[]).slice().reverse().slice(0,10);
+            if (!layouts.length) { container.innerHTML='<span style="font-size:12px;color:#cbd5e1;">None saved yet</span>'; return; }
             container.innerHTML = layouts.map(function(l) {
                 return '<div style="position:relative;" title="' + l.name + '">' +
                     '<img src="' + l.dataUrl + '" onclick="loadLayoutIntoCanvas(\'' + l.id + '\')" style="height:44px;width:72px;object-fit:cover;border-radius:6px;border:2px solid #e2e8f0;cursor:pointer;">' +
@@ -6587,27 +6720,27 @@
         }
 
         function loadLayoutIntoCanvas(lid) {
-            var l = (appData.layouts || []).find(function(x){ return x.id === lid; });
+            var l = (appData.layouts||[]).find(function(x){ return x.id===lid; });
             if (!l || !_layoutCtx || !_layoutCanvas) return;
             var img = new Image();
-            img.onload = function() { _layoutCtx.clearRect(0,0,_layoutCanvas.width,_layoutCanvas.height); _layoutCtx.drawImage(img, 0, 0, _layoutCanvas.width, _layoutCanvas.height); _pushLayoutHistory(); };
+            img.onload = function() { _layoutCtx.clearRect(0,0,_layoutCanvas.width,_layoutCanvas.height); _layoutCtx.drawImage(img,0,0,_layoutCanvas.width,_layoutCanvas.height); _pushLayoutHistory(); };
             img.src = l.dataUrl;
         }
 
         function deleteLayout(lid) {
-            appData.layouts = (appData.layouts || []).filter(function(l){ return l.id !== lid; });
-            (appData.contracts || []).forEach(function(c){ c.layouts = (c.layouts||[]).filter(function(id){ return id !== lid; }); });
-            (appData.estimates || []).forEach(function(e){ e.layouts = (e.layouts||[]).filter(function(id){ return id !== lid; }); });
+            appData.layouts = (appData.layouts||[]).filter(function(l){ return l.id!==lid; });
+            (appData.contracts||[]).forEach(function(c){ c.layouts=(c.layouts||[]).filter(function(id){ return id!==lid; }); });
+            (appData.estimates||[]).forEach(function(e){ e.layouts=(e.layouts||[]).filter(function(id){ return id!==lid; }); });
             saveData(); renderSavedLayoutThumbs();
         }
 
         function updateContractLayoutThumbs(contractId) {
             var el = document.getElementById('contractLayoutThumbs');
             if (!el) return;
-            var c = (appData.contracts || []).find(function(x){ return x.id === contractId; });
-            if (!c || !c.layouts || !c.layouts.length) { el.innerHTML = ''; return; }
+            var c = (appData.contracts||[]).find(function(x){ return x.id===contractId; });
+            if (!c||!c.layouts||!c.layouts.length) { el.innerHTML=''; return; }
             el.innerHTML = c.layouts.map(function(lid) {
-                var l = (appData.layouts||[]).find(function(x){ return x.id === lid; });
+                var l = (appData.layouts||[]).find(function(x){ return x.id===lid; });
                 if (!l) return '';
                 return '<div style="position:relative;"><img src="' + l.dataUrl + '" style="height:52px;width:84px;object-fit:cover;border-radius:6px;border:2px solid #bae6fd;" title="' + l.name + '">' +
                     '<button onclick="removeLayoutFromDoc(\'contract\',\'' + contractId + '\',\'' + lid + '\')" style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:9px;cursor:pointer;line-height:16px;padding:0;">×</button></div>';
@@ -6617,10 +6750,10 @@
         function updateEstLayoutThumbs(estimateId) {
             var el = document.getElementById('estLayoutThumbs');
             if (!el) return;
-            var est = (appData.estimates||[]).find(function(x){ return x.id === estimateId; });
-            if (!est || !est.layouts || !est.layouts.length) { el.innerHTML = ''; return; }
+            var est = (appData.estimates||[]).find(function(x){ return x.id===estimateId; });
+            if (!est||!est.layouts||!est.layouts.length) { el.innerHTML=''; return; }
             el.innerHTML = est.layouts.map(function(lid) {
-                var l = (appData.layouts||[]).find(function(x){ return x.id === lid; });
+                var l = (appData.layouts||[]).find(function(x){ return x.id===lid; });
                 if (!l) return '';
                 return '<div style="position:relative;"><img src="' + l.dataUrl + '" style="height:52px;width:84px;object-fit:cover;border-radius:6px;border:2px solid #fed7c5;" title="' + l.name + '">' +
                     '<button onclick="removeLayoutFromDoc(\'estimate\',\'' + estimateId + '\',\'' + lid + '\')" style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:9px;cursor:pointer;line-height:16px;padding:0;">×</button></div>';
@@ -6628,26 +6761,255 @@
         }
 
         function removeLayoutFromDoc(docType, docId, lid) {
-            if (docType === 'contract') {
-                var c = (appData.contracts||[]).find(function(x){ return x.id === docId; });
-                if (c) c.layouts = (c.layouts||[]).filter(function(id){ return id !== lid; });
+            if (docType==='contract') {
+                var c = (appData.contracts||[]).find(function(x){ return x.id===docId; });
+                if (c) c.layouts=(c.layouts||[]).filter(function(id){ return id!==lid; });
                 saveData(); updateContractLayoutThumbs(docId);
             } else {
-                var est = (appData.estimates||[]).find(function(x){ return x.id === docId; });
-                if (est) est.layouts = (est.layouts||[]).filter(function(id){ return id !== lid; });
+                var est = (appData.estimates||[]).find(function(x){ return x.id===docId; });
+                if (est) est.layouts=(est.layouts||[]).filter(function(id){ return id!==lid; });
                 saveData(); updateEstLayoutThumbs(docId);
             }
         }
 
         function buildLayoutsHtml(docLayouts) {
-            if (!docLayouts || !docLayouts.length) return '';
+            if (!docLayouts||!docLayouts.length) return '';
             var imgs = docLayouts.map(function(lid) {
-                var l = (appData.layouts||[]).find(function(x){ return x.id === lid; });
+                var l = (appData.layouts||[]).find(function(x){ return x.id===lid; });
                 if (!l) return '';
                 return '<div style="margin:6px 0;"><img src="' + l.dataUrl + '" alt="Layout: ' + l.name + '" style="max-width:100%;border-radius:10px;border:2px solid #e5e5e5;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#94a3b8;margin:3px 0 0;">' + l.name + '</p></div>';
             }).filter(Boolean).join('');
             if (!imgs) return '';
             return '<div style="margin-top:16px;padding:16px;background:#f8f9fb;border-radius:10px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:#ff6b35;margin:0 0 10px;">📐 Job Layout / Sketch</p>' + imgs + '</div>';
+        }
+
+        // ── Qty Calculator — Property Drawing Mode ─────────────────────────
+        var _qtyDrawPoints  = [];   // [{x,y}] canvas pixels
+        var _qtyDrawGates   = [];   // segment indices that are gates (0 = seg between pt0→pt1)
+        var _qtyDrawActive  = false;
+        var _qtyDrawClosed  = false;
+        var _qtyDrawHover   = null; // {x,y} live mouse
+        var _qtyDC          = null; // canvas element
+        var _qtyDCtx        = null;
+        var GRID            = 40;   // px per grid square
+
+        function toggleQtyDraw() {
+            _qtyDrawActive = !_qtyDrawActive;
+            var panel = document.getElementById('qtyDrawPanel');
+            var btn   = document.getElementById('qtyDrawToggle');
+            if (_qtyDrawActive) {
+                panel.style.display = 'block';
+                btn.textContent = 'Hide Drawing';
+                btn.className = 'btn-primary text-sm';
+                initQtyDrawCanvas();
+            } else {
+                panel.style.display = 'none';
+                btn.textContent = 'Enable Drawing';
+                btn.className = 'btn-secondary text-sm';
+            }
+        }
+
+        function initQtyDrawCanvas() {
+            _qtyDC = document.getElementById('qtyDrawCanvas');
+            if (!_qtyDC) return;
+            var wrap = document.getElementById('qtyDrawWrap');
+            var w = wrap ? wrap.offsetWidth : 500;
+            _qtyDC.width  = w;
+            _qtyDC.height = Math.round(w * 0.55);
+            _qtyDCtx = _qtyDC.getContext('2d');
+            qtyDrawRedraw();
+            _qtyDC.onclick = function(e){ if(_qtyDrawClosed) return; var p=_qtyDrawGetPos(e); qtyDrawAddPoint(p.x,p.y); };
+            _qtyDC.oncontextmenu = function(e){ e.preventDefault(); qtyDrawGate(); };
+            _qtyDC.onmousemove = function(e){ var p=_qtyDrawGetPos(e); _qtyDrawHover={x:p.x,y:p.y}; qtyDrawRedraw(); };
+            _qtyDC.onmouseleave = function(){ _qtyDrawHover=null; qtyDrawRedraw(); };
+        }
+
+        function _qtyDrawGetPos(e) {
+            var r = _qtyDC.getBoundingClientRect();
+            return {
+                x: Math.round(((e.clientX - r.left) * (_qtyDC.width/r.width)) / GRID) * GRID,
+                y: Math.round(((e.clientY - r.top)  * (_qtyDC.height/r.height)) / GRID) * GRID
+            };
+        }
+
+        function qtyDrawAddPoint(x, y) {
+            // Snap to grid already done in _qtyDrawGetPos
+            _qtyDrawPoints.push({x:x,y:y});
+            qtyDrawRedraw();
+            _updateQtyDrawStatus();
+        }
+
+        function qtyDrawClose() {
+            if (_qtyDrawPoints.length < 3) { toast('Need at least 3 points to close a shape'); return; }
+            _qtyDrawClosed = true;
+            qtyDrawRedraw();
+            _qtyDrawPushToMeasurements();
+            _updateQtyDrawStatus();
+        }
+
+        function qtyDrawUndo() {
+            if (!_qtyDrawPoints.length) return;
+            _qtyDrawPoints.pop();
+            _qtyDrawClosed = false;
+            // also remove any gate on the now-removed last segment
+            var last = _qtyDrawPoints.length;
+            _qtyDrawGates = _qtyDrawGates.filter(function(g){ return g < last; });
+            qtyDrawRedraw();
+            _updateQtyDrawStatus();
+        }
+
+        function qtyDrawReset() {
+            _qtyDrawPoints = []; _qtyDrawGates = []; _qtyDrawClosed = false; _qtyDrawHover = null;
+            qtyDrawRedraw();
+            _updateQtyDrawStatus();
+            // Clear the side inputs too
+            qtySides = [{id:1,label:'Side A',ft:''},{id:2,label:'Side B',ft:''},{id:3,label:'Side C',ft:''},{id:4,label:'Side D',ft:''}];
+            renderQtySides();
+        }
+
+        function qtyDrawGate() {
+            var n = _qtyDrawPoints.length;
+            if (n < 2) { toast('Add at least 2 points first, then mark the last segment as a gate'); return; }
+            var segIdx = n - 2; // last drawn segment
+            if (_qtyDrawGates.indexOf(segIdx) === -1) {
+                _qtyDrawGates.push(segIdx);
+                toast('🚪 Gate marked on last segment');
+            } else {
+                _qtyDrawGates = _qtyDrawGates.filter(function(g){ return g !== segIdx; });
+                toast('Gate removed from last segment');
+            }
+            qtyDrawRedraw();
+        }
+
+        function qtyDrawRedraw() {
+            if (!_qtyDCtx || !_qtyDC) return;
+            var ctx = _qtyDCtx, W = _qtyDC.width, H = _qtyDC.height;
+            var scale = parseFloat((document.getElementById('qtyDrawScale')||{}).value||10)||10;
+
+            ctx.clearRect(0,0,W,H);
+
+            // Grid
+            ctx.save();
+            ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+            for (var gx=0; gx<=W; gx+=GRID){ ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke(); }
+            for (var gy=0; gy<=H; gy+=GRID){ ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke(); }
+            // Major grid (every 4 squares = label)
+            ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
+            for (var mx=0; mx<=W; mx+=GRID*4){ ctx.beginPath();ctx.moveTo(mx,0);ctx.lineTo(mx,H);ctx.stroke(); }
+            for (var my=0; my<=H; my+=GRID*4){ ctx.beginPath();ctx.moveTo(0,my);ctx.lineTo(W,my);ctx.stroke(); }
+            // Scale labels
+            ctx.fillStyle='#94a3b8'; ctx.font='10px Inter,Arial'; ctx.textAlign='left';
+            for (var lx=GRID*4; lx<W; lx+=GRID*4) ctx.fillText((lx/GRID*scale)+'ft', lx+2, 12);
+            for (var ly=GRID*4; ly<H; ly+=GRID*4) ctx.fillText((ly/GRID*scale)+'ft', 2, ly-2);
+            ctx.restore();
+
+            var pts = _qtyDrawPoints;
+            if (!pts.length) return;
+
+            // Draw segments
+            for (var i=0; i<pts.length-1; i++) {
+                var isGate = _qtyDrawGates.indexOf(i) !== -1;
+                _drawQtySeg(ctx, pts[i], pts[i+1], isGate, i, pts, scale);
+            }
+            // Closing segment
+            if (_qtyDrawClosed && pts.length >= 3) {
+                var lastSeg = pts.length - 1;
+                var isLastGate = _qtyDrawGates.indexOf(lastSeg) !== -1;
+                _drawQtySeg(ctx, pts[pts.length-1], pts[0], isLastGate, lastSeg, pts, scale);
+            }
+
+            // Preview line to hover
+            if (_qtyDrawHover && pts.length && !_qtyDrawClosed) {
+                ctx.save();
+                ctx.setLineDash([6,4]); ctx.strokeStyle='#94a3b8'; ctx.lineWidth=2;
+                ctx.beginPath(); ctx.moveTo(pts[pts.length-1].x, pts[pts.length-1].y);
+                ctx.lineTo(_qtyDrawHover.x, _qtyDrawHover.y); ctx.stroke();
+                ctx.restore();
+            }
+
+            // Draw points (corner posts)
+            pts.forEach(function(p, idx) {
+                ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, Math.PI*2);
+                ctx.fillStyle = idx===0 ? '#22c55e' : '#ff6b35';
+                ctx.fill();
+                ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+                // Label
+                ctx.fillStyle='#0f172a'; ctx.font='bold 10px Inter,Arial'; ctx.textAlign='center';
+                ctx.fillText(String.fromCharCode(65+idx), p.x, p.y+4);
+            });
+        }
+
+        function _drawQtySeg(ctx, p1, p2, isGate, segIdx, allPts, scale) {
+            ctx.save();
+            if (isGate) {
+                ctx.setLineDash([10,6]); ctx.strokeStyle='#22c55e'; ctx.lineWidth=3;
+            } else {
+                ctx.setLineDash([]); ctx.strokeStyle='#1e293b'; ctx.lineWidth=3;
+            }
+            ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();
+            ctx.restore();
+
+            // Mid-point dimension label
+            var mx=(p1.x+p2.x)/2, my=(p1.y+p2.y)/2;
+            var dx=p2.x-p1.x, dy=p2.y-p1.y;
+            var pxLen = Math.sqrt(dx*dx+dy*dy);
+            var ftLen = (pxLen/GRID*scale).toFixed(1);
+
+            // Offset label perpendicular to line
+            var nx=-dy/pxLen, ny=dx/pxLen; // normal
+            var lx=mx+nx*16, ly=my+ny*16;
+            ctx.save();
+            ctx.fillStyle=isGate?'#15803d':'#1e293b';
+            ctx.strokeStyle='#fff'; ctx.lineWidth=3;
+            ctx.font='bold 11px Inter,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.strokeText(ftLen+'ft'+(isGate?' 🚪':''), lx, ly);
+            ctx.fillText(ftLen+'ft'+(isGate?' 🚪':''), lx, ly);
+            ctx.restore();
+        }
+
+        function _qtyDrawPxToFt(pxLen) {
+            var scale = parseFloat((document.getElementById('qtyDrawScale')||{}).value||10)||10;
+            return pxLen / GRID * scale;
+        }
+
+        function _updateQtyDrawStatus() {
+            var el = document.getElementById('qtyDrawStatus');
+            if (!el) return;
+            var n = _qtyDrawPoints.length;
+            if (!n) { el.textContent='Click to place first point'; return; }
+            if (!_qtyDrawClosed) {
+                el.textContent = n + ' point' + (n===1?'':'s') + ' placed — ' + (n>=3 ? 'Close Shape when done' : 'keep clicking');
+            } else {
+                el.textContent = '✓ Shape closed — measurements sent to calculator above';
+            }
+        }
+
+        function _qtyDrawPushToMeasurements() {
+            // Compute segment lengths in ft, push to qtySides
+            var pts = _qtyDrawPoints;
+            if (pts.length < 2) return;
+            var labels = ['Side A','Side B','Side C','Side D','Side E','Side F','Side G','Side H','Side I','Side J'];
+            var segs = [];
+            for (var i=0;i<pts.length-1;i++) {
+                var dx=pts[i+1].x-pts[i].x, dy=pts[i+1].y-pts[i].y;
+                segs.push(_qtyDrawPxToFt(Math.sqrt(dx*dx+dy*dy)));
+            }
+            // Closing segment
+            if (_qtyDrawClosed) {
+                var dx2=pts[0].x-pts[pts.length-1].x, dy2=pts[0].y-pts[pts.length-1].y;
+                segs.push(_qtyDrawPxToFt(Math.sqrt(dx2*dx2+dy2*dy2)));
+            }
+            qtySides = segs.map(function(ft,i){
+                return {id:Date.now()+i, label:labels[i]||('Side '+(i+1)), ft:ft.toFixed(1)};
+            });
+
+            // Update gate count
+            var gateInput = document.getElementById('qtyGates');
+            if (gateInput) gateInput.value = _qtyDrawGates.length;
+
+            renderQtySides();
+            calcQty();
+            toast('✓ Measurements from drawing applied — scroll up to see results!');
         }
 
         // =============================================
