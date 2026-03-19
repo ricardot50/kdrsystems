@@ -2536,7 +2536,7 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -6850,7 +6850,8 @@
         var _qdGateW  = 4;        // ft
         var _qdSnap   = 'h45';    // 'free'|'h45'|'h90'
         var _qdCurRun = null;     // index of last-placed point in current run (null = start new)
-        var _qdMouse  = null;     // canvas px {x,y}
+        var _qdMouse    = null;     // canvas px {x,y} (angle+grid snapped for preview)
+        var _qdMouseRaw = null;     // raw canvas px (for snap highlight detection)
         var _QDG      = 30;       // grid px
 
         function toggleQtyDraw() {
@@ -6912,33 +6913,56 @@
                 return qdSnapAngle(raw);
             }
 
-            // click to place
+            // click to place — uses full snap hierarchy (endpoint > segment > grid)
             c.addEventListener('click', function(e){
                 e.preventDefault();
-                var p=pos(e);
-                // snap to nearby existing point?
-                var near=qdNearPoint(p, 22);
-                if(near!==null) {
-                    // connect to existing point and end run there
-                    if(_qdCurRun!==null && near!==_qdCurRun) {
-                        _qdSegs.push({a:_qdCurRun,b:near,isGate:_qdMode==='gate',gateW:_qdGateW});
-                        _qdCurRun=null; // run ends at junction
-                        if(_qdMode==='gate') qdSetMode('fence');
+                var rawPos = (function(){
+                    var r=c.getBoundingClientRect();
+                    var sx=c.width/r.width, sy=c.height/r.height;
+                    var cx2=e.clientX, cy2=e.clientY;
+                    return {x:(cx2-r.left)*sx, y:(cy2-r.top)*sy};
+                })();
+                var snap = qdFindSnap(rawPos);
+
+                if (snap.type === 'point') {
+                    // Connect run to existing point
+                    var nearIdx = snap.idx;
+                    if (_qdCurRun !== null && nearIdx !== _qdCurRun) {
+                        _qdSegs.push({a:_qdCurRun, b:nearIdx, isGate:_qdMode==='gate', gateW:_qdGateW});
+                        _qdCurRun = nearIdx; // stay active at junction — user can keep drawing
+                        if (_qdMode==='gate') qdSetMode('fence');
+                    } else if (_qdCurRun === null) {
+                        _qdCurRun = nearIdx; // start run from existing point
                     }
+                } else if (snap.type === 'seg') {
+                    // Click ON a segment — split it and connect there
+                    var newIdx = _qdPts.length;
+                    _qdPts.push(snap.pt);
+                    qdSplitSeg(snap.segIdx, newIdx);
+                    if (_qdCurRun !== null && _qdCurRun !== newIdx) {
+                        _qdSegs.push({a:_qdCurRun, b:newIdx, isGate:_qdMode==='gate', gateW:_qdGateW});
+                        if (_qdMode==='gate') qdSetMode('fence');
+                    }
+                    _qdCurRun = newIdx;
                 } else {
-                    var idx=_qdPts.length;
-                    _qdPts.push(p);
-                    if(_qdCurRun!==null) {
-                        _qdSegs.push({a:_qdCurRun,b:idx,isGate:_qdMode==='gate',gateW:_qdGateW});
-                        if(_qdMode==='gate') qdSetMode('fence');
+                    // Plain grid point
+                    var idx = _qdPts.length;
+                    _qdPts.push(snap.pt);
+                    if (_qdCurRun !== null) {
+                        _qdSegs.push({a:_qdCurRun, b:idx, isGate:_qdMode==='gate', gateW:_qdGateW});
+                        if (_qdMode==='gate') qdSetMode('fence');
                     }
-                    _qdCurRun=idx;
+                    _qdCurRun = idx;
                 }
                 qdRedraw();
                 qdUpdateCount();
             });
 
             c.addEventListener('mousemove', function(e){
+                // store raw for qdFindSnap highlights
+                var r2=c.getBoundingClientRect();
+                var sx2=c.width/r2.width, sy2=c.height/r2.height;
+                _qdMouseRaw={x:(e.clientX-r2.left)*sx2, y:(e.clientY-r2.top)*sy2};
                 _qdMouse=pos(e);
                 qdRedraw();
                 qdShowBubble(e);
@@ -6948,43 +6972,116 @@
             c.addEventListener('touchstart',function(e){e.preventDefault();},{passive:false});
             c.addEventListener('touchend',function(e){
                 e.preventDefault();
-                var p=pos(e.changedTouches?{clientX:e.changedTouches[0].clientX,clientY:e.changedTouches[0].clientY}:e);
-                var near=qdNearPoint(p,22);
-                if(near!==null) {
-                    if(_qdCurRun!==null && near!==_qdCurRun) {
-                        _qdSegs.push({a:_qdCurRun,b:near,isGate:_qdMode==='gate',gateW:_qdGateW});
-                        _qdCurRun=null;
+                var t=e.changedTouches[0];
+                var r3=c.getBoundingClientRect();
+                var rawT={x:(t.clientX-r3.left)*(c.width/r3.width), y:(t.clientY-r3.top)*(c.height/r3.height)};
+                var snap=qdFindSnap(rawT);
+                if(snap.type==='point') {
+                    var ni=snap.idx;
+                    if(_qdCurRun!==null && ni!==_qdCurRun) {
+                        _qdSegs.push({a:_qdCurRun,b:ni,isGate:_qdMode==='gate',gateW:_qdGateW});
+                        _qdCurRun=ni;
+                        if(_qdMode==='gate') qdSetMode('fence');
+                    } else if(_qdCurRun===null) { _qdCurRun=ni; }
+                } else if(snap.type==='seg') {
+                    var nIdx=_qdPts.length;
+                    _qdPts.push(snap.pt);
+                    qdSplitSeg(snap.segIdx, nIdx);
+                    if(_qdCurRun!==null && _qdCurRun!==nIdx) {
+                        _qdSegs.push({a:_qdCurRun,b:nIdx,isGate:_qdMode==='gate',gateW:_qdGateW});
                         if(_qdMode==='gate') qdSetMode('fence');
                     }
+                    _qdCurRun=nIdx;
                 } else {
                     var idx=_qdPts.length;
-                    _qdPts.push(p);
+                    _qdPts.push(snap.pt);
                     if(_qdCurRun!==null) {
                         _qdSegs.push({a:_qdCurRun,b:idx,isGate:_qdMode==='gate',gateW:_qdGateW});
                         if(_qdMode==='gate') qdSetMode('fence');
                     }
                     _qdCurRun=idx;
                 }
-                qdRedraw();
-                qdUpdateCount();
+                qdRedraw(); qdUpdateCount();
             },{passive:false});
         }
 
-        // Snap mouse pos to angle multiples from last point
-        function qdSnapAngle(raw) {
-            if(_qdCurRun===null||_qdSnap==='free') return raw;
-            var origin=_qdPts[_qdCurRun];
-            if(!origin) return raw;
-            var dx=raw.x-origin.x, dy=raw.y-origin.y;
-            var len=Math.sqrt(dx*dx+dy*dy);
-            if(len<2) return raw;
-            var ang=Math.atan2(dy,dx);
-            var step=_qdSnap==='h90'?(Math.PI/2):(Math.PI/4);
-            var snapped=Math.round(ang/step)*step;
-            return {x:origin.x+Math.cos(snapped)*len, y:origin.y+Math.sin(snapped)*len};
+        // ── GRID SNAP: always snap to nearest grid intersection first ──────────
+        function qdGridSnap(raw) {
+            return { x: Math.round(raw.x / _QDG) * _QDG,
+                     y: Math.round(raw.y / _QDG) * _QDG };
         }
 
-        // Returns point index if within threshold px, else null
+        // ── ANGLE SNAP on top of grid snap (from origin point) ───────────────
+        // After angle-snapping, re-snap to the nearest grid point ON that ray
+        function qdSnapAngle(raw) {
+            // Always grid-snap first for whole-number footage
+            var g = qdGridSnap(raw);
+            if (_qdCurRun === null || _qdSnap === 'free') return g;
+            var origin = _qdPts[_qdCurRun];
+            if (!origin) return g;
+            var dx = g.x - origin.x, dy = g.y - origin.y;
+            var len = Math.sqrt(dx*dx + dy*dy);
+            if (len < 2) return g;
+            var ang = Math.atan2(dy, dx);
+            var step = _qdSnap === 'h90' ? (Math.PI/2) : (Math.PI/4);
+            var snappedAng = Math.round(ang / step) * step;
+            // Project onto snapped angle, then re-grid-snap that endpoint
+            var ex = origin.x + Math.cos(snappedAng) * len;
+            var ey = origin.y + Math.sin(snappedAng) * len;
+            return { x: Math.round(ex / _QDG) * _QDG,
+                     y: Math.round(ey / _QDG) * _QDG };
+        }
+
+        // ── SNAP HIERARCHY ────────────────────────────────────────────────────
+        // Priority: 1) nearby endpoint  2) nearby mid-segment point  3) grid
+        // Returns {type:'point'|'seg'|'grid', idx, pt:{x,y}}
+        function qdFindSnap(raw) {
+            var g = qdGridSnap(raw);
+
+            // 1. Existing endpoint within 20px
+            var bestPt = null, bestPtD = 20*20;
+            _qdPts.forEach(function(pt, i) {
+                var d = (pt.x-raw.x)*(pt.x-raw.x) + (pt.y-raw.y)*(pt.y-raw.y);
+                if (d < bestPtD) { bestPtD = d; bestPt = i; }
+            });
+            if (bestPt !== null) return { type:'point', idx:bestPt, pt:_qdPts[bestPt] };
+
+            // 2. Point on any existing segment within 14px
+            var THRESH = 14;
+            for (var si = 0; si < _qdSegs.length; si++) {
+                var s = _qdSegs[si];
+                var a = _qdPts[s.a], b = _qdPts[s.b];
+                if (!a || !b) continue;
+                var sdx = b.x-a.x, sdy = b.y-a.y, slen2 = sdx*sdx+sdy*sdy;
+                if (slen2 < 1) continue;
+                var t = ((raw.x-a.x)*sdx + (raw.y-a.y)*sdy) / slen2;
+                t = Math.max(0.05, Math.min(0.95, t)); // avoid snapping exactly to endpoints
+                var proj = { x: a.x + t*sdx, y: a.y + t*sdy };
+                var d = (proj.x-raw.x)*(proj.x-raw.x) + (proj.y-raw.y)*(proj.y-raw.y);
+                if (d < THRESH*THRESH) {
+                    // Grid-snap the projection point for clean numbers
+                    var snappedProj = qdGridSnap(proj);
+                    return { type:'seg', segIdx:si, t:t, pt:snappedProj };
+                }
+            }
+
+            // 3. Grid
+            return { type:'grid', pt: g };
+        }
+
+        // ── SPLIT a segment at a new midpoint index ───────────────────────────
+        function qdSplitSeg(segIdx, newPtIdx) {
+            var s = _qdSegs[segIdx];
+            var origA = s.a, origB = s.b;
+            var wasGate = s.isGate, gw = s.gateW;
+            // Remove original segment
+            _qdSegs.splice(segIdx, 1);
+            // Insert two new segments
+            _qdSegs.push({ a:origA, b:newPtIdx, isGate:wasGate, gateW:gw });
+            _qdSegs.push({ a:newPtIdx, b:origB, isGate:wasGate, gateW:gw });
+        }
+
+        // Returns point index if within threshold px, else null (legacy, kept for touch)
         function qdNearPoint(p, thresh) {
             var best=null, bd=thresh*thresh;
             _qdPts.forEach(function(pt,i){
@@ -7146,6 +7243,27 @@
                 }
             }
 
+            // ── Segment hover highlight (when mouse is near a segment but not endpoint) ──
+            if (_qdMouseRaw) {
+                var hsnap = qdFindSnap(_qdMouseRaw);
+                if (hsnap.type === 'seg') {
+                    var hs = _qdSegs[hsnap.segIdx];
+                    var ha = _qdPts[hs.a], hb = _qdPts[hs.b];
+                    if (ha && hb) {
+                        ctx.save();
+                        ctx.strokeStyle='#f59e0b'; ctx.lineWidth=9; ctx.globalAlpha=0.35; ctx.lineCap='round';
+                        ctx.beginPath(); ctx.moveTo(ha.x,ha.y); ctx.lineTo(hb.x,hb.y); ctx.stroke();
+                        ctx.restore();
+                        // Show snap dot on the line
+                        ctx.beginPath(); ctx.arc(hsnap.pt.x, hsnap.pt.y, 7, 0, Math.PI*2);
+                        ctx.fillStyle='#f59e0b'; ctx.fill();
+                        ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+                        ctx.fillStyle='#92400e'; ctx.font='bold 8px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                        ctx.fillText('T', hsnap.pt.x, hsnap.pt.y);
+                    }
+                }
+            }
+
             // ── Points ──
             _qdPts.forEach(function(p,i){
                 var type=qdPointType(i);
@@ -7153,13 +7271,17 @@
                 var color=type==='end'?'#3b82f6':type==='corner'?'#ff6b35':'#94a3b8';
                 if(isCur) color='#ff6b35';
 
-                // snap ring highlight when mouse is near
-                if(_qdMouse){
-                    var dd=(p.x-_qdMouse.x)*(p.x-_qdMouse.x)+(p.y-_qdMouse.y)*(p.y-_qdMouse.y);
+                // snap ring highlight — use raw mouse for accuracy
+                var _mchk = _qdMouseRaw || _qdMouse;
+                if(_mchk){
+                    var dd=(p.x-_mchk.x)*(p.x-_mchk.x)+(p.y-_mchk.y)*(p.y-_mchk.y);
                     if(dd<22*22){
-                        ctx.beginPath(); ctx.arc(p.x,p.y,13,0,Math.PI*2);
-                        ctx.strokeStyle='#ff6b35'; ctx.lineWidth=2;
-                        ctx.setLineDash([3,3]); ctx.stroke(); ctx.setLineDash([]);
+                        ctx.beginPath(); ctx.arc(p.x,p.y,14,0,Math.PI*2);
+                        ctx.strokeStyle='#ff6b35'; ctx.lineWidth=2.5;
+                        ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
+                        // label: "click to connect"
+                        ctx.fillStyle='#ff6b35'; ctx.font='bold 9px Arial'; ctx.textAlign='center'; ctx.textBaseline='top';
+                        ctx.fillText('SNAP',p.x,p.y+16);
                     }
                 }
 
