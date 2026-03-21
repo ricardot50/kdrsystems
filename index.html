@@ -1273,74 +1273,82 @@
 
                         <!-- Draw Mode toggle -->
                         <div class="card" style="border:2px solid #ff6b35;">
-                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
                                 <div>
                                     <h3 class="font-bold text-base">🖊️ Draw Property Layout</h3>
-                                    <p class="text-xs text-gray-700 mt-1">Click to place posts — the tool draws the fence between them and counts everything for you</p>
+                                    <p class="text-xs text-gray-700 mt-1">Place posts, drag them anywhere, connect runs, add gates</p>
                                 </div>
                                 <button id="qtyDrawToggle" onclick="toggleQtyDraw()" class="btn-secondary text-sm">Open Drawing</button>
                             </div>
+
                             <div id="qtyDrawPanel" style="display:none;margin-top:12px;">
 
-                                <!-- Instructions -->
-                                <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:12px;color:#166534;line-height:1.6;">
-                                    <strong>How it works:</strong>
-                                    1️⃣ Click anywhere on the canvas to place your first post. &nbsp;
-                                    2️⃣ Keep clicking — each click places a post and draws fence to the last one. &nbsp;
-                                    3️⃣ Click near an existing post (yellow ring) to snap &amp; connect. &nbsp;
-                                    4️⃣ Switch to <strong>🚪 Gate</strong> mode before clicking to make that segment a gate. &nbsp;
-                                    5️⃣ Hit <strong>New Run</strong> to start a separate fence run anywhere.
-                                </div>
-
-                                <!-- Toolbar -->
+                                <!-- Mode + Gate row -->
                                 <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px;">
                                     <div style="display:flex;gap:0;border:2px solid #e2e8f0;border-radius:8px;overflow:hidden;">
-                                        <button id="qdMode-fence" onclick="qdSetMode('fence')" style="padding:8px 14px;font-size:12px;font-weight:700;border:none;background:#1e293b;color:#fff;cursor:pointer;">🏗 Fence</button>
-                                        <button id="qdMode-gate"  onclick="qdSetMode('gate')"  style="padding:8px 14px;font-size:12px;font-weight:700;border:none;background:#f8f9fb;color:#475569;cursor:pointer;">🚪 Gate</button>
+                                        <button id="qdMode-draw" onclick="qdSetMode('draw')" style="padding:8px 14px;font-size:12px;font-weight:700;border:none;background:#1e293b;color:#fff;cursor:pointer;">✏️ Draw</button>
+                                        <button id="qdMode-move" onclick="qdSetMode('move')" style="padding:8px 14px;font-size:12px;font-weight:700;border:none;background:#f8f9fb;color:#475569;cursor:pointer;">✋ Move</button>
+                                        <button id="qdMode-gate" onclick="qdSetMode('gate')" style="padding:8px 14px;font-size:12px;font-weight:700;border:none;background:#f8f9fb;color:#475569;cursor:pointer;">🚪 Gate</button>
                                     </div>
-                                    <div id="qdGateWrap" style="display:none;gap:4px;align-items:center;">
+                                    <div id="qdGateWrap" style="display:none;gap:6px;align-items:center;">
                                         <span style="font-size:11px;color:#475569;font-weight:700;">Opening:</span>
-                                        <div style="display:flex;gap:2px;" id="qdGWBtns">
-                                            <button onclick="qdSetGateW(4)"  id="qdGW4"  class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#22c55e;color:#fff;cursor:pointer;">4ft</button>
-                                            <button onclick="qdSetGateW(5)"  id="qdGW5"  class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#475569;cursor:pointer;">5ft</button>
-                                            <button onclick="qdSetGateW(6)"  id="qdGW6"  class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#475569;cursor:pointer;">6ft</button>
-                                            <button onclick="qdSetGateW(10)" id="qdGW10" class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#475569;cursor:pointer;">10ft</button>
-                                            <button onclick="qdSetGateW(12)" id="qdGW12" class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#475569;cursor:pointer;">12ft</button>
-                                        </div>
+                                        <button onclick="qdSetGateW(4)"  id="qdGW4"  class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#22c55e;color:#fff;cursor:pointer;">4ft</button>
+                                        <button onclick="qdSetGateW(5)"  id="qdGW5"  class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#475569;cursor:pointer;">5ft</button>
+                                        <button onclick="qdSetGateW(6)"  id="qdGW6"  class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#475569;cursor:pointer;">6ft</button>
+                                        <button onclick="qdSetGateW(10)" id="qdGW10" class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#475569;cursor:pointer;">10ft</button>
+                                        <button onclick="qdSetGateW(12)" id="qdGW12" class="qdgwbtn" style="padding:4px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#475569;cursor:pointer;">12ft</button>
                                     </div>
-                                    <div style="display:flex;gap:4px;align-items:center;margin-left:auto;">
-                                        <button onclick="qdNewRun()" class="btn-secondary text-xs" style="padding:6px 10px;">✂️ New Run</button>
+                                    <div style="display:flex;gap:4px;margin-left:auto;">
+                                        <button onclick="qdNewRun()" class="btn-secondary text-xs" style="padding:6px 10px;" title="Break chain — start placing a new disconnected run">✂️ New Run</button>
                                         <button onclick="qdUndo()"   class="btn-secondary text-xs" style="padding:6px 10px;">↩ Undo</button>
                                         <button onclick="qdClear()"  class="btn-secondary text-xs" style="padding:6px 10px;">🗑 Clear</button>
                                     </div>
                                 </div>
 
-                                <!-- Snap + Scale row -->
+                                <!-- Scale + snap row -->
                                 <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;">
-                                    <span style="font-size:11px;color:#94a3b8;font-weight:700;">LINE SNAP:</span>
-                                    <div style="display:flex;gap:3px;">
-                                        <button onclick="qdSetSnap('free')" id="qdSnap-free" style="padding:3px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#fff;color:#475569;">Free</button>
-                                        <button onclick="qdSetSnap('h45')"  id="qdSnap-h45"  style="padding:3px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#ff6b35;color:#fff;">45°</button>
-                                        <button onclick="qdSetSnap('h90')"  id="qdSnap-h90"  style="padding:3px 9px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#fff;color:#475569;">90° only</button>
+                                    <span style="font-size:11px;font-weight:700;color:#64748b;">SCALE</span>
+                                    <div style="display:flex;gap:2px;">
+                                        <button onclick="qdSetScale(5)"   id="qdSc5"   class="qdscbtn" style="padding:3px 8px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#fff;color:#475569;">5ft/sq</button>
+                                        <button onclick="qdSetScale(10)"  id="qdSc10"  class="qdscbtn" style="padding:3px 8px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#ff6b35;color:#fff;">10ft/sq</button>
+                                        <button onclick="qdSetScale(20)"  id="qdSc20"  class="qdscbtn" style="padding:3px 8px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#fff;color:#475569;">20ft/sq</button>
+                                        <button onclick="qdSetScale(50)"  id="qdSc50"  class="qdscbtn" style="padding:3px 8px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#fff;color:#475569;">50ft/sq</button>
                                     </div>
                                     <span style="font-size:11px;color:#94a3b8;">|</span>
-                                    <span style="font-size:11px;color:#94a3b8;font-weight:700;">SCALE:</span>
-                                    <input type="number" id="qdScale" value="10" min="1" max="500" step="1"
-                                        style="width:54px;padding:3px 7px;font-size:12px;border-radius:5px;border:1px solid #e2e8f0;"
-                                        oninput="qdRedraw()">
-                                    <span style="font-size:11px;color:#94a3b8;">ft per square</span>
+                                    <span style="font-size:11px;font-weight:700;color:#64748b;">SNAP</span>
+                                    <div style="display:flex;gap:2px;">
+                                        <button onclick="qdSetSnap('off')" id="qdSn-off" class="qdsnbtn" style="padding:3px 8px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#fff;color:#475569;">Off</button>
+                                        <button onclick="qdSetSnap('90')"  id="qdSn-90"  class="qdsnbtn" style="padding:3px 8px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#ff6b35;color:#fff;">90°</button>
+                                        <button onclick="qdSetSnap('45')"  id="qdSn-45"  class="qdsnbtn" style="padding:3px 8px;font-size:11px;font-weight:700;border:1px solid #e2e8f0;border-radius:5px;cursor:pointer;background:#fff;color:#475569;">45°</button>
+                                    </div>
+                                </div>
+
+                                <!-- Instructions tip -->
+                                <div id="qdTip" style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:7px;padding:8px 12px;margin-bottom:8px;font-size:11px;color:#0369a1;line-height:1.6;">
+                                    <strong>✏️ Draw:</strong> Click to place a post — each click adds to current run. Click near an existing post (ring) to connect. &nbsp;
+                                    <strong>✋ Move:</strong> Drag any post to reposition it — all lines follow. &nbsp;
+                                    <strong>🚪 Gate:</strong> Pick a width then click two spots for gate opening. &nbsp;
+                                    <strong>✂️ New Run:</strong> Break the chain to start a separate fence run anywhere.
                                 </div>
 
                                 <!-- Canvas -->
-                                <div style="position:relative;background:#fafafa;border:2px solid #cbd5e1;border-radius:10px;overflow:hidden;user-select:none;" id="qdWrap">
+                                <div style="position:relative;background:#f9fafb;border:2px solid #cbd5e1;border-radius:10px;overflow:hidden;user-select:none;" id="qdWrap">
                                     <canvas id="qdCanvas" style="display:block;width:100%;cursor:crosshair;touch-action:none;"></canvas>
-                                    <div id="qdBubble" style="display:none;position:absolute;background:#0f172a;color:#ff6b35;font-size:13px;font-weight:800;padding:5px 12px;border-radius:20px;pointer-events:none;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.35);z-index:10;"></div>
+                                    <div id="qdBubble" style="display:none;position:absolute;background:#0f172a;color:#ff6b35;font-size:13px;font-weight:800;padding:5px 13px;border-radius:20px;pointer-events:none;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.3);z-index:10;"></div>
+                                    <!-- Zoom controls -->
+                                    <div style="position:absolute;bottom:10px;right:10px;display:flex;flex-direction:column;gap:4px;z-index:5;">
+                                        <button onclick="qdZoomIn()" style="width:32px;height:32px;background:#fff;border:1px solid #cbd5e1;border-radius:6px;font-size:18px;font-weight:700;cursor:pointer;color:#1e293b;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,0.12);">+</button>
+                                        <button onclick="qdZoomOut()" style="width:32px;height:32px;background:#fff;border:1px solid #cbd5e1;border-radius:6px;font-size:18px;font-weight:700;cursor:pointer;color:#1e293b;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,0.12);">−</button>
+                                        <button onclick="qdResetView()" title="Fit to screen" style="width:32px;height:32px;background:#fff;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;cursor:pointer;color:#1e293b;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,0.12);">⊡</button>
+                                    </div>
+                                    <!-- Pan hint -->
+                                    <div style="position:absolute;top:8px;right:10px;font-size:10px;color:#94a3b8;background:rgba(255,255,255,0.85);padding:2px 7px;border-radius:10px;">Scroll=zoom · Space+drag=pan · 2-finger=pan</div>
                                 </div>
 
-                                <!-- Live count bar -->
+                                <!-- Live count boxes -->
                                 <div id="qdCountBar" style="display:none;margin-top:10px;">
                                     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#ff6b35;margin-bottom:6px;">Live Material Count</div>
-                                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;" id="qdCountGrid"></div>
+                                    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:6px;" id="qdCountGrid"></div>
                                 </div>
 
                                 <!-- Status + Apply -->
@@ -1348,9 +1356,10 @@
                                     <div style="font-size:12px;color:#64748b;" id="qdStatus">Click on the canvas to place your first post.</div>
                                     <button onclick="qdApply()" class="btn-primary" style="padding:10px 18px;font-size:13px;">✅ Send to Calculator</button>
                                 </div>
-
                             </div>
                         </div>
+
+
 
                                                 <button class="btn-primary w-full" onclick="calcQty()" style="font-size:15px;padding:14px;">🔢 Calculate Materials</button>
                     </div>
@@ -2536,7 +2545,7 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-       const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -3023,6 +3032,7 @@
                     '</div>' +
                     (est.notes ? '<div style="margin-top:24px;padding:16px;background:#f9f9f9;border-left:4px solid #ff6b35;border-radius:4px;"><p style="margin:0;font-size:14px;color:#333;"><strong>Notes:</strong> ' + est.notes + '</p></div>' : '') +
                     (est.terms ? '<div style="margin-top:16px;padding:16px;border:1px solid #eee;border-radius:8px;"><p style="font-size:13px;font-weight:700;color:#222;margin:0 0 6px;text-transform:uppercase;">Terms & Conditions</p><p style="font-size:12px;color:#333;margin:0;white-space:pre-wrap;">' + est.terms + '</p></div>' : '') +
+                    (est.layoutImages && est.layoutImages.length ? '<div style="margin-top:24px;padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:#ff6b35;margin:0 0 12px;">📐 Job Layout / Sketch</p>' + est.layoutImages.map(function(l){return '<div style="margin-bottom:10px;"><img src="'+l.dataUrl+'" alt="Layout" style="max-width:100%;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#999;margin:4px 0 0;">'+l.name+'</p></div>';}).join('') + '</div>' : '') +
                     signSection +
                     // Footer
                     '<div style="margin-top:30px;padding-top:20px;border-top:1px solid #eee;text-align:center;">' +
@@ -4554,7 +4564,58 @@
         // Estimates
         var estServices = []; // Array of service objects for current estimate
 
+        // Open the FULL estimate form pre-filled for editing an existing estimate
+        function openEditEstimateModal(id) {
+            if (!doc) return;
+
+            // Reset and open modal first
+            document.getElementById('estimateForm').reset();
+            estServices = [];
+            currentEstPhotos = doc.photos ? doc.photos.slice() : [];
+
+            // Pre-fill fields
+            populateCustomerSelect('estCustomer');
+            document.getElementById('estCustomer').value = doc.customerId || '';
+            document.getElementById('estDate').value = doc.date || new Date().toISOString().split('T')[0];
+            document.getElementById('estNotes').value = doc.notes || '';
+
+            // Restore services from saved data
+            if (doc.services && doc.services.length) {
+                estServices = JSON.parse(JSON.stringify(doc.services));
+            } else if (doc.ownerLineItems && doc.ownerLineItems.length) {
+                // Fall back to owner line items as custom services
+                estServices = doc.ownerLineItems.map(function(li){
+                    return { type:'custom', description:li.description, qty:parseFloat(li.quantity)||1, rate:parseFloat(li.rate)||0, markup:parseFloat(li.markup)||0 };
+                });
+            } else {
+                estServices = doc.lineItems.map(function(li){
+                    return { type:'custom', description:li.description, qty:parseFloat(li.quantity)||1, rate:parseFloat(li.rate)||0, markup:0 };
+                });
+            }
+
+            // Restore labor if present
+            var laborLine = (doc.ownerLineItems||doc.lineItems||[]).find(function(li){return li._laborHrs;});
+            if (laborLine) {
+                document.getElementById('estLaborHours').value = laborLine._laborHrs || '';
+                document.getElementById('estLaborRate').value  = laborLine._laborRate || '';
+            }
+
+            // Restore photos preview
+            renderEstPhotoPreview();
+            populateTemplateSelect();
+            populateTermsSelect();
+
+            // Store the ID we're editing so save replaces instead of adding new
+            document.getElementById('estEditId').value = id;
+
+            // Render services
+            renderEstimateServices();
+            calculateEstimate();
+            openModal('estimateModal');
+        }
+
         function openEstimateModal() {
+            document.getElementById('estEditId').value = ''; // clear any pending edit
             document.getElementById('estimateForm').reset();
             estServices = [];
             var container = document.getElementById('estimateServices');
@@ -4867,7 +4928,31 @@
                 photos: currentEstPhotos.slice()
             };
             
-            appData.estimates.push(estimate);
+            // Check if editing existing
+            var editId = document.getElementById('estEditId').value;
+            if (editId) {
+                var existingIdx = appData.estimates.findIndex(function(e){return e.id===editId;});
+                if (existingIdx>=0) {
+                    // Preserve existing fields not in the form
+                    var existing = appData.estimates[existingIdx];
+                    estimate.id = editId;
+                    estimate.status = existing.status || 'pending';
+                    estimate.sentDate = existing.sentDate || null;
+                    estimate.signToken = existing.signToken || null;
+                    estimate.signature = existing.signature || null;
+                    estimate.signedBy = existing.signedBy || null;
+                    estimate.signedDate = existing.signedDate || null;
+                    estimate.layouts = existing.layouts || [];
+                    estimate.activity = existing.activity || [];
+                    appData.estimates[existingIdx] = estimate;
+                    toast('Estimate updated ✓');
+                } else {
+                    appData.estimates.push(estimate);
+                }
+                document.getElementById('estEditId').value = '';
+            } else {
+                appData.estimates.push(estimate);
+            }
             saveData();
             this.reset();
             estServices = [];
@@ -5108,6 +5193,14 @@
 
             // For estimates: create public document for signing, then send
             if (doc.type === 'estimate') {
+                // Resolve layout image data urls to embed in the public doc
+                var layoutImages = [];
+                if (doc.layouts && doc.layouts.length) {
+                    doc.layouts.forEach(function(lid) {
+                        var lay = (appData.layouts||[]).find(function(x){return x.id===lid;});
+                        if (lay && lay.dataUrl) layoutImages.push({name:lay.name, dataUrl:lay.dataUrl});
+                    });
+                }
                 var pubDoc = {
                     id: doc.id,
                     ownerId: currentUserId,
@@ -5125,6 +5218,7 @@
                     total: doc.total,
                     notes: doc.notes || '',
                     terms: doc.terms || '',
+                    layoutImages: layoutImages,
                     status: 'sent',
                     signature: null,
                     signedBy: null,
@@ -5360,7 +5454,7 @@
                     '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid #f1f5f9;">' +
                         '<button class="btn-secondary" onclick="refreshEstimate(\'' + doc.id + '\')">🔄 Refresh</button>' +
                         (!doc.signature ? '<button class="btn-primary" onclick="openSignatureModal(\'' + doc.id + '\')">✍️ Approve &amp; Sign</button>' : '') +
-                        '<button class="btn-secondary" onclick="editDocument(\'' + doc.id + '\', \'estimate\'); closeModal(\'invoiceViewModal\');">✏️ Edit</button>' +
+                        '<button class="btn-secondary" onclick="openEditEstimateModal(\'' + doc.id + '\'); closeModal(\'invoiceViewModal\');">✏️ Edit</button>' +
                         '<button class="btn-secondary" onclick="sendDocument(\'' + doc.id + '\')">📧 Send</button>' +
                         '<button class="btn-secondary" onclick="convertToInvoice(\'' + doc.id + '\'); closeModal(\'invoiceViewModal\');">→ Invoice</button>' +
                         '<button class="btn-secondary" onclick="closeModal(\'invoiceViewModal\')">Close</button>' +
@@ -6830,53 +6924,51 @@
         }
 
         // ── Fence Layout Drawing Tool ─────────────────────────────────────────────
-        //
-        //  State: _qdPts (all placed points), _qdSegs (all segments),
-        //         _qdCurRun (index of "current" start point for next segment)
-        //
-        //  A point has: {x, y}
-        //  A segment has: {a, b, isGate, gateW}  where a,b are point indices
-        //
-        //  Post classification:
-        //    End post    – point touched by exactly 1 segment
-        //    Corner post – point touched by 2+ segments, any angle change
-        //    Line post   – intermediate posts between two structural posts (end/corner)
-        //                  count = ceil(segFt / span) - 1  per segment
-        //    Gate post   – 2 per gate segment (the gate frames)
+        var _qdPts    = [];      // [{x,y}] in canvas px
+        var _qdSegs   = [];      // [{a,b,isGate,gateW}]  a,b = point indices
+        var _qdMode   = 'draw';  // 'draw'|'move'|'gate'
+        var _qdGateW  = 4;
+        var _qdSnap   = '90';
+        var _qdScale  = 10;      // ft per grid square (QD_GRID px)
+        var _qdCurRun = null;    // index of last placed point (draw chain)
+        var _qdMouse  = null;    // canvas coords of mouse (for preview)
+        var _qdDragPt = null;    // index of point being dragged (move mode)
+        var QD_GRID   = 28;      // px per grid square — visual grid only, no snapping
+        var _qdPan    = {x:0,y:0}; // pan offset in canvas px
+        var _qdZoom   = 1;          // zoom level
+        var _qdPanning= false;      // middle-mouse/space pan in progress
+        var _qdPanStart=null;
 
-        var _qdPts    = [];       // [{x,y}]
-        var _qdSegs   = [];       // [{a,b,isGate,gateW}]
-        var _qdMode   = 'fence';  // 'fence'|'gate'
-        var _qdGateW  = 4;        // ft
-        var _qdSnap   = 'h45';    // 'free'|'h45'|'h90'
-        var _qdCurRun = null;     // index of last-placed point in current run (null = start new)
-        var _qdMouse    = null;     // canvas px {x,y} (angle+grid snapped for preview)
-        var _qdMouseRaw = null;     // raw canvas px (for snap highlight detection)
-        var _QDG      = 30;       // grid px
-
+        // ── UI ──
         function toggleQtyDraw() {
-            var panel = document.getElementById('qtyDrawPanel');
-            var btn   = document.getElementById('qtyDrawToggle');
-            if (panel.style.display === 'none') {
-                panel.style.display = 'block';
-                btn.textContent = 'Hide Drawing';
-                btn.className = 'btn-primary text-sm';
-                setTimeout(qdInit, 70);
+            var panel=document.getElementById('qtyDrawPanel');
+            var btn=document.getElementById('qtyDrawToggle');
+            if (panel.style.display==='none') {
+                panel.style.display='block';
+                btn.textContent='Hide Drawing'; btn.className='btn-primary text-sm';
+                setTimeout(qdInit,70);
             } else {
-                panel.style.display = 'none';
-                btn.textContent = 'Open Drawing';
-                btn.className = 'btn-secondary text-sm';
+                panel.style.display='none';
+                btn.textContent='Open Drawing'; btn.className='btn-secondary text-sm';
             }
         }
 
         function qdSetMode(m) {
-            _qdMode = m;
-            ['fence','gate'].forEach(function(v){
+            _qdMode=m;
+            _qdCurRun = (m==='move') ? null : _qdCurRun;
+            ['draw','move','gate'].forEach(function(v){
                 var b=document.getElementById('qdMode-'+v);
-                if(b){b.style.background=v===m?(v==='gate'?'#22c55e':'#1e293b'):'#f8f9fb';b.style.color=v===m?'#fff':'#475569';}
+                if(!b) return;
+                var active=(v===m);
+                b.style.background=active?(v==='gate'?'#22c55e':v==='move'?'#7c3aed':'#1e293b'):'#f8f9fb';
+                b.style.color=active?'#fff':'#475569';
             });
             var gw=document.getElementById('qdGateWrap');
             if(gw) gw.style.display=m==='gate'?'flex':'none';
+            var tip=document.getElementById('qdTip');
+            var c=document.getElementById('qdCanvas');
+            if(c) c.style.cursor=m==='move'?'grab':'crosshair';
+            qdRedraw();
         }
 
         function qdSetGateW(w) {
@@ -6888,273 +6980,285 @@
             });
         }
 
+        function qdSetScale(s) {
+            _qdScale=s;
+            document.querySelectorAll('.qdscbtn').forEach(function(b){
+                var v=parseInt(b.id.replace('qdSc',''));
+                b.style.background=v===s?'#ff6b35':'#fff';
+                b.style.color=v===s?'#fff':'#475569';
+            });
+            qdRedraw();
+        }
+
         function qdSetSnap(s) {
             _qdSnap=s;
-            ['free','h45','h90'].forEach(function(v){
-                var b=document.getElementById('qdSnap-'+v);
-                if(b){b.style.background=v===s?'#ff6b35':'#fff';b.style.color=v===s?'#fff':'#475569';}
+            document.querySelectorAll('.qdsnbtn').forEach(function(b){
+                var v=b.id.replace('qdSn-','');
+                b.style.background=v===s?'#ff6b35':'#fff';
+                b.style.color=v===s?'#fff':'#475569';
             });
         }
 
+        function qdNewRun() { _qdCurRun=null; qdRedraw(); toast('New run — click to start next fence run'); }
+
+        function qdZoomIn()  { _qdZoom=Math.min(10,_qdZoom*1.25); qdRedraw(); }
+        function qdZoomOut() { _qdZoom=Math.max(0.1,_qdZoom/1.25); qdRedraw(); }
+        function qdResetView() {
+            _qdZoom=1; _qdPan={x:0,y:0};
+            // If we have points, fit them in view
+            if (_qdPts.length) {
+                var c=document.getElementById('qdCanvas');
+                if (!c) return;
+                var xs=_qdPts.map(function(p){return p.x;}), ys=_qdPts.map(function(p){return p.y;});
+                var minX=Math.min.apply(null,xs)-40, maxX=Math.max.apply(null,xs)+40;
+                var minY=Math.min.apply(null,ys)-40, maxY=Math.max.apply(null,ys)+40;
+                var scaleX=c.width/(maxX-minX), scaleY=c.height/(maxY-minY);
+                _qdZoom=Math.min(scaleX,scaleY,3);
+                _qdPan.x=-minX*_qdZoom + (c.width-(maxX-minX)*_qdZoom)/2;
+                _qdPan.y=-minY*_qdZoom + (c.height-(maxY-minY)*_qdZoom)/2;
+            }
+            qdRedraw();
+        }
+
+        function qdUndo() {
+            if (_qdSegs.length) {
+                var s=_qdSegs.pop();
+                // Remove dangling point (point "b" not used by any remaining seg)
+                var bUsed=_qdSegs.some(function(x){return x.a===s.b||x.b===s.b;});
+                if (!bUsed && s.b===_qdPts.length-1) {
+                    _qdPts.pop();
+                }
+                _qdCurRun = bUsed ? s.b : (s.a>=0&&s.a<_qdPts.length?s.a:null);
+            } else if (_qdPts.length) {
+                _qdPts.pop();
+                _qdCurRun=_qdPts.length?_qdPts.length-1:null;
+            }
+            qdRedraw(); qdUpdateCount();
+        }
+
+        function qdClear() {
+            _qdPts=[]; _qdSegs=[]; _qdCurRun=null; _qdDragPt=null;
+            qdRedraw(); qdUpdateCount();
+        }
+
+        // ── Canvas init ──
         function qdInit() {
             var c=document.getElementById('qdCanvas');
             if(!c) return;
             var wrap=document.getElementById('qdWrap');
-            c.width=wrap?wrap.offsetWidth:560;
-            c.height=Math.round(c.width*0.58);
+            c.width=wrap?wrap.offsetWidth:580;
+            c.height=Math.round(c.width*0.75);  // taller canvas for more room
             qdRedraw();
 
-            function pos(e) {
+            // ── Coordinate helpers (world = canvas storage coords, screen = canvas px) ──
+            function toWorld(screenX, screenY) {
+                return { x: (screenX - _qdPan.x) / _qdZoom,
+                         y: (screenY - _qdPan.y) / _qdZoom };
+            }
+            function toScreen(wx, wy) {
+                return { x: wx * _qdZoom + _qdPan.x, y: wy * _qdZoom + _qdPan.y };
+            }
+            function screenPos(e) {
                 var r=c.getBoundingClientRect();
-                var sx=c.width/r.width, sy=c.height/r.height;
-                var cx=e.touches?e.touches[0].clientX:e.clientX;
-                var cy=e.touches?e.touches[0].clientY:e.clientY;
-                var raw={x:(cx-r.left)*sx, y:(cy-r.top)*sy};
-                return qdSnapAngle(raw);
+                var scX=c.width/r.width, scY=c.height/r.height;
+                var src=e.touches?e.touches[0]:(e.changedTouches?e.changedTouches[0]:e);
+                return {x:(src.clientX-r.left)*scX, y:(src.clientY-r.top)*scY};
+            }
+            function worldPos(e) { var s=screenPos(e); return toWorld(s.x,s.y); }
+
+            // Angle snap in world space
+            function angleSnap(wPos, originIdx) {
+                if (_qdSnap==='off'||originIdx===null||originIdx===undefined) return wPos;
+                var o=_qdPts[originIdx]; if(!o) return wPos;
+                var dx=wPos.x-o.x, dy=wPos.y-o.y;
+                var len=Math.sqrt(dx*dx+dy*dy);
+                if(len<1) return wPos;
+                var ang=Math.atan2(dy,dx);
+                var step=_qdSnap==='45'?(Math.PI/4):(Math.PI/2);
+                var sa=Math.round(ang/step)*step;
+                return {x:o.x+Math.cos(sa)*len, y:o.y+Math.sin(sa)*len};
             }
 
-            // click to place — uses full snap hierarchy (endpoint > segment > grid)
-            c.addEventListener('click', function(e){
-                e.preventDefault();
-                var rawPos = (function(){
-                    var r=c.getBoundingClientRect();
-                    var sx=c.width/r.width, sy=c.height/r.height;
-                    var cx2=e.clientX, cy2=e.clientY;
-                    return {x:(cx2-r.left)*sx, y:(cy2-r.top)*sy};
-                })();
-                var snap = qdFindSnap(rawPos);
+            // Nearest world point within screen-px threshold
+            function nearPt(wPos, screenThresh) {
+                var best=null, bd=(screenThresh/_qdZoom)*(screenThresh/_qdZoom);
+                _qdPts.forEach(function(p,i){
+                    var d=(p.x-wPos.x)*(p.x-wPos.x)+(p.y-wPos.y)*(p.y-wPos.y);
+                    if(d<bd){bd=d;best=i;}
+                });
+                return best;
+            }
 
-                if (snap.type === 'point') {
-                    // Connect run to existing point
-                    var nearIdx = snap.idx;
-                    if (_qdCurRun !== null && nearIdx !== _qdCurRun) {
-                        _qdSegs.push({a:_qdCurRun, b:nearIdx, isGate:_qdMode==='gate', gateW:_qdGateW});
-                        _qdCurRun = nearIdx; // stay active at junction — user can keep drawing
-                        if (_qdMode==='gate') qdSetMode('fence');
-                    } else if (_qdCurRun === null) {
-                        _qdCurRun = nearIdx; // start run from existing point
-                    }
-                } else if (snap.type === 'seg') {
-                    // Click ON a segment — split it and connect there
-                    var newIdx = _qdPts.length;
-                    _qdPts.push(snap.pt);
-                    qdSplitSeg(snap.segIdx, newIdx);
-                    if (_qdCurRun !== null && _qdCurRun !== newIdx) {
-                        _qdSegs.push({a:_qdCurRun, b:newIdx, isGate:_qdMode==='gate', gateW:_qdGateW});
-                        if (_qdMode==='gate') qdSetMode('fence');
-                    }
-                    _qdCurRun = newIdx;
-                } else {
-                    // Plain grid point
-                    var idx = _qdPts.length;
-                    _qdPts.push(snap.pt);
-                    if (_qdCurRun !== null) {
-                        _qdSegs.push({a:_qdCurRun, b:idx, isGate:_qdMode==='gate', gateW:_qdGateW});
-                        if (_qdMode==='gate') qdSetMode('fence');
-                    }
-                    _qdCurRun = idx;
+            var _spaceDown=false;
+            document.addEventListener('keydown',function(e){if(e.code==='Space'){_spaceDown=true;if(document.getElementById('qtyDrawPanel').style.display!=='none')c.style.cursor='grab';}});
+            document.addEventListener('keyup',  function(e){if(e.code==='Space'){_spaceDown=false;c.style.cursor=_qdMode==='move'?'grab':'crosshair';}});
+
+            // Zoom with wheel
+            c.addEventListener('wheel', function(e){
+                e.preventDefault();
+                var s=screenPos(e);
+                var wBefore=toWorld(s.x,s.y);
+                var delta=e.deltaY<0?1.12:0.89;
+                _qdZoom=Math.max(0.15,Math.min(10,_qdZoom*delta));
+                // keep point under cursor fixed
+                _qdPan.x=s.x-wBefore.x*_qdZoom;
+                _qdPan.y=s.y-wBefore.y*_qdZoom;
+                qdRedraw();
+            },{passive:false});
+
+            var _mouseDownScreen=null;
+            // ── MOUSE DOWN ──
+            c.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                _mouseDownScreen=screenPos(e);
+                var w=worldPos(e);
+
+                if (_spaceDown || e.button===1) { // pan
+                    _qdPanning=true; _qdPanStart={x:e.clientX-_qdPan.x,y:e.clientY-_qdPan.y};
+                    c.style.cursor='grabbing'; return;
                 }
-                qdRedraw();
-                qdUpdateCount();
+                if (_qdMode==='move') {
+                    var np=nearPt(w,18); if(np!==null){_qdDragPt=np;c.style.cursor='grabbing';}
+                    return;
+                }
             });
 
-            c.addEventListener('mousemove', function(e){
-                // store raw for qdFindSnap highlights
-                var r2=c.getBoundingClientRect();
-                var sx2=c.width/r2.width, sy2=c.height/r2.height;
-                _qdMouseRaw={x:(e.clientX-r2.left)*sx2, y:(e.clientY-r2.top)*sy2};
-                _qdMouse=pos(e);
+            // ── MOUSE MOVE ──
+            c.addEventListener('mousemove', function(e) {
+                if (_qdPanning) {
+                    _qdPan.x=e.clientX-_qdPanStart.x; _qdPan.y=e.clientY-_qdPanStart.y;
+                    qdRedraw(); return;
+                }
+                var w=worldPos(e);
+                if (_qdMode==='move'&&_qdDragPt!==null) {
+                    _qdPts[_qdDragPt]={x:w.x,y:w.y}; qdRedraw(); qdUpdateCount();
+                    _qdMouse=w; qdShowBubble(e,null); return;
+                }
+                _qdMouse=(_qdCurRun!==null&&_qdMode!=='move')?angleSnap(w,_qdCurRun):w;
                 qdRedraw();
-                qdShowBubble(e);
+                if(_qdCurRun!==null) qdShowBubble(e,_qdMouse); else qdHideBubble();
             });
-            c.addEventListener('mouseleave',function(){ _qdMouse=null; qdRedraw(); qdHideBubble(); });
 
-            c.addEventListener('touchstart',function(e){e.preventDefault();},{passive:false});
-            c.addEventListener('touchend',function(e){
-                e.preventDefault();
-                var t=e.changedTouches[0];
-                var r3=c.getBoundingClientRect();
-                var rawT={x:(t.clientX-r3.left)*(c.width/r3.width), y:(t.clientY-r3.top)*(c.height/r3.height)};
-                var snap=qdFindSnap(rawT);
-                if(snap.type==='point') {
-                    var ni=snap.idx;
-                    if(_qdCurRun!==null && ni!==_qdCurRun) {
-                        _qdSegs.push({a:_qdCurRun,b:ni,isGate:_qdMode==='gate',gateW:_qdGateW});
-                        _qdCurRun=ni;
-                        if(_qdMode==='gate') qdSetMode('fence');
-                    } else if(_qdCurRun===null) { _qdCurRun=ni; }
-                } else if(snap.type==='seg') {
-                    var nIdx=_qdPts.length;
-                    _qdPts.push(snap.pt);
-                    qdSplitSeg(snap.segIdx, nIdx);
-                    if(_qdCurRun!==null && _qdCurRun!==nIdx) {
-                        _qdSegs.push({a:_qdCurRun,b:nIdx,isGate:_qdMode==='gate',gateW:_qdGateW});
-                        if(_qdMode==='gate') qdSetMode('fence');
-                    }
-                    _qdCurRun=nIdx;
+            // ── MOUSE UP ──
+            c.addEventListener('mouseup', function(e) {
+                if (_qdPanning){_qdPanning=false;c.style.cursor=_spaceDown?'grab':(_qdMode==='move'?'grab':'crosshair');return;}
+                if (_qdMode==='move'){_qdDragPt=null;c.style.cursor='grab';return;}
+
+                // Only register click if didn't drag much
+                var s=screenPos(e);
+                if(_mouseDownScreen&&(Math.abs(s.x-_mouseDownScreen.x)>6||Math.abs(s.y-_mouseDownScreen.y)>6)){return;}
+
+                var w=worldPos(e);
+                var wp=(_qdCurRun!==null)?angleSnap(w,_qdCurRun):w;
+                var near=nearPt(wp,18);
+                if(near!==null&&near!==_qdCurRun){
+                    if(_qdCurRun!==null){_qdSegs.push({a:_qdCurRun,b:near,isGate:_qdMode==='gate',gateW:_qdGateW});if(_qdMode==='gate')qdSetMode('draw');}
+                    _qdCurRun=near;
                 } else {
-                    var idx=_qdPts.length;
-                    _qdPts.push(snap.pt);
-                    if(_qdCurRun!==null) {
-                        _qdSegs.push({a:_qdCurRun,b:idx,isGate:_qdMode==='gate',gateW:_qdGateW});
-                        if(_qdMode==='gate') qdSetMode('fence');
-                    }
+                    var idx=_qdPts.length; _qdPts.push({x:wp.x,y:wp.y});
+                    if(_qdCurRun!==null){_qdSegs.push({a:_qdCurRun,b:idx,isGate:_qdMode==='gate',gateW:_qdGateW});if(_qdMode==='gate')qdSetMode('draw');}
                     _qdCurRun=idx;
                 }
                 qdRedraw(); qdUpdateCount();
+            });
+
+            c.addEventListener('mouseleave',function(){
+                if(_qdPanning){_qdPanning=false;}
+                if(_qdDragPt!==null){_qdDragPt=null;}
+                _qdMouse=null; qdRedraw(); qdHideBubble();
+                c.style.cursor=_qdMode==='move'?'grab':'crosshair';
+            });
+
+            // Touch — two-finger pan, single-finger draw/move
+            var _touchPanRef=null;
+            c.addEventListener('touchstart',function(e){e.preventDefault();
+                if(e.touches.length===2){
+                    _touchPanRef={x:(e.touches[0].clientX+e.touches[1].clientX)/2-_qdPan.x,
+                                  y:(e.touches[0].clientY+e.touches[1].clientY)/2-_qdPan.y};
+                    return;
+                }
+                var w=worldPos(e);
+                if(_qdMode==='move'){var np=nearPt(w,24);if(np!==null)_qdDragPt=np;}
+                _mouseDownScreen=screenPos(e);
+            },{passive:false});
+            c.addEventListener('touchmove',function(e){e.preventDefault();
+                if(e.touches.length===2&&_touchPanRef){
+                    var cx=(e.touches[0].clientX+e.touches[1].clientX)/2;
+                    var cy=(e.touches[0].clientY+e.touches[1].clientY)/2;
+                    _qdPan.x=cx-_touchPanRef.x; _qdPan.y=cy-_touchPanRef.y;
+                    qdRedraw(); return;
+                }
+                var w=worldPos(e);
+                if(_qdMode==='move'&&_qdDragPt!==null){_qdPts[_qdDragPt]={x:w.x,y:w.y};qdRedraw();qdUpdateCount();}
+                else{_qdMouse=(_qdCurRun!==null)?angleSnap(w,_qdCurRun):w;qdRedraw();}
+            },{passive:false});
+            c.addEventListener('touchend',function(e){e.preventDefault();
+                _touchPanRef=null;
+                if(_qdMode==='move'){_qdDragPt=null;return;}
+                var s=screenPos(e);
+                if(_mouseDownScreen&&(Math.abs(s.x-_mouseDownScreen.x)>8||Math.abs(s.y-_mouseDownScreen.y)>8)){return;}
+                var w=worldPos(e);
+                var wp=(_qdCurRun!==null)?angleSnap(w,_qdCurRun):w;
+                var near=nearPt(wp,24);
+                if(near!==null&&near!==_qdCurRun){
+                    if(_qdCurRun!==null){_qdSegs.push({a:_qdCurRun,b:near,isGate:_qdMode==='gate',gateW:_qdGateW});if(_qdMode==='gate')qdSetMode('draw');}
+                    _qdCurRun=near;
+                } else {
+                    var idx=_qdPts.length;_qdPts.push({x:wp.x,y:wp.y});
+                    if(_qdCurRun!==null){_qdSegs.push({a:_qdCurRun,b:idx,isGate:_qdMode==='gate',gateW:_qdGateW});if(_qdMode==='gate')qdSetMode('draw');}
+                    _qdCurRun=idx;
+                }
+                qdRedraw();qdUpdateCount();
             },{passive:false});
         }
 
-        // ── GRID SNAP: always snap to nearest grid intersection first ──────────
-        function qdGridSnap(raw) {
-            return { x: Math.round(raw.x / _QDG) * _QDG,
-                     y: Math.round(raw.y / _QDG) * _QDG };
-        }
-
-        // ── ANGLE SNAP on top of grid snap (from origin point) ───────────────
-        // After angle-snapping, re-snap to the nearest grid point ON that ray
-        function qdSnapAngle(raw) {
-            // Always grid-snap first for whole-number footage
-            var g = qdGridSnap(raw);
-            if (_qdCurRun === null || _qdSnap === 'free') return g;
-            var origin = _qdPts[_qdCurRun];
-            if (!origin) return g;
-            var dx = g.x - origin.x, dy = g.y - origin.y;
-            var len = Math.sqrt(dx*dx + dy*dy);
-            if (len < 2) return g;
-            var ang = Math.atan2(dy, dx);
-            var step = _qdSnap === 'h90' ? (Math.PI/2) : (Math.PI/4);
-            var snappedAng = Math.round(ang / step) * step;
-            // Project onto snapped angle, then re-grid-snap that endpoint
-            var ex = origin.x + Math.cos(snappedAng) * len;
-            var ey = origin.y + Math.sin(snappedAng) * len;
-            return { x: Math.round(ex / _QDG) * _QDG,
-                     y: Math.round(ey / _QDG) * _QDG };
-        }
-
-        // ── SNAP HIERARCHY ────────────────────────────────────────────────────
-        // Priority: 1) nearby endpoint  2) nearby mid-segment point  3) grid
-        // Returns {type:'point'|'seg'|'grid', idx, pt:{x,y}}
-        function qdFindSnap(raw) {
-            var g = qdGridSnap(raw);
-
-            // 1. Existing endpoint within 20px
-            var bestPt = null, bestPtD = 20*20;
-            _qdPts.forEach(function(pt, i) {
-                var d = (pt.x-raw.x)*(pt.x-raw.x) + (pt.y-raw.y)*(pt.y-raw.y);
-                if (d < bestPtD) { bestPtD = d; bestPt = i; }
-            });
-            if (bestPt !== null) return { type:'point', idx:bestPt, pt:_qdPts[bestPt] };
-
-            // 2. Point on any existing segment within 14px
-            var THRESH = 14;
-            for (var si = 0; si < _qdSegs.length; si++) {
-                var s = _qdSegs[si];
-                var a = _qdPts[s.a], b = _qdPts[s.b];
-                if (!a || !b) continue;
-                var sdx = b.x-a.x, sdy = b.y-a.y, slen2 = sdx*sdx+sdy*sdy;
-                if (slen2 < 1) continue;
-                var t = ((raw.x-a.x)*sdx + (raw.y-a.y)*sdy) / slen2;
-                t = Math.max(0.05, Math.min(0.95, t)); // avoid snapping exactly to endpoints
-                var proj = { x: a.x + t*sdx, y: a.y + t*sdy };
-                var d = (proj.x-raw.x)*(proj.x-raw.x) + (proj.y-raw.y)*(proj.y-raw.y);
-                if (d < THRESH*THRESH) {
-                    // Grid-snap the projection point for clean numbers
-                    var snappedProj = qdGridSnap(proj);
-                    return { type:'seg', segIdx:si, t:t, pt:snappedProj };
-                }
-            }
-
-            // 3. Grid
-            return { type:'grid', pt: g };
-        }
-
-        // ── SPLIT a segment at a new midpoint index ───────────────────────────
-        function qdSplitSeg(segIdx, newPtIdx) {
-            var s = _qdSegs[segIdx];
-            var origA = s.a, origB = s.b;
-            var wasGate = s.isGate, gw = s.gateW;
-            // Remove original segment
-            _qdSegs.splice(segIdx, 1);
-            // Insert two new segments
-            _qdSegs.push({ a:origA, b:newPtIdx, isGate:wasGate, gateW:gw });
-            _qdSegs.push({ a:newPtIdx, b:origB, isGate:wasGate, gateW:gw });
-        }
-
-        // Returns point index if within threshold px, else null (legacy, kept for touch)
-        function qdNearPoint(p, thresh) {
-            var best=null, bd=thresh*thresh;
-            _qdPts.forEach(function(pt,i){
-                var d=(pt.x-p.x)*(pt.x-p.x)+(pt.y-p.y)*(pt.y-p.y);
-                if(d<bd){bd=d;best=i;}
-            });
-            return best;
-        }
-
-        function qdNewRun() { _qdCurRun=null; toast('New run — click to place first post of next run'); }
-        function qdUndo() {
-            if(_qdSegs.length) {
-                var s=_qdSegs.pop();
-                // remove "b" point if it's only used by this segment
-                var bUsed=_qdSegs.some(function(x){return x.a===s.b||x.b===s.b;});
-                if(!bUsed) { _qdPts.splice(s.b,1); _qdSegs.forEach(function(x){if(x.a>s.b)x.a--;if(x.b>s.b)x.b--;}); }
-                _qdCurRun = bUsed ? s.b : (s.a < _qdPts.length ? s.a : null);
-            } else if(_qdPts.length) {
-                _qdPts.pop(); _qdCurRun=_qdPts.length?_qdPts.length-1:null;
-            }
-            qdRedraw(); qdUpdateCount();
-        }
-        function qdClear() { _qdPts=[]; _qdSegs=[]; _qdCurRun=null; qdRedraw(); qdUpdateCount(); }
-
-        function qdScale() { return parseFloat(document.getElementById('qdScale').value||10)||10; }
-        function qdPxToFt(px) { return px/_QDG*qdScale(); }
+        // ── Helpers ──
+        // World units → feet  (1 world-px = 1 ft * _qdScale / QD_GRID)
+        // We store pts in "world px" where QD_GRID world-px = _qdScale ft
+        function qdWorldPxToFt(wp) { return wp / QD_GRID * _qdScale; }
+        function qdPxToFt(px) { return qdWorldPxToFt(px); } // alias for labels
         function qdSegFt(s) {
-            var a=_qdPts[s.a], b=_qdPts[s.b];
+            var a=_qdPts[s.a],b=_qdPts[s.b];
             if(!a||!b) return 0;
-            return qdPxToFt(Math.sqrt((b.x-a.x)*(b.x-a.x)+(b.y-a.y)*(b.y-a.y)));
+            var dx=b.x-a.x, dy=b.y-a.y;
+            return qdWorldPxToFt(Math.sqrt(dx*dx+dy*dy));
         }
         function qdFtLabel(ft) {
-            var f=Math.floor(ft), in_=Math.round((ft-f)*12);
-            if(in_===12){f++;in_=0;}
-            return in_>0?f+"' "+in_+'"':f+"'";
+            // Show as X' Y" — whole inches, no rounding to just feet
+            var totalIn = Math.round(ft*12);
+            var feet=Math.floor(totalIn/12), inches=totalIn%12;
+            return inches>0 ? feet+"' "+inches+'"' : feet+"'";
         }
 
-        // Classify each point: 'end', 'corner', 'line' (computed per segment)
         function qdPointType(idx) {
-            var count=_qdSegs.filter(function(s){return s.a===idx||s.b===idx;}).length;
-            if(count===0) return 'unused';
-            if(count===1) return 'end';
+            var segs=_qdSegs.filter(function(s){return s.a===idx||s.b===idx;});
+            if(!segs.length) return 'unused';
+            if(segs.length===1) return 'end';
             return 'corner';
         }
 
-        // Full post count breakdown
         function qdCalcPosts() {
-            if(!_qdPts.length||!_qdSegs.length) return null;
+            if(!_qdSegs.length) return null;
             var span=qtySpan||8;
-            var endPosts=0, cornerPosts=0, linePosts=0, gatePosts=0;
-            var totalFt=0, totalSections=0, gateCount=0;
-
-            // per-point classification
+            var endPosts=0,cornerPosts=0,linePosts=0,gatePosts=0,totalFt=0,totalSections=0,gateCount=0;
             _qdPts.forEach(function(_,i){
                 var t=qdPointType(i);
                 if(t==='end') endPosts++;
                 else if(t==='corner') cornerPosts++;
             });
-
             _qdSegs.forEach(function(s){
                 var ft=qdSegFt(s);
-                if(s.isGate) {
-                    gatePosts+=2; gateCount++;
-                } else {
+                if(s.isGate){gatePosts+=2;gateCount++;}
+                else{
                     totalFt+=ft;
                     var sections=Math.ceil(ft/span);
                     totalSections+=sections;
-                    linePosts+=(sections-1); // intermediate line posts only
+                    linePosts+=Math.max(0,sections-1);
                 }
             });
-
-            var totalPosts=endPosts+cornerPosts+linePosts+gatePosts;
-            return {endPosts,cornerPosts,linePosts,gatePosts,totalPosts,totalFt,totalSections,gateCount,span};
+            return {endPosts,cornerPosts,linePosts,gatePosts,
+                    totalPosts:endPosts+cornerPosts+linePosts+gatePosts,
+                    totalFt,totalSections,gateCount,span};
         }
 
         function qdUpdateCount() {
@@ -7163,218 +7267,221 @@
             var st=document.getElementById('qdStatus');
             if(!bar||!grid) return;
             var r=qdCalcPosts();
-            if(!r) {
-                bar.style.display='none';
-                if(st) st.textContent='Click on the canvas to place your first post.';
-                return;
-            }
+            if(!r){bar.style.display='none';if(st)st.textContent='Click to place first post.';return;}
             bar.style.display='block';
-            var boxes=[
-                {label:'End Posts',    val:r.endPosts,    color:'#3b82f6', tip:'Open ends of fence runs'},
-                {label:'Corner Posts', val:r.cornerPosts, color:'#ff6b35', tip:'Where runs meet or change direction'},
-                {label:'Line Posts',   val:r.linePosts,   color:'#64748b', tip:'Posts between corners/ends at '+r.span+'ft spacing'},
-                {label:'Gate Posts',   val:r.gatePosts,   color:'#22c55e', tip:'2 per gate (frames)'},
-                {label:'TOTAL POSTS',  val:r.totalPosts,  color:'#0f172a', tip:'All posts combined', bold:true},
-                {label:'Sections',     val:r.totalSections,color:'#7c3aed',tip:r.span+'ft panels/spans'},
-                {label:'Fence Footage',val:qdFtLabel(r.totalFt), color:'#0f172a', tip:'Total linear fence (excl. gates)'},
-                {label:'Gates',        val:r.gateCount,   color:'#22c55e', tip:'Gate openings'},
+            var items=[
+                {lbl:'End Posts',  val:r.endPosts,    col:'#3b82f6', tip:'Open ends of fence runs'},
+                {lbl:'Corner Posts',val:r.cornerPosts, col:'#ff6b35', tip:'Where lines meet/change direction'},
+                {lbl:'Line Posts', val:r.linePosts,    col:'#64748b', tip:'Every '+r.span+'ft between structural posts'},
+                {lbl:'Gate Posts', val:r.gatePosts,    col:'#22c55e', tip:'2 per gate (the frames)'},
+                {lbl:'TOTAL POSTS',val:r.totalPosts,   col:'#0f172a', tip:'All posts', bold:true},
+                {lbl:'Sections',   val:r.totalSections,col:'#7c3aed', tip:r.span+'ft sections'},
+                {lbl:'Fence',      val:qdFtLabel(r.totalFt), col:'#0369a1', tip:'Linear feet of fence'},
+                {lbl:'Gates',      val:r.gateCount,   col:'#22c55e', tip:'Gate openings'},
             ];
-            grid.innerHTML=boxes.map(function(b){
-                return '<div title="'+b.tip+'" style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;border-left:3px solid '+b.color+';">'
-                    +'<div style="font-size:11px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">'+b.label+'</div>'
-                    +'<div style="font-size:'+(b.bold?'20':'17')+'px;font-weight:800;color:'+b.color+';line-height:1.2;margin-top:2px;">'+b.val+'</div>'
+            grid.innerHTML=items.map(function(b){
+                return '<div title="'+b.tip+'" style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;border-left:3px solid '+b.col+';">'
+                    +'<div style="font-size:10px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;line-height:1.2;">'+b.lbl+'</div>'
+                    +'<div style="font-size:'+(b.bold?'20':'17')+'px;font-weight:800;color:'+b.col+';line-height:1.2;margin-top:2px;">'+b.val+'</div>'
                     +'</div>';
             }).join('');
-            if(st) st.innerHTML='<strong>'+_qdSegs.length+'</strong> line'+(r.gateCount?' | <strong>'+r.gateCount+'</strong> gate'+(r.gateCount>1?'s':''):'')
-                +' | <strong>'+qdFtLabel(r.totalFt)+'</strong> fence | <strong>'+r.totalPosts+'</strong> total posts — hit <em>Send to Calculator</em> when done.';
+            if(st) st.innerHTML=
+                '<strong>'+qdFtLabel(r.totalFt)+'</strong> fence'
+                +(r.gateCount?' | <strong>'+r.gateCount+'</strong> gate'+(r.gateCount>1?'s':''):'')
+                +' | <strong>'+r.totalPosts+'</strong> total posts'
+                +' &nbsp;— <em>Send to Calculator</em> when done.';
         }
 
+        // ── Redraw ──
         function qdRedraw() {
             var c=document.getElementById('qdCanvas');
             if(!c||!c.getContext) return;
-            var ctx=c.getContext('2d');
-            var W=c.width, H=c.height;
+            var ctx=c.getContext('2d'), W=c.width, H=c.height;
             ctx.clearRect(0,0,W,H);
 
-            // ── Grid ──
+            // ── Apply pan/zoom transform for all world-space drawing ──
             ctx.save();
-            ctx.strokeStyle='#eef0f4'; ctx.lineWidth=1;
-            for(var gx=0;gx<=W;gx+=_QDG){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();}
-            for(var gy=0;gy<=H;gy+=_QDG){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();}
-            ctx.strokeStyle='#dde1e9'; ctx.lineWidth=1;
-            for(var mx=0;mx<=W;mx+=_QDG*4){ctx.beginPath();ctx.moveTo(mx,0);ctx.lineTo(mx,H);ctx.stroke();}
-            for(var my=0;my<=H;my+=_QDG*4){ctx.beginPath();ctx.moveTo(0,my);ctx.lineTo(W,my);ctx.stroke();}
-            // scale labels
-            var sc=qdScale();
-            ctx.fillStyle='#b0b8c8'; ctx.font='10px Arial'; ctx.textAlign='left';
-            for(var lx=_QDG*4;lx<W-10;lx+=_QDG*4) ctx.fillText(Math.round(lx/_QDG*sc)+"'",lx+2,11);
-            for(var ly=_QDG*8;ly<H-4;ly+=_QDG*4) ctx.fillText(Math.round(ly/_QDG*sc)+"'",2,ly-2);
+            ctx.translate(_qdPan.x, _qdPan.y);
+            ctx.scale(_qdZoom, _qdZoom);
+
+            // Grid lines in world space
+            var gridStep=QD_GRID;  // 1 grid square = _qdScale ft
+            // visible world range
+            var wx0=(-_qdPan.x/_qdZoom), wy0=(-_qdPan.y/_qdZoom);
+            var wx1=wx0+W/_qdZoom,        wy1=wy0+H/_qdZoom;
+            var gxStart=Math.floor(wx0/gridStep)*gridStep;
+            var gyStart=Math.floor(wy0/gridStep)*gridStep;
+
+            ctx.strokeStyle='#eef0f5'; ctx.lineWidth=1/_qdZoom;
+            for(var gx=gxStart;gx<=wx1;gx+=gridStep){ctx.beginPath();ctx.moveTo(gx,wy0);ctx.lineTo(gx,wy1);ctx.stroke();}
+            for(var gy=gyStart;gy<=wy1;gy+=gridStep){ctx.beginPath();ctx.moveTo(wx0,gy);ctx.lineTo(wx1,gy);ctx.stroke();}
+            ctx.strokeStyle='#dde1ea'; ctx.lineWidth=1/_qdZoom;
+            for(var mgx=gxStart;mgx<=wx1;mgx+=gridStep*4){ctx.beginPath();ctx.moveTo(mgx,wy0);ctx.lineTo(mgx,wy1);ctx.stroke();}
+            for(var mgy=gyStart;mgy<=wy1;mgy+=gridStep*4){ctx.beginPath();ctx.moveTo(wx0,mgy);ctx.lineTo(wx1,mgy);ctx.stroke();}
+
+            // Scale labels (in world space, drawn at screen-consistent font size)
+            var fontSize=11/_qdZoom;
+            ctx.fillStyle='#adb5c8'; ctx.font=fontSize+'px Arial,sans-serif'; ctx.textAlign='left';
+            for(var lx=gxStart;lx<=wx1;lx+=gridStep*4){
+                if(lx>=0) ctx.fillText(qdFtLabel(qdWorldPxToFt(lx)),lx+2/_qdZoom,wy0+fontSize+2/_qdZoom);
+            }
+            for(var ly=gyStart;ly<=wy1;ly+=gridStep*4){
+                if(ly>=0) ctx.fillText(qdFtLabel(qdWorldPxToFt(ly)),wx0+2/_qdZoom,ly-2/_qdZoom);
+            }
             ctx.restore();
 
-            // ── Committed segments ──
-            _qdSegs.forEach(function(s){ qdDrawSeg(ctx,s,false); });
+            // All subsequent drawing in world space — wrap in transform
+            ctx.save();
+            ctx.translate(_qdPan.x,_qdPan.y);
+            ctx.scale(_qdZoom,_qdZoom);
 
-            // ── Preview line from last placed point to mouse ──
-            if(_qdCurRun!==null && _qdMouse) {
-                var origin=_qdPts[_qdCurRun];
-                if(origin) {
+            // Segments
+            _qdSegs.forEach(function(s){_qdDrawSeg(ctx,s,false);});
+
+            // Preview line
+            if (_qdCurRun!==null && _qdMouse && _qdMode!=='move') {
+                var o=_qdPts[_qdCurRun];
+                if (o) {
+                    var pdx=_qdMouse.x-o.x, pdy=_qdMouse.y-o.y, plen=Math.sqrt(pdx*pdx+pdy*pdy);
                     ctx.save();
-                    ctx.setLineDash(_qdMode==='gate'?[10,6]:[6,4]);
+                    ctx.setLineDash(_qdMode==='gate'?[10,6]:[5,4]);
                     ctx.strokeStyle=_qdMode==='gate'?'#22c55e':'#ff6b35';
-                    ctx.lineWidth=3; ctx.globalAlpha=0.6; ctx.lineCap='round';
-                    ctx.beginPath(); ctx.moveTo(origin.x,origin.y); ctx.lineTo(_qdMouse.x,_qdMouse.y); ctx.stroke();
-
-                    // live ft label on preview
-                    var pdx=_qdMouse.x-origin.x, pdy=_qdMouse.y-origin.y;
-                    var plen=Math.sqrt(pdx*pdx+pdy*pdy);
-                    if(plen>10) {
-                        var pft=qdPxToFt(plen);
-                        var pmx=(origin.x+_qdMouse.x)/2, pmy=(origin.y+_qdMouse.y)/2;
-                        var pnx=-pdy/plen, pny=pdx/plen;
-                        ctx.globalAlpha=1;
-                        ctx.setLineDash([]);
-                        ctx.font='bold 12px Inter,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-                        ctx.strokeStyle='#fff'; ctx.lineWidth=4;
-                        ctx.strokeText(qdFtLabel(pft), pmx+pnx*20, pmy+pny*20);
-                        ctx.fillStyle=_qdMode==='gate'?'#15803d':'#ff6b35';
-                        ctx.fillText(qdFtLabel(pft), pmx+pnx*20, pmy+pny*20);
+                    ctx.lineWidth=3; ctx.globalAlpha=0.65; ctx.lineCap='round';
+                    ctx.beginPath(); ctx.moveTo(o.x,o.y); ctx.lineTo(_qdMouse.x,_qdMouse.y); ctx.stroke();
+                    // live label
+                    if (plen>4/_qdZoom) {
+                        var pmx=(o.x+_qdMouse.x)/2, pmy=(o.y+_qdMouse.y)/2;
+                        var pnx=-pdy/plen*(20/_qdZoom), pny=pdx/plen*(20/_qdZoom);
+                        ctx.setLineDash([]); ctx.globalAlpha=1;
+                        ctx.font='bold '+(13/_qdZoom)+'px Inter,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                        ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=5/_qdZoom;
+                        ctx.strokeText(qdFtLabel(qdPxToFt(plen)),pmx+pnx,pmy+pny);
+                        ctx.fillStyle=_qdMode==='gate'?'#166534':'#ff6b35';
+                        ctx.fillText(qdFtLabel(qdPxToFt(plen)),pmx+pnx,pmy+pny);
                     }
                     ctx.restore();
                 }
             }
 
-            // ── Segment hover highlight (when mouse is near a segment but not endpoint) ──
-            if (_qdMouseRaw) {
-                var hsnap = qdFindSnap(_qdMouseRaw);
-                if (hsnap.type === 'seg') {
-                    var hs = _qdSegs[hsnap.segIdx];
-                    var ha = _qdPts[hs.a], hb = _qdPts[hs.b];
-                    if (ha && hb) {
-                        ctx.save();
-                        ctx.strokeStyle='#f59e0b'; ctx.lineWidth=9; ctx.globalAlpha=0.35; ctx.lineCap='round';
-                        ctx.beginPath(); ctx.moveTo(ha.x,ha.y); ctx.lineTo(hb.x,hb.y); ctx.stroke();
-                        ctx.restore();
-                        // Show snap dot on the line
-                        ctx.beginPath(); ctx.arc(hsnap.pt.x, hsnap.pt.y, 7, 0, Math.PI*2);
-                        ctx.fillStyle='#f59e0b'; ctx.fill();
-                        ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
-                        ctx.fillStyle='#92400e'; ctx.font='bold 8px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-                        ctx.fillText('T', hsnap.pt.x, hsnap.pt.y);
-                    }
-                }
-            }
-
-            // ── Points ──
+            // Points
             _qdPts.forEach(function(p,i){
                 var type=qdPointType(i);
                 var isCur=(i===_qdCurRun);
-                var color=type==='end'?'#3b82f6':type==='corner'?'#ff6b35':'#94a3b8';
-                if(isCur) color='#ff6b35';
+                var isDrag=(i===_qdDragPt);
+                var col=type==='end'?'#3b82f6':type==='corner'?'#ff6b35':'#94a3b8';
+                if(isCur||isDrag) col='#ff6b35';
 
-                // snap ring highlight — use raw mouse for accuracy
-                var _mchk = _qdMouseRaw || _qdMouse;
-                if(_mchk){
-                    var dd=(p.x-_mchk.x)*(p.x-_mchk.x)+(p.y-_mchk.y)*(p.y-_mchk.y);
-                    if(dd<22*22){
-                        ctx.beginPath(); ctx.arc(p.x,p.y,14,0,Math.PI*2);
-                        ctx.strokeStyle='#ff6b35'; ctx.lineWidth=2.5;
-                        ctx.setLineDash([4,3]); ctx.stroke(); ctx.setLineDash([]);
-                        // label: "click to connect"
-                        ctx.fillStyle='#ff6b35'; ctx.font='bold 9px Arial'; ctx.textAlign='center'; ctx.textBaseline='top';
-                        ctx.fillText('SNAP',p.x,p.y+16);
-                    }
-                }
 
-                ctx.beginPath(); ctx.arc(p.x,p.y,isCur?8:6,0,Math.PI*2);
-                ctx.fillStyle=color; ctx.fill();
+                ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2);
+                ctx.fillStyle=col; ctx.fill();
                 ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
-
-                // label inside dot
-                ctx.fillStyle='#fff'; ctx.font='bold 7px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-                var lbl=type==='end'?'E':type==='corner'?'C':isCur?'★':'·';
+                ctx.fillStyle='#fff'; ctx.font='bold '+(r>7?'9':'7')+'px Arial';
+                ctx.textAlign='center'; ctx.textBaseline='middle';
+                var lbl=type==='end'?'E':type==='corner'?'C':isCur?'▶':'·';
                 ctx.fillText(lbl,p.x,p.y);
+
+                // move mode: show grab handles
+                if (_qdMode==='move') {
+                    ctx.beginPath(); ctx.arc(p.x,p.y,r+4,0,Math.PI*2);
+                    ctx.strokeStyle=isDrag?'#7c3aed':'#c4b5fd'; ctx.lineWidth=2; ctx.stroke();
+                }
             });
+
+            ctx.restore(); // close pan/zoom transform
         }
 
-        function qdDrawSeg(ctx, s, isPreview) {
+        function _qdDrawSeg(ctx, s, isPreview) {
             var a=_qdPts[s.a], b=_qdPts[s.b];
             if(!a||!b) return;
             var dx=b.x-a.x, dy=b.y-a.y, len=Math.sqrt(dx*dx+dy*dy);
             if(len<1) return;
 
-            ctx.save();
-            ctx.lineCap='round';
-            if(s.isGate) {
-                ctx.strokeStyle='#22c55e'; ctx.lineWidth=5; ctx.setLineDash([10,7]);
+            ctx.save(); ctx.lineCap='round';
+            if (s.isGate) {
+                ctx.strokeStyle='#22c55e'; ctx.lineWidth=5/_qdZoom; ctx.setLineDash([10/_qdZoom,7/_qdZoom]);
             } else {
-                ctx.strokeStyle=isPreview?'#ff6b35':'#1e293b';
-                ctx.lineWidth=isPreview?3:5; ctx.setLineDash([]);
+                ctx.strokeStyle='#1e293b'; ctx.lineWidth=5/_qdZoom; ctx.setLineDash([]);
             }
-            ctx.globalAlpha=isPreview?0.6:1;
             ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
 
-            // gate post squares at each end
-            if(s.isGate&&!isPreview) {
-                ctx.setLineDash([]); ctx.globalAlpha=1;
+            // Gate post squares (zoom-independent size)
+            if (s.isGate) {
+                ctx.setLineDash([]); ctx.fillStyle='#22c55e';
+                var gs=6/_qdZoom;
                 [[a.x,a.y],[b.x,b.y]].forEach(function(p){
-                    ctx.fillStyle='#22c55e';
-                    ctx.fillRect(p[0]-5,p[1]-5,10,10);
-                    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5;
-                    ctx.strokeRect(p[0]-5,p[1]-5,10,10);
+                    ctx.fillRect(p[0]-gs,p[1]-gs,gs*2,gs*2);
+                    ctx.strokeStyle='#fff'; ctx.lineWidth=1.5/_qdZoom; ctx.strokeRect(p[0]-gs,p[1]-gs,gs*2,gs*2);
                 });
             }
             ctx.restore();
 
-            // dimension label
+            // Line posts tick marks (visual only — shows where line posts fall)
+            if (!s.isGate) {
+                var span=qtySpan||8;
+                var segFt=qdPxToFt(len);
+                var sections=Math.ceil(segFt/span);
+                var ux=dx/len, uy=dy/len;
+                var tickLen=7/_qdZoom;
+                var nx2b=-uy*tickLen, ny2b=ux*tickLen;
+                for(var k=1;k<sections;k++){
+                    var tt=k/sections;
+                    var ttx=a.x+tt*dx, tty=a.y+tt*dy;
+                    ctx.save();
+                    ctx.strokeStyle='rgba(100,116,139,0.7)'; ctx.lineWidth=1.5/_qdZoom;
+                    ctx.beginPath(); ctx.moveTo(ttx-nx2b,tty-ny2b); ctx.lineTo(ttx+nx2b,tty+ny2b); ctx.stroke();
+                    ctx.restore();
+                }
+            }
+
+            // Dimension label — zoom-independent font/offset
             var ft=qdPxToFt(len);
             var lbl=(s.isGate?'🚪 GATE '+s.gateW+"ft — ":'')+qdFtLabel(ft);
             var mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
-            var nx=-dy/len*18, ny=dx/len*18;
+            var perpOff=18/_qdZoom;
+            var nx2=-dy/len*perpOff, ny2=dx/len*perpOff;
+            var fz=12/_qdZoom;
             ctx.save();
-            ctx.globalAlpha=isPreview?0.8:1;
-            ctx.font='bold 11px Inter,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-            ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=4;
-            ctx.strokeText(lbl,mx+nx,my+ny);
-            ctx.fillStyle=s.isGate?'#166534':(isPreview?'#ff6b35':'#0f172a');
-            ctx.fillText(lbl,mx+nx,my+ny);
+            ctx.font='bold '+fz+'px Inter,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+            ctx.strokeStyle='rgba(255,255,255,0.95)'; ctx.lineWidth=5/_qdZoom;
+            ctx.strokeText(lbl,mx+nx2,my+ny2);
+            ctx.fillStyle=s.isGate?'#166534':'#0f172a';
+            ctx.fillText(lbl,mx+nx2,my+ny2);
             ctx.restore();
         }
 
-        function qdShowBubble(e) {
-            if(_qdCurRun===null||!_qdMouse) { qdHideBubble(); return; }
-            var origin=_qdPts[_qdCurRun];
-            if(!origin) { qdHideBubble(); return; }
-            var pdx=_qdMouse.x-origin.x, pdy=_qdMouse.y-origin.y;
-            var plen=Math.sqrt(pdx*pdx+pdy*pdy);
-            if(plen<8) { qdHideBubble(); return; }
+        function qdShowBubble(e, snapPt) {
             var bub=document.getElementById('qdBubble');
-            if(!bub) return;
-            bub.textContent=(_qdMode==='gate'?'🚪 ':'📏 ')+qdFtLabel(qdPxToFt(plen));
+            if(!bub||_qdCurRun===null) {qdHideBubble();return;}
+            var origin=_qdPts[_qdCurRun];
+            if(!origin){qdHideBubble();return;}
+            var target=snapPt||_qdMouse;
+            if(!target){qdHideBubble();return;}
+            var dx=target.x-origin.x, dy=target.y-origin.y;
+            var px=Math.sqrt(dx*dx+dy*dy);
+            if(px<6){qdHideBubble();return;}
+            bub.textContent=(_qdMode==='gate'?'🚪 ':'📏 ')+qdFtLabel(qdPxToFt(px));
             var wr=document.getElementById('qdWrap').getBoundingClientRect();
-            var cx=e.touches?e.touches[0].clientX:e.clientX;
-            var cy=e.touches?e.touches[0].clientY:e.clientY;
-            bub.style.left=Math.max(4,(cx-wr.left+14))+'px';
-            bub.style.top=Math.max(4,(cy-wr.top-38))+'px';
+            var src=e.touches?e.touches[0]:e;
+            bub.style.left=Math.max(4,src.clientX-wr.left+14)+'px';
+            bub.style.top=Math.max(4,src.clientY-wr.top-38)+'px';
             bub.style.display='block';
         }
-        function qdHideBubble() {
-            var b=document.getElementById('qdBubble'); if(b) b.style.display='none';
-        }
+        function qdHideBubble(){var b=document.getElementById('qdBubble');if(b)b.style.display='none';}
 
         function qdApply() {
             var r=qdCalcPosts();
-            if(!r||!r.totalFt) { toast('Draw some fence lines first'); return; }
+            if(!r||!r.totalFt){toast('Draw some fence lines first');return;}
             var labels='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-            var fenceSegs=_qdSegs.filter(function(s){return !s.isGate;});
-            var gateSegs =_qdSegs.filter(function(s){return s.isGate;});
-            qtySides=fenceSegs.map(function(s,i){
+            var fSegs=_qdSegs.filter(function(s){return !s.isGate;});
+            var gSegs=_qdSegs.filter(function(s){return s.isGate;});
+            qtySides=fSegs.map(function(s,i){
                 return {id:Date.now()+i,label:'Side '+(labels[i]||i+1),ft:qdSegFt(s).toFixed(1)};
             });
             var gi=document.getElementById('qtyGates');
-            if(gi) gi.value=gateSegs.length;
+            if(gi) gi.value=gSegs.length;
             renderQtySides();
             calcQty();
-            toast('\u2713 Drawing applied! Scroll up to see results.');
+            toast('\u2713 Drawing applied — scroll up to see results!');
         }
 
 
