@@ -1262,7 +1262,7 @@
 
             <!-- Quantity Calculator -->
             <div id="qtycalc" class="tab-content">
-                <h2 class="text-3xl font-bold mb-1">🧱 Fence Quantity Calculator</h2>
+                <h2 class="text-3xl font-bold mb-1"> Fence Quantity Calculator</h2>
                 <p class="text-sm text-gray-700 mb-6">Pick your material, enter your measured linear feet — get an exact material list instantly.</p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1403,7 +1403,7 @@
                                         <button onclick="qdResetView()" title="Fit to screen" style="width:32px;height:32px;background:#fff;border:1px solid #cbd5e1;border-radius:6px;font-size:13px;cursor:pointer;color:#1e293b;line-height:1;box-shadow:0 1px 4px rgba(0,0,0,0.12);">⊡</button>
                                     </div>
                                     <!-- Pan hint -->
-                                    <div style="position:absolute;top:8px;right:10px;font-size:10px;color:#94a3b8;background:rgba(255,255,255,0.85);padding:2px 7px;border-radius:10px;">Scroll=zoom · Space+drag=pan · 2-finger=pan</div>
+                                    <div style="position:absolute;top:8px;right:10px;font-size:10px;color:#94a3b8;background:rgba(255,255,255,0.85);padding:2px 7px;border-radius:10px;">+/− to zoom · Space+drag to pan</div>
                                 </div>
 
                                 <!-- Live count boxes -->
@@ -2606,7 +2606,7 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-       const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -7128,8 +7128,24 @@
 
         function qdNewRun() { _qdCurRun=null; qdRedraw(); toast('New run — click to start next fence run'); }
 
-        function qdZoomIn()  { _qdZoom=Math.min(10,_qdZoom*1.25); qdRedraw(); }
-        function qdZoomOut() { _qdZoom=Math.max(0.1,_qdZoom/1.25); qdRedraw(); }
+        function qdZoomIn()  { _qdZoomAround(1.3); }
+        function qdZoomOut() { _qdZoomAround(1/1.3); }
+        function _qdZoomAround(delta) {
+            var c = document.getElementById('qdCanvas');
+            if (!c) return;
+            // zoom around canvas center
+            var cx = c.width/2, cy = c.height/2;
+            var oldZoom = _qdZoom;
+            _qdZoom = Math.max(0.1, Math.min(12, _qdZoom * delta));
+            // adjust pan so center stays fixed
+            _qdPan.x = cx - (_qdPan.x - cx) * (_qdZoom/oldZoom) - cx + _qdPan.x + (cx - _qdPan.x) * (1 - _qdZoom/oldZoom);
+            // simpler: keep world-point under center fixed
+            var wx = (cx - _qdPan.x) / oldZoom;
+            var wy = (cy - _qdPan.y) / oldZoom;
+            _qdPan.x = cx - wx * _qdZoom;
+            _qdPan.y = cy - wy * _qdZoom;
+            qdRedraw();
+        }
         function qdResetView() {
             _qdZoom=1; _qdPan={x:0,y:0};
             // If we have points, fit them in view
@@ -7416,62 +7432,56 @@
             var ctx=c.getContext('2d'), W=c.width, H=c.height;
             ctx.clearRect(0,0,W,H);
 
-            // ── Apply pan/zoom transform for all world-space drawing ──
+            // ── GRID ── (drawn in world-space under pan/zoom transform)
             ctx.save();
             ctx.translate(_qdPan.x, _qdPan.y);
             ctx.scale(_qdZoom, _qdZoom);
 
-            // Grid lines in world space
-            var gridStep=QD_GRID;  // 1 grid square = _qdScale ft
-            // visible world range
-            var wx0=(-_qdPan.x/_qdZoom), wy0=(-_qdPan.y/_qdZoom);
-            var wx1=wx0+W/_qdZoom,        wy1=wy0+H/_qdZoom;
-            var gxStart=Math.floor(wx0/gridStep)*gridStep;
-            var gyStart=Math.floor(wy0/gridStep)*gridStep;
+            var gridStep = QD_GRID;
+            var wx0 = -_qdPan.x / _qdZoom, wy0 = -_qdPan.y / _qdZoom;
+            var wx1 = wx0 + W / _qdZoom,    wy1 = wy0 + H / _qdZoom;
+            var gxS = Math.floor(wx0/gridStep)*gridStep;
+            var gyS = Math.floor(wy0/gridStep)*gridStep;
 
             ctx.strokeStyle='#eef0f5'; ctx.lineWidth=1/_qdZoom;
-            for(var gx=gxStart;gx<=wx1;gx+=gridStep){ctx.beginPath();ctx.moveTo(gx,wy0);ctx.lineTo(gx,wy1);ctx.stroke();}
-            for(var gy=gyStart;gy<=wy1;gy+=gridStep){ctx.beginPath();ctx.moveTo(wx0,gy);ctx.lineTo(wx1,gy);ctx.stroke();}
-            ctx.strokeStyle='#dde1ea'; ctx.lineWidth=1/_qdZoom;
-            for(var mgx=gxStart;mgx<=wx1;mgx+=gridStep*4){ctx.beginPath();ctx.moveTo(mgx,wy0);ctx.lineTo(mgx,wy1);ctx.stroke();}
-            for(var mgy=gyStart;mgy<=wy1;mgy+=gridStep*4){ctx.beginPath();ctx.moveTo(wx0,mgy);ctx.lineTo(wx1,mgy);ctx.stroke();}
+            for(var gx=gxS;gx<=wx1;gx+=gridStep){ctx.beginPath();ctx.moveTo(gx,wy0);ctx.lineTo(gx,wy1);ctx.stroke();}
+            for(var gy=gyS;gy<=wy1;gy+=gridStep){ctx.beginPath();ctx.moveTo(wx0,gy);ctx.lineTo(wx1,gy);ctx.stroke();}
+            ctx.strokeStyle='#d8dce6'; ctx.lineWidth=1/_qdZoom;
+            for(var mgx=gxS;mgx<=wx1;mgx+=gridStep*4){ctx.beginPath();ctx.moveTo(mgx,wy0);ctx.lineTo(mgx,wy1);ctx.stroke();}
+            for(var mgy=gyS;mgy<=wy1;mgy+=gridStep*4){ctx.beginPath();ctx.moveTo(wx0,mgy);ctx.lineTo(wx1,mgy);ctx.stroke();}
 
-            // Scale labels (in world space, drawn at screen-consistent font size)
-            var fontSize=11/_qdZoom;
-            ctx.fillStyle='#adb5c8'; ctx.font=fontSize+'px Arial,sans-serif'; ctx.textAlign='left';
-            for(var lx=gxStart;lx<=wx1;lx+=gridStep*4){
-                if(lx>=0) ctx.fillText(qdFtLabel(qdWorldPxToFt(lx)),lx+2/_qdZoom,wy0+fontSize+2/_qdZoom);
-            }
-            for(var ly=gyStart;ly<=wy1;ly+=gridStep*4){
-                if(ly>=0) ctx.fillText(qdFtLabel(qdWorldPxToFt(ly)),wx0+2/_qdZoom,ly-2/_qdZoom);
-            }
+            // Scale labels
+            var fz = Math.max(9, 11/_qdZoom);
+            ctx.fillStyle='#b0b8c8'; ctx.font=fz+'px Arial'; ctx.textAlign='left';
+            for(var lx=gxS;lx<=wx1;lx+=gridStep*4){if(lx>=0)ctx.fillText(qdFtLabel(qdWorldPxToFt(lx)),lx+2/_qdZoom,wy0+fz+2/_qdZoom);}
+            for(var ly=gyS;ly<=wy1;ly+=gridStep*4){if(ly>=0)ctx.fillText(qdFtLabel(qdWorldPxToFt(ly)),wx0+2/_qdZoom,ly-2/_qdZoom);}
             ctx.restore();
 
-            // All subsequent drawing in world space — wrap in transform
+            // ── SEGMENTS + PREVIEW + POINTS ── (all in same world transform)
             ctx.save();
-            ctx.translate(_qdPan.x,_qdPan.y);
-            ctx.scale(_qdZoom,_qdZoom);
+            ctx.translate(_qdPan.x, _qdPan.y);
+            ctx.scale(_qdZoom, _qdZoom);
 
-            // Segments
-            _qdSegs.forEach(function(s){_qdDrawSeg(ctx,s,false);});
+            // Draw committed segments
+            _qdSegs.forEach(function(s){ _qdDrawSeg(ctx, s, false); });
 
-            // Preview line
+            // Preview line from current run point to mouse
             if (_qdCurRun!==null && _qdMouse && _qdMode!=='move') {
-                var o=_qdPts[_qdCurRun];
+                var o = _qdPts[_qdCurRun];
                 if (o) {
                     var pdx=_qdMouse.x-o.x, pdy=_qdMouse.y-o.y, plen=Math.sqrt(pdx*pdx+pdy*pdy);
                     ctx.save();
-                    ctx.setLineDash(_qdMode==='gate'?[10,6]:[5,4]);
+                    ctx.setLineDash(_qdMode==='gate'?[10/_qdZoom,6/_qdZoom]:[6/_qdZoom,4/_qdZoom]);
                     ctx.strokeStyle=_qdMode==='gate'?'#22c55e':'#ff6b35';
-                    ctx.lineWidth=3; ctx.globalAlpha=0.65; ctx.lineCap='round';
+                    ctx.lineWidth=3/_qdZoom; ctx.globalAlpha=0.65; ctx.lineCap='round';
                     ctx.beginPath(); ctx.moveTo(o.x,o.y); ctx.lineTo(_qdMouse.x,_qdMouse.y); ctx.stroke();
-                    // live label
-                    if (plen>4/_qdZoom) {
+                    if (plen > 2/_qdZoom) {
                         var pmx=(o.x+_qdMouse.x)/2, pmy=(o.y+_qdMouse.y)/2;
-                        var pnx=-pdy/plen*(20/_qdZoom), pny=pdx/plen*(20/_qdZoom);
+                        var pnx=-pdy/plen*18/_qdZoom, pny=pdx/plen*18/_qdZoom;
                         ctx.setLineDash([]); ctx.globalAlpha=1;
-                        ctx.font='bold '+(13/_qdZoom)+'px Inter,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-                        ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=5/_qdZoom;
+                        var pfz=12/_qdZoom;
+                        ctx.font='bold '+pfz+'px Inter,Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                        ctx.strokeStyle='rgba(255,255,255,0.95)'; ctx.lineWidth=4/_qdZoom;
                         ctx.strokeText(qdFtLabel(qdPxToFt(plen)),pmx+pnx,pmy+pny);
                         ctx.fillStyle=_qdMode==='gate'?'#166534':'#ff6b35';
                         ctx.fillText(qdFtLabel(qdPxToFt(plen)),pmx+pnx,pmy+pny);
@@ -7480,31 +7490,55 @@
                 }
             }
 
-            // Points
-            _qdPts.forEach(function(p,i){
-                var type=qdPointType(i);
-                var isCur=(i===_qdCurRun);
-                var isDrag=(i===_qdDragPt);
-                var col=type==='end'?'#3b82f6':type==='corner'?'#ff6b35':'#94a3b8';
-                if(isCur||isDrag) col='#ff6b35';
+            // Draw points
+            var baseR = 6 / _qdZoom;  // screen-size-consistent radius
+            var SNAP_THRESH = 20 / _qdZoom;
 
+            _qdPts.forEach(function(p, i) {
+                var type   = qdPointType(i);
+                var isCur  = (i === _qdCurRun);
+                var isDrag = (i === _qdDragPt);
+                var r      = isDrag ? 10/_qdZoom : (isCur ? 8/_qdZoom : baseR);
 
-                ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2);
-                ctx.fillStyle=col; ctx.fill();
-                ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
-                ctx.fillStyle='#fff'; ctx.font='bold '+(r>7?'9':'7')+'px Arial';
-                ctx.textAlign='center'; ctx.textBaseline='middle';
-                var lbl=type==='end'?'E':type==='corner'?'C':isCur?'▶':'·';
-                ctx.fillText(lbl,p.x,p.y);
+                // Snap highlight ring when mouse is nearby (draw mode)
+                if (_qdMouse && _qdMode !== 'move' && i !== _qdCurRun) {
+                    var hd = (p.x-_qdMouse.x)*(p.x-_qdMouse.x) + (p.y-_qdMouse.y)*(p.y-_qdMouse.y);
+                    if (hd < SNAP_THRESH * SNAP_THRESH) {
+                        ctx.beginPath(); ctx.arc(p.x, p.y, r+6/_qdZoom, 0, Math.PI*2);
+                        ctx.strokeStyle='#ff6b35'; ctx.lineWidth=2/_qdZoom;
+                        ctx.setLineDash([3/_qdZoom,3/_qdZoom]); ctx.stroke(); ctx.setLineDash([]);
+                        // "SNAP" label below dot
+                        var sfz = 9/_qdZoom;
+                        ctx.fillStyle='#ff6b35'; ctx.font='bold '+sfz+'px Arial';
+                        ctx.textAlign='center'; ctx.textBaseline='top';
+                        ctx.fillText('SNAP', p.x, p.y+r+8/_qdZoom);
+                    }
+                }
 
-                // move mode: show grab handles
-                if (_qdMode==='move') {
-                    ctx.beginPath(); ctx.arc(p.x,p.y,r+4,0,Math.PI*2);
-                    ctx.strokeStyle=isDrag?'#7c3aed':'#c4b5fd'; ctx.lineWidth=2; ctx.stroke();
+                // Dot color by type
+                var col = type==='end' ? '#3b82f6' : type==='corner' ? '#ff6b35' : '#94a3b8';
+                if (isCur || isDrag) col = '#ff6b35';
+
+                ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI*2);
+                ctx.fillStyle = col; ctx.fill();
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 2/_qdZoom; ctx.stroke();
+
+                // Letter inside dot
+                var dfz = Math.max(6, (r*1.1)*_qdZoom) / _qdZoom;
+                ctx.fillStyle = '#fff'; ctx.font = 'bold '+dfz+'px Arial';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                var lbl = type==='end' ? 'E' : type==='corner' ? 'C' : isCur ? '▶' : '·';
+                ctx.fillText(lbl, p.x, p.y);
+
+                // Move mode: purple grab ring
+                if (_qdMode === 'move') {
+                    ctx.beginPath(); ctx.arc(p.x, p.y, r+5/_qdZoom, 0, Math.PI*2);
+                    ctx.strokeStyle = isDrag ? '#7c3aed' : '#c4b5fd';
+                    ctx.lineWidth = 2/_qdZoom; ctx.stroke();
                 }
             });
 
-            ctx.restore(); // close pan/zoom transform
+            ctx.restore(); // close world transform
         }
 
         function _qdDrawSeg(ctx, s, isPreview) {
@@ -7591,14 +7625,39 @@
             var labels='ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
             var fSegs=_qdSegs.filter(function(s){return !s.isGate;});
             var gSegs=_qdSegs.filter(function(s){return s.isGate;});
+
+            // Push segment footage to the side inputs
             qtySides=fSegs.map(function(s,i){
                 return {id:Date.now()+i,label:'Side '+(labels[i]||i+1),ft:qdSegFt(s).toFixed(1)};
             });
             var gi=document.getElementById('qtyGates');
             if(gi) gi.value=gSegs.length;
+
+            // Update gate count for calcQty
             renderQtySides();
+
+            // Show inline summary in draw panel
+            var drawSummary = '<div style="margin-top:10px;padding:12px;background:#0f172a;border-radius:10px;color:#fff;">'
+                +'<div style="font-size:11px;font-weight:700;color:#ff6b35;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Drawing Summary</div>'
+                +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">'
+                +'<div style="background:#1e293b;border-radius:7px;padding:8px;text-align:center;"><div style="color:#94a3b8;font-size:9px;text-transform:uppercase;">End Posts</div><div style="color:#3b82f6;font-size:20px;font-weight:800;">'+r.endPosts+'</div></div>'
+                +'<div style="background:#1e293b;border-radius:7px;padding:8px;text-align:center;"><div style="color:#94a3b8;font-size:9px;text-transform:uppercase;">Corner Posts</div><div style="color:#ff6b35;font-size:20px;font-weight:800;">'+r.cornerPosts+'</div></div>'
+                +'<div style="background:#1e293b;border-radius:7px;padding:8px;text-align:center;"><div style="color:#94a3b8;font-size:9px;text-transform:uppercase;">Line Posts</div><div style="color:#94a3b8;font-size:20px;font-weight:800;">'+r.linePosts+'</div></div>'
+                +'</div>'
+                +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;">'
+                +(r.gatePosts?'<div style="background:#1e293b;border-radius:7px;padding:8px;text-align:center;"><div style="color:#94a3b8;font-size:9px;text-transform:uppercase;">Gate Posts</div><div style="color:#22c55e;font-size:20px;font-weight:800;">'+r.gatePosts+'</div></div>':'')
+                +'<div style="background:#ff6b35;border-radius:7px;padding:8px;text-align:center;"><div style="color:rgba(0,0,0,0.6);font-size:9px;text-transform:uppercase;font-weight:700;">TOTAL POSTS</div><div style="color:#fff;font-size:20px;font-weight:900;">'+r.totalPosts+'</div></div>'
+                +'<div style="background:#1e293b;border-radius:7px;padding:8px;text-align:center;"><div style="color:#94a3b8;font-size:9px;text-transform:uppercase;">Fence</div><div style="color:#fff;font-size:18px;font-weight:800;">'+qdFtLabel(r.totalFt)+'</div></div>'
+                +'</div>'
+                +'<div style="margin-top:8px;font-size:11px;color:#64748b;">'+r.totalSections+' sections @ '+r.span+'ft span'+(r.gateCount?' | '+r.gateCount+' gate'+(r.gateCount>1?'s':''):'')+'</div>'
+                +'</div>';
+
+            var stEl = document.getElementById('qdStatus');
+            if (stEl) stEl.innerHTML = drawSummary + '<div style="margin-top:6px;font-size:11px;color:#22c55e;font-weight:600;">✓ Measurements sent to calculator above — select a material to see full material list.</div>';
+
+            // Run calcQty to populate the right-side results
             calcQty();
-            toast('\u2713 Drawing applied — scroll up to see results!');
+            toast('\u2713 Applied! Select a material above to see the full list.');
         }
 
 
