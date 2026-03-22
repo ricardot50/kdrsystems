@@ -1112,89 +1112,150 @@
 
             <!-- Profitability -->
             <div id="calculator" class="tab-content">
-                <h2 class="text-3xl font-bold mb-1">Overhead Calculator</h2>
-                <p class="text-sm text-gray-700 mb-6">Know your true hourly rate. This auto-fills labor costs in your estimates.</p>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <!-- LEFT: All Inputs -->
-                    <div class="space-y-4">
-                        <div class="card">
-                            <h3 class="font-bold text-base mb-3">Monthly Expenses</h3>
-                            <p class="text-xs text-gray-700 mb-3">Insurance, fuel, tools, taxes, rent — everything it costs to run your business</p>
-                            <div id="expensesList" class="space-y-2 mb-3"></div>
-                            <button class="btn-secondary w-full text-sm" onclick="addExpense()">+ Add Expense</button>
-                            <div class="mt-3 pt-3 border-t flex justify-between">
-                                <span class="text-sm text-gray-700">Total Expenses:</span>
-                                <span class="font-bold text-orange" id="totalExpenses">$0.00</span>
-                            </div>
+                <!-- GrowZbl-style True Hourly Rate Calculator -->
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:28px;">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-1">Profitability Calculator</h2>
+                        <p class="text-sm text-gray-700">Know your true hourly rate — so you never underbid a job again.</p>
+                    </div>
+                    <button class="btn-primary" onclick="saveCalculator()" style="white-space:nowrap;">💾 Save Settings</button>
+                </div>
+
+                <!-- TRUE HOURLY RATE HERO CARD -->
+                <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-radius:16px;padding:32px;margin-bottom:24px;position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,107,53,0.08);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-30px;left:40px;width:120px;height:120px;background:rgba(255,107,53,0.05);border-radius:50%;"></div>
+                    <div style="position:relative;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:24px;">
+                        <div>
+                            <p style="color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:2px;margin:0 0 8px;font-weight:700;">Your True Hourly Rate</p>
+                            <p style="color:#ff6b35;font-size:56px;font-weight:900;margin:0;line-height:1;letter-spacing:-2px;" id="minimumRate">$0.00<span style="font-size:20px;color:#94a3b8;">/hr</span></p>
+                            <p style="color:#64748b;font-size:13px;margin:10px 0 0;">Charge this to cover all costs + hit your profit goal</p>
                         </div>
-                        
-                        <div class="card">
-                            <h3 class="font-bold text-base mb-3">Team / Labor</h3>
-                            <p class="text-xs text-gray-700 mb-3">What you pay your crew (including yourself)</p>
-                            <div id="teamMembersList" class="space-y-2 mb-3"></div>
-                            <button class="btn-secondary w-full text-sm" onclick="addTeamMember()">+ Add Team Member</button>
-                            <div class="mt-3 pt-3 border-t flex justify-between">
-                                <span class="text-sm text-gray-700">Total Team Cost/Mo:</span>
-                                <span class="font-bold text-orange" id="totalTeamCost">$0.00</span>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:260px;">
+                            <div style="background:#1e293b;border-radius:10px;padding:14px 16px;">
+                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Monthly Hours</p>
+                                <input type="number" id="workingHours" value="160" step="1" oninput="calculateAll()" style="background:transparent;border:none;color:#fff;font-size:22px;font-weight:800;width:100%;padding:0;outline:none;">
+                                <p style="color:#475569;font-size:10px;margin:2px 0 0;" id="hoursHint">40 hrs/wk × 4 wks</p>
                             </div>
-                        </div>
-                        
-                        <div class="card">
-                            <h3 class="font-bold text-base mb-3">Profit & Hours</h3>
-                            <!-- Period toggle -->
-                            <div style="display:flex;gap:0;border:1px solid #e5e5e5;border-radius:8px;overflow:hidden;margin-bottom:14px;">
-                                <button id="periodWeek"  onclick="setCalcPeriod('week')"  style="flex:1;padding:7px 4px;font-size:12px;font-weight:700;border:none;background:#f8f9fb;color:#94a3b8;cursor:pointer;">Weekly</button>
-                                <button id="periodMonth" onclick="setCalcPeriod('month')" style="flex:1;padding:7px 4px;font-size:12px;font-weight:700;border:none;background:#ff6b35;color:#000;cursor:pointer;">Monthly</button>
-                                <button id="periodYear"  onclick="setCalcPeriod('year')"  style="flex:1;padding:7px 4px;font-size:12px;font-weight:700;border:none;background:#f8f9fb;color:#94a3b8;cursor:pointer;">Yearly</button>
-                            </div>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block mb-1 text-xs" id="profitLabel">Desired Profit/Mo ($)</label>
-                                    <input type="number" id="desiredProfit" placeholder="5000" step="0.01" onchange="calculateAll()">
+                            <div style="background:#1e293b;border-radius:10px;padding:14px 16px;">
+                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Profit Margin</p>
+                                <div style="display:flex;align-items:baseline;gap:2px;">
+                                    <input type="number" id="profitMargin" placeholder="20" step="0.5" oninput="calculateFromMargin()" style="background:transparent;border:none;color:#22c55e;font-size:22px;font-weight:800;width:60px;padding:0;outline:none;">
+                                    <span style="color:#22c55e;font-size:16px;font-weight:700;">%</span>
                                 </div>
-                                <div>
-                                    <label class="block mb-1 text-xs">Profit Margin (%)</label>
-                                    <input type="number" id="profitMargin" placeholder="20" step="0.1" onchange="calculateFromMargin()">
-                                </div>
+                                <p style="color:#475569;font-size:10px;margin:2px 0 0;">target margin</p>
                             </div>
-                            <div class="mt-3">
-                                <label class="block mb-1 text-xs" id="hoursLabel">Working Hours/Month</label>
-                                <input type="number" id="workingHours" value="160" step="1" onchange="calculateAll()">
-                                <p class="text-xs text-gray-700 mt-1" id="hoursHint">40 hrs/week × 4 weeks = 160</p>
+                            <div style="background:#1e293b;border-radius:10px;padding:14px 16px;">
+                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Annual Revenue</p>
+                                <p style="color:#fff;font-size:18px;font-weight:800;margin:4px 0 0;" id="annualRevenue">$0</p>
+                                <p style="color:#475569;font-size:10px;margin:2px 0 0;">at this rate</p>
+                            </div>
+                            <div style="background:#1e293b;border-radius:10px;padding:14px 16px;">
+                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Annual Profit</p>
+                                <p style="color:#22c55e;font-size:18px;font-weight:800;margin:4px 0 0;" id="annualProfit">$0</p>
+                                <p style="color:#475569;font-size:10px;margin:2px 0 0;" id="marginDisplay">0% margin</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- RIGHT: Results -->
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- LEFT: Expenses -->
                     <div class="space-y-4">
-                        <div class="card" style="background:#0f172a;border:none;">
-                            <h3 style="color:#fff;font-size:14px;font-weight:600;margin-bottom:16px;">Your Billing Rate</h3>
-                            <div style="text-align:center;padding:16px 0;">
-                                <p style="color:#94a3b8;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Charge Per Hour</p>
-                                <p style="color:#ff6b35;font-size:48px;font-weight:800;margin:0;letter-spacing:-2px;" id="minimumRate">$0.00</p>
-                                <p style="color:#64748b;font-size:12px;margin:8px 0 0;">to cover all costs + profit</p>
-                            </div>
-                            <div style="border-top:1px solid #1e293b;padding-top:16px;margin-top:16px;">
-                                <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:#94a3b8;font-size:13px;">Team Labor/Hr</span><span style="color:#fff;font-weight:600;font-size:13px;" id="teamCostPerHour">$0.00</span></div>
-                                <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:#94a3b8;font-size:13px;">Overhead/Hr</span><span style="color:#fff;font-weight:600;font-size:13px;" id="overheadPerHour">$0.00</span></div>
-                                <div style="display:flex;justify-content:space-between;padding:6px 0;"><span style="color:#94a3b8;font-size:13px;">Profit/Hr</span><span style="color:#22c55e;font-weight:600;font-size:13px;" id="profitPerHour">$0.00</span></div>
-                                <div style="display:flex;justify-content:space-between;padding:8px 0;border-top:1px solid #1e293b;margin-top:4px;"><span style="color:#94a3b8;font-size:13px;">Profit Margin</span><span style="color:#22c55e;font-weight:700;font-size:14px;" id="marginDisplay">0%</span></div>
-                            </div>
-                        </div>
-                        
+                        <!-- Overhead Expenses -->
                         <div class="card">
-                            <h3 class="font-bold text-base mb-3" id="summaryTitle">Monthly Summary</h3>
-                            <div class="space-y-2">
-                                <div class="flex justify-between py-1"><span class="text-sm text-gray-700">Team Costs</span><span class="font-semibold" id="summaryTeam">$0.00</span></div>
-                                <div class="flex justify-between py-1"><span class="text-sm text-gray-700">Expenses</span><span class="font-semibold" id="summaryExpenses">$0.00</span></div>
-                                <div class="flex justify-between py-1 border-t"><span class="text-sm text-gray-700">Total Costs</span><span class="font-bold" id="summaryTotalCosts">$0.00</span></div>
-                                <div class="flex justify-between py-1"><span class="text-sm text-green-600">Profit</span><span class="font-bold text-green-600" id="summaryProfit">$0.00</span></div>
-                                <div class="flex justify-between py-2 border-t-2 border-orange-500"><span class="font-bold">Revenue Needed</span><span class="font-bold text-xl text-orange" id="requiredRevenue">$0.00</span></div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                <h3 class="font-bold text-base">Monthly Overhead Expenses</h3>
+                                <button class="btn-secondary text-sm" onclick="addExpense()" style="padding:6px 12px;">+ Add</button>
+                            </div>
+                            <p class="text-xs text-gray-700 mb-3">Insurance, fuel, tools, taxes, office, truck payments — everything to run the business</p>
+                            <div id="expensesList" class="space-y-2 mb-3"></div>
+                            <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:2px solid #f1f5f9;margin-top:4px;">
+                                <span class="text-sm font-semibold text-gray-700">Total Monthly Overhead</span>
+                                <span class="font-bold text-orange text-base" id="totalExpenses">$0.00</span>
                             </div>
                         </div>
-                        
-                        <button class="btn-primary w-full" onclick="saveCalculator()">Save Settings</button>
+
+                        <!-- Team / Labor -->
+                        <div class="card">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                <h3 class="font-bold text-base">Team Labor Costs</h3>
+                                <button class="btn-secondary text-sm" onclick="addTeamMember()" style="padding:6px 12px;">+ Add</button>
+                            </div>
+                            <p class="text-xs text-gray-700 mb-3">What you pay your crew per month — include yourself</p>
+                            <div id="teamMembersList" class="space-y-2 mb-3"></div>
+                            <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:2px solid #f1f5f9;margin-top:4px;">
+                                <span class="text-sm font-semibold text-gray-700">Total Team Cost/Month</span>
+                                <span class="font-bold text-orange text-base" id="totalTeamCost">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: Breakdown -->
+                    <div class="space-y-4">
+                        <!-- Monthly Breakdown (GrowZbl style) -->
+                        <div class="card">
+                            <h3 class="font-bold text-base mb-4" id="summaryTitle">Monthly Breakdown</h3>
+                            <div style="space-y:0;">
+                                <!-- Expense rows like GrowZbl -->
+                                <div id="calcExpenseRows"></div>
+                                <!-- Team row -->
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+                                    <span style="font-size:13px;color:#475569;">Team Labor</span>
+                                    <span style="font-weight:700;color:#1e293b;" id="summaryTeam">$0.00</span>
+                                </div>
+                                <!-- Divider -->
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:2px solid #e2e8f0;margin-top:4px;">
+                                    <span style="font-size:13px;font-weight:700;color:#0f172a;">Total Monthly Costs</span>
+                                    <span style="font-weight:800;font-size:16px;color:#0f172a;" id="summaryTotalCosts">$0.00</span>
+                                </div>
+                                <!-- Profit -->
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">
+                                    <div>
+                                        <span style="font-size:13px;color:#15803d;">Profit Goal</span>
+                                        <input type="number" id="desiredProfit" placeholder="0" step="100" oninput="calculateAll()" style="width:90px;margin-left:8px;padding:3px 8px;font-size:12px;border:1px solid #e2e8f0;border-radius:6px;color:#15803d;font-weight:700;">
+                                    </div>
+                                    <span style="font-weight:700;color:#15803d;" id="summaryProfit">$0.00</span>
+                                </div>
+                                <!-- Revenue needed -->
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#fef7f4;border-radius:10px;margin-top:12px;border:1px solid #fed7c5;">
+                                    <span style="font-weight:700;color:#ff6b35;font-size:14px;">Revenue Needed / Month</span>
+                                    <span style="font-weight:900;font-size:22px;color:#ff6b35;" id="requiredRevenue">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Rate breakdown -->
+                        <div class="card" style="background:#f8f9fb;">
+                            <h3 class="font-bold text-sm text-gray-700 mb-3 uppercase tracking-wide">Hourly Rate Breakdown</h3>
+                            <div style="space-y:0;">
+                                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;">
+                                    <span style="font-size:13px;color:#64748b;">Team Labor / hr</span>
+                                    <span style="font-weight:700;" id="teamCostPerHour">$0.00</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;">
+                                    <span style="font-size:13px;color:#64748b;">Overhead / hr</span>
+                                    <span style="font-weight:700;" id="overheadPerHour">$0.00</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #e2e8f0;">
+                                    <span style="font-size:13px;color:#22c55e;">Profit / hr</span>
+                                    <span style="font-weight:700;color:#22c55e;" id="profitPerHour">$0.00</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;padding:10px 0;margin-top:4px;">
+                                    <span style="font-size:14px;font-weight:800;color:#ff6b35;">TRUE Hourly Rate</span>
+                                    <span style="font-size:18px;font-weight:900;color:#ff6b35;" id="minimumRate2">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Period toggle (hidden, kept for JS compatibility) -->
+                        <div style="display:none;">
+                            <button id="periodWeek"  onclick="setCalcPeriod('week')">W</button>
+                            <button id="periodMonth" onclick="setCalcPeriod('month')">M</button>
+                            <button id="periodYear"  onclick="setCalcPeriod('year')">Y</button>
+                            <span id="profitLabel"></span><span id="hoursLabel"></span>
+                            <span id="summaryExpenses"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1762,7 +1823,7 @@
                             Add Photos
                             <input type="file" accept="image/*" multiple class="hidden" onchange="handleEstPhotos(event)">
                         </label>
-                        <button type="button" class="btn-secondary text-sm" onclick="openLayoutModal('estimate', document.getElementById('estEditId') ? document.getElementById('estEditId').value : null)">📐 Draw Layout</button>
+                        <button type="button" class="btn-secondary text-sm" onclick="openLayoutForEstimate()">📐 Draw Layout</button>
                         </div>
                         <div id="estLayoutThumbs" class="flex flex-wrap gap-2 mt-2"></div>
                         <p class="text-xs text-gray-700 mt-1">Upload up to 5 photos · draw fence layout diagrams</p>
@@ -2545,7 +2606,7 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-      const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -3931,13 +3992,40 @@
             document.getElementById('teamCostPerHour').textContent = '$' + teamCostPerHour.toFixed(2);
             document.getElementById('overheadPerHour').textContent = '$' + overheadPerHour.toFixed(2);
             document.getElementById('profitPerHour').textContent = '$' + profitPerHour.toFixed(2);
-            document.getElementById('minimumRate').textContent = '$' + hourlyRate.toFixed(2);
-            document.getElementById('marginDisplay').textContent = profitMarginPercent.toFixed(1) + '%';
+            // minimumRate has a nested /hr span — only update the text node
+            var rateEl = document.getElementById('minimumRate');
+            if (rateEl) {
+                rateEl.childNodes[0].textContent = '$' + hourlyRate.toFixed(2);
+            }
+            var rate2El = document.getElementById('minimumRate2');
+            if (rate2El) rate2El.textContent = '$' + hourlyRate.toFixed(2);
+            // margin display
+            var marginEl = document.getElementById('marginDisplay');
+            if (marginEl) marginEl.textContent = profitMarginPercent.toFixed(1) + '% margin';
             document.getElementById('summaryTeam').textContent = '$' + dispTeam.toFixed(2);
-            document.getElementById('summaryExpenses').textContent = '$' + dispExpenses.toFixed(2);
+            if (document.getElementById('summaryExpenses')) document.getElementById('summaryExpenses').textContent = '$' + dispExpenses.toFixed(2);
             document.getElementById('summaryTotalCosts').textContent = '$' + dispCosts.toFixed(2);
             document.getElementById('summaryProfit').textContent = '$' + dispProfit.toFixed(2);
             document.getElementById('requiredRevenue').textContent = '$' + dispRevenue.toFixed(2);
+
+            // Annual stats for hero card
+            var annualRev = hourlyRate * hoursMonthly * 12;
+            var annualPro = profitMonthly * 12;
+            var annRevEl = document.getElementById('annualRevenue');
+            var annProEl = document.getElementById('annualProfit');
+            if (annRevEl) annRevEl.textContent = '$' + Math.round(annualRev).toLocaleString();
+            if (annProEl) annProEl.textContent = '$' + Math.round(annualPro).toLocaleString();
+
+            // Build GrowZbl-style per-expense rows in the breakdown column
+            var rowsEl = document.getElementById('calcExpenseRows');
+            if (rowsEl) {
+                rowsEl.innerHTML = (appData.expenses||[]).map(function(e){
+                    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;">'
+                        +'<span style="font-size:13px;color:#475569;">'+e.name+'</span>'
+                        +'<span style="font-weight:600;color:#1e293b;">$'+(parseFloat(e.amount)||0).toFixed(2)+'</span>'
+                        +'</div>';
+                }).join('');
+            }
 
             appData.calculator.hourlyRate   = hourlyRate;
             appData.calculator.profitPerHour = profitPerHour;
@@ -4564,7 +4652,38 @@
         // Estimates
         var estServices = []; // Array of service objects for current estimate
 
-        // Open the FULL estimate form pre-filled for editing an existing estimate
+        // Open layout modal for an estimate — if editing, use existing ID; if new, auto-save a temp estimate first
+        function openLayoutForEstimate() {
+            var editId = (document.getElementById('estEditId')||{}).value;
+            if (editId) {
+                // editing existing — attach directly
+                openLayoutModal('estimate', editId);
+                return;
+            }
+            // New estimate — need to save it first so layouts have something to attach to
+            // Create a temporary ID for this session
+            if (!window._tempEstId) window._tempEstId = 'tmp_' + Date.now();
+            // Make sure it exists in appData so attach works
+            var exists = (appData.estimates||[]).find(function(e){return e.id===window._tempEstId;});
+            if (!exists) {
+                var custSel = document.getElementById('estCustomer');
+                var custId = custSel ? custSel.value : '';
+                var cust = (appData.customers||[]).find(function(c){return c.id===custId;});
+                appData.estimates.push({
+                    id: window._tempEstId,
+                    type: 'estimate',
+                    customerId: custId,
+                    customerName: cust ? cust.name : 'Pending',
+                    date: (document.getElementById('estDate')||{}).value || new Date().toISOString().split('T')[0],
+                    lineItems: [], total: '0', status: '_draft', layouts: []
+                });
+                saveData();
+            }
+            document.getElementById('estEditId').value = window._tempEstId;
+            openLayoutModal('estimate', window._tempEstId);
+        }
+
+
         function openEditEstimateModal(id) {
             var doc = (appData.estimates||[]).find(function(e){ return e.id === id; });
             if (!doc) return;
@@ -4617,6 +4736,7 @@
 
         function openEstimateModal() {
             document.getElementById('estEditId').value = ''; // clear any pending edit
+            window._tempEstId = null;
             document.getElementById('estimateForm').reset();
             estServices = [];
             var container = document.getElementById('estimateServices');
@@ -4952,6 +5072,16 @@
                 }
                 document.getElementById('estEditId').value = '';
             } else {
+                // New estimate — check if there was a temp draft with layouts
+                if (window._tempEstId) {
+                    var tmpEst = (appData.estimates||[]).find(function(e){return e.id===window._tempEstId;});
+                    if (tmpEst && tmpEst.layouts && tmpEst.layouts.length) {
+                        estimate.layouts = tmpEst.layouts.slice();
+                    }
+                    // Remove temp draft
+                    appData.estimates = appData.estimates.filter(function(e){return e.id!==window._tempEstId;});
+                    window._tempEstId = null;
+                }
                 appData.estimates.push(estimate);
             }
             saveData();
@@ -6502,18 +6632,10 @@
         var _layoutColor   = '#1e293b';
         var _layoutStroke  = 4;
         var _layoutDrawing = false;
-        var _layoutStartX  = 0;
-        var _layoutStartY  = 0;
+        var _layoutStartX  = 0, _layoutStartY = 0;
         var _layoutHistory = [];
         var _layoutCtx     = null;
         var _layoutCanvas  = null;
-        var _layoutCtx     = null;
-        var _layoutDrawing = false;
-        var _layoutTool    = 'pen';
-        var _layoutColor   = '#1e293b';
-        var _layoutStroke  = 4;
-        var _layoutStartX  = 0, _layoutStartY = 0;
-        var _layoutHistory = [];
         var _layoutAttachFor = { type: null, id: null };
         var _shiftDown = false;
 
@@ -6657,11 +6779,15 @@
         function bindLayoutCanvas() {
             var c = _layoutCanvas;
             if (!c) return;
-            // Remove old handlers by cloning
-            var newC = c.cloneNode(true);
-            c.parentNode.replaceChild(newC, c);
-            _layoutCanvas = newC;
-            c = newC;
+
+            // Remove old handlers cleanly using a bound-flag instead of cloneNode
+            // (cloneNode would break _layoutCtx since it points to the original canvas)
+            if (c._layoutBound) {
+                c.onmousedown = null; c.onmousemove = null; c.onmouseup = null; c.onmouseleave = null;
+                c.ontouchstart = null; c.ontouchmove = null; c.ontouchend = null;
+            }
+            c._layoutBound = true;
+
             var _snap = null;
 
             function startDraw(e) {
@@ -7094,18 +7220,8 @@
             document.addEventListener('keydown',function(e){if(e.code==='Space'){_spaceDown=true;if(document.getElementById('qtyDrawPanel').style.display!=='none')c.style.cursor='grab';}});
             document.addEventListener('keyup',  function(e){if(e.code==='Space'){_spaceDown=false;c.style.cursor=_qdMode==='move'?'grab':'crosshair';}});
 
-            // Zoom with wheel
-            c.addEventListener('wheel', function(e){
-                e.preventDefault();
-                var s=screenPos(e);
-                var wBefore=toWorld(s.x,s.y);
-                var delta=e.deltaY<0?1.12:0.89;
-                _qdZoom=Math.max(0.15,Math.min(10,_qdZoom*delta));
-                // keep point under cursor fixed
-                _qdPan.x=s.x-wBefore.x*_qdZoom;
-                _qdPan.y=s.y-wBefore.y*_qdZoom;
-                qdRedraw();
-            },{passive:false});
+            // Scroll wheel now just scrolls the page — zoom via +/- buttons only
+            // (wheel zoom removed per user request)
 
             var _mouseDownScreen=null;
             // ── MOUSE DOWN ──
