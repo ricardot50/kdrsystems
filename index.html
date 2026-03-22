@@ -1262,7 +1262,7 @@
 
             <!-- Quantity Calculator -->
             <div id="qtycalc" class="tab-content">
-                <h2 class="text-3xl font-bold mb-1"> Fence Quantity Calculator</h2>
+                <h2 class="text-3xl font-bold mb-1">🧱 Fence Quantity Calculator</h2>
                 <p class="text-sm text-gray-700 mb-6">Pick your material, enter your measured linear feet — get an exact material list instantly.</p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -2606,14 +2606,14 @@
         // Follow the setup guide to get these values from your Firebase Console
         // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
         // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
   storageBucket: "kdrsystems-c269c.firebasestorage.app",
   messagingSenderId: "436571279407",
   appId: "1:436571279407:web:eeb521438b8ff87cd6b6da"
-};
+};;
 
         // Block app from starting if config is still placeholder
         (function() {
@@ -3384,19 +3384,6 @@
             var el = document.getElementById('saveIndicator');
             if (!el) return;
             if (status === 'saving') {
-                el.textContent = 'Saving...'; el.style.color = '#f59e0b'; el.style.display = 'inline';
-            } else if (status === 'saved') {
-                el.textContent = 'Saved ✓'; el.style.color = '#22c55e'; el.style.display = 'inline';
-                setTimeout(function() { el.style.display = 'none'; }, 2500);
-            } else {
-                el.textContent = 'Retrying...'; el.style.color = '#ef4444'; el.style.display = 'inline';
-            }
-        }
-
-        function showSaveStatus(status) {
-            var el = document.getElementById('saveIndicator');
-            if (!el) return;
-            if (status === 'saving') {
                 el.textContent = 'Saving...';
                 el.style.color = '#f59e0b';
                 el.style.display = 'inline';
@@ -3629,7 +3616,7 @@
                 
                 if (timeUntilJob > 0 && timeUntilJob <= notificationMs) {
                     const notificationId = 'job-' + job.id;
-                    const exists = appData.notifications.find(function(n) { return n.id === notificationId; });
+                    const exists = appData.notifications.find(function(n) { return n.id === notificationId; }) || _dismissedNotifIds[notificationId];
                     
                     if (!exists) {
                         const hoursUntil = Math.round(timeUntilJob / (60 * 60 * 1000));
@@ -3664,7 +3651,7 @@
                         
                         if (shouldRemind) {
                             const notificationId = 'invoice-' + invoice.id + '-day' + daysSinceSent;
-                            const exists = appData.notifications.find(function(n) { return n.id === notificationId; });
+                            const exists = appData.notifications.find(function(n) { return n.id === notificationId; }) || _dismissedNotifIds[notificationId];
                             
                             if (!exists) {
                                 appData.notifications.push({
@@ -3687,7 +3674,7 @@
                 if (est.activity && est.activity.length > 0) {
                     est.activity.forEach(function(a) {
                         var nId = 'est-activity-' + est.id + '-' + a.date;
-                        var exists = appData.notifications.find(function(n) { return n.id === nId; });
+                        var exists = appData.notifications.find(function(n) { return n.id === nId; }) || _dismissedNotifIds[nId];
                         if (!exists) {
                             appData.notifications.push({
                                 id: nId,
@@ -3762,9 +3749,18 @@
             }
         }
 
+        // Track dismissed notification IDs so checkNotifications doesn't re-add them
+        var _dismissedNotifIds = (function() {
+            try { return JSON.parse(localStorage.getItem('kdr_dismissed_notifs') || '{}'); } catch(e) { return {}; }
+        })();
+
         function clearAllNotifications() {
+            // Remember all current IDs as dismissed so they don't re-appear
+            (appData.notifications||[]).forEach(function(n){ _dismissedNotifIds[n.id]=true; });
+            try { localStorage.setItem('kdr_dismissed_notifs', JSON.stringify(_dismissedNotifIds)); } catch(e) {}
             appData.notifications = [];
-            saveData();
+            _saveConfig();          // saves notifications:[] explicitly to Firestore config
+            _lsSave();
             updateNotificationBadge();
             renderNotifications();
         }
@@ -4141,6 +4137,7 @@
             kdrConfirm('Delete customer?', 'This cannot be undone.', 'Delete', function() {
                 appData.customers = appData.customers.filter(function(c) { return c.id !== id; });
                 deleteCustomerDoc(id);
+                _lsSave();
                 renderCustomers();
                 updateDashboard();
             });
@@ -4574,7 +4571,8 @@
         function deleteTemplate(id) {
             kdrConfirm('Delete template?', 'This cannot be undone.', 'Delete', function() {
                 appData.templates = appData.templates.filter(function(t) { return t.id !== id; });
-                saveData();
+                deleteTemplateDoc(id);
+                _lsSave();
                 renderTemplates();
             });
         }
@@ -5368,11 +5366,14 @@
             kdrConfirm('Delete this ' + type + '?', 'This cannot be undone.', 'Delete', function() {
                 if (type === 'estimate') {
                     appData.estimates = appData.estimates.filter(function(e) { return e.id !== id; });
+                    deleteEstimateDoc(id);          // actually delete from Firestore
                 } else {
                     appData.invoices = appData.invoices.filter(function(i) { return i.id !== id; });
+                    deleteInvoiceDoc(id);           // actually delete from Firestore
                 }
-                saveData();
+                _lsSave();                          // update localStorage immediately
                 renderDocuments();
+                updateDashboard();
             });
         }
 
@@ -6055,7 +6056,11 @@
             document.getElementById('dashRevenueTarget').textContent = '$' + revenue.toFixed(2);
             document.getElementById('dashExpenses').textContent      = '$' + expenses.toFixed(2);
             document.getElementById('dashTeamCosts').textContent     = '$' + teamCost.toFixed(2);
-            document.getElementById('dashProfit').textContent        = '$' + profit.toFixed(2);
+            // Actual profit = paid revenue minus team+expense overhead
+            var actualRevenue = paid;
+            var monthlyOverhead = teamCost + expenses;
+            var actualProfit = actualRevenue > 0 ? Math.max(0, actualRevenue - monthlyOverhead) : profit;
+            document.getElementById('dashProfit').textContent = '$' + (actualRevenue > 0 ? actualProfit : profit).toFixed(2);
 
             // ── Estimates breakdown widget ──────────────────────────────────
             var ests = appData.estimates || [];
@@ -6887,34 +6892,41 @@
             var pos = _getPos(e, _layoutCanvas);
             var inp = document.getElementById('layoutTextInput');
             var wrap = document.getElementById('layoutCanvasWrap');
-            if (!inp || !wrap) return;
-            var r = _layoutCanvas.getBoundingClientRect();
-            var wrapR = wrap.getBoundingClientRect();
-            var scaleX = r.width / _layoutCanvas.width;
-            var scaleY = r.height / _layoutCanvas.height;
-            var left = (r.left - wrapR.left + pos.x * scaleX);
-            var top  = (r.top  - wrapR.top  + pos.y * scaleY - 18);
-            inp.style.left    = Math.max(0, Math.min(left, wrap.offsetWidth - 160)) + 'px';
-            inp.style.top     = Math.max(0, top) + 'px';
+            if (!inp || !wrap || !_layoutCanvas) return;
+            // Position the input relative to the wrap container
+            var canvasR = _layoutCanvas.getBoundingClientRect();
+            var wrapR   = wrap.getBoundingClientRect();
+            var scaleX  = _layoutCanvas.width  / canvasR.width;
+            var scaleY  = _layoutCanvas.height / canvasR.height;
+            var screenX = pos.x / scaleX;  // canvas pixel → screen pixel
+            var screenY = pos.y / scaleY;
+            var left = canvasR.left - wrapR.left + screenX;
+            var top  = canvasR.top  - wrapR.top  + screenY - 20;
+            inp.style.left    = Math.max(4, Math.min(left, wrap.offsetWidth - 180)) + 'px';
+            inp.style.top     = Math.max(4, top) + 'px';
             inp.style.color   = _layoutColor;
-            inp.style.fontSize= Math.round((_layoutStroke+1)*3.5+12) + 'px';
+            var fSize = Math.max(12, Math.round((_layoutStroke + 1) * 4 + 10));
+            inp.style.fontSize= fSize + 'px';
             inp.style.display = 'block';
             inp.value = ''; inp.focus();
             var _textPos = { x: pos.x, y: pos.y };
             inp.onkeydown = function(ev) {
+                ev.stopPropagation();
                 if (ev.key === 'Enter') {
-                    var txt = inp.value.trim(); inp.style.display='none';
-                    if (!txt) return;
-                    var fSize = parseInt(inp.style.fontSize)||16;
+                    var txt = inp.value.trim();
+                    inp.style.display = 'none';
+                    if (!txt || !_layoutCtx) return;
+                    _layoutCtx.save();
                     _layoutCtx.font = 'bold ' + fSize + 'px Inter, Arial, sans-serif';
                     _layoutCtx.fillStyle = _layoutColor;
-                    _layoutCtx.fillText(txt, _textPos.x, _textPos.y + fSize*0.35);
+                    _layoutCtx.textBaseline = 'middle';
+                    _layoutCtx.fillText(txt, _textPos.x, _textPos.y);
+                    _layoutCtx.restore();
                     _pushLayoutHistory();
                 }
-                if (ev.key === 'Escape') inp.style.display='none';
-                ev.stopPropagation();
+                if (ev.key === 'Escape') inp.style.display = 'none';
             };
-            inp.onblur = function() { setTimeout(function(){ inp.style.display='none'; }, 150); };
+            inp.onblur = function() { setTimeout(function(){ inp.style.display='none'; }, 200); };
         }
 
         function saveLayoutDrawing() {
