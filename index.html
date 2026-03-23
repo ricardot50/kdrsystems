@@ -897,7 +897,7 @@
             <div id="customers" class="tab-content">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-3xl font-bold">Customers</h2>
-                    <button class="btn-primary" onclick="openModal('customerModal')">Add Customer</button>
+                    <button class="btn-primary" onclick="openAddCustomerModal()">Add Customer</button>
                 </div>
                 
                 <div class="card">
@@ -1642,10 +1642,11 @@
     <div id="customerModal" class="modal">
         <div class="modal-content modal-content-small">
             <div class="p-6 border-b border-gray-200">
-                <h3 class="text-2xl font-bold">Add Customer</h3>
+                <h3 class="text-2xl font-bold" id="customerModalTitle">Add Customer</h3>
             </div>
             <div class="p-6">
                 <form id="customerForm" class="space-y-4">
+                    <input type="hidden" id="custEditId" value="">
                     <input type="text" id="custName" placeholder="Customer Name" required>
                     <input type="email" id="custEmail" placeholder="Email">
                     <input type="tel" id="custPhone" placeholder="Phone">
@@ -1654,7 +1655,7 @@
                         <div class="addr-drop" id="custAddress_drop"></div>
                     </div>
                     <div class="flex gap-3">
-                        <button type="submit" class="btn-primary flex-1">Add Customer</button>
+                        <button type="submit" class="btn-primary flex-1" id="custSubmitBtn">Add Customer</button>
                         <button type="button" class="btn-secondary flex-1" onclick="closeModal('customerModal')">Cancel</button>
                     </div>
                 </form>
@@ -2613,7 +2614,7 @@
   storageBucket: "kdrsystems-c269c.firebasestorage.app",
   messagingSenderId: "436571279407",
   appId: "1:436571279407:web:eeb521438b8ff87cd6b6da"
-};;
+};
 
         // Block app from starting if config is still placeholder
         (function() {
@@ -4105,14 +4106,58 @@
         // Customers
         document.getElementById('customerForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            var c = { id: Date.now().toString(), name: document.getElementById('custName').value, email: document.getElementById('custEmail').value, phone: document.getElementById('custPhone').value, address: document.getElementById('custAddress').value };
-            appData.customers.push(c);
-            saveCustomer(c);
+            var editId = document.getElementById('custEditId').value;
+            var data = {
+                name:    document.getElementById('custName').value,
+                email:   document.getElementById('custEmail').value,
+                phone:   document.getElementById('custPhone').value,
+                address: document.getElementById('custAddress').value
+            };
+            if (editId) {
+                // Update existing customer
+                var idx = appData.customers.findIndex(function(c){ return c.id === editId; });
+                if (idx >= 0) {
+                    data.id = editId;
+                    appData.customers[idx] = data;
+                    saveCustomer(data);
+                    toast('Customer updated ✓');
+                }
+                document.getElementById('custEditId').value = '';
+            } else {
+                // New customer
+                var c = Object.assign({ id: Date.now().toString() }, data);
+                appData.customers.push(c);
+                saveCustomer(c);
+            }
             this.reset();
+            document.getElementById('custEditId').value = '';
+            document.getElementById('customerModalTitle').textContent = 'Add Customer';
+            document.getElementById('custSubmitBtn').textContent = 'Add Customer';
             closeModal('customerModal');
             renderCustomers();
             updateDashboard();
         });
+
+        function openAddCustomerModal() {
+            document.getElementById('custEditId').value = '';
+            document.getElementById('customerForm').reset();
+            document.getElementById('customerModalTitle').textContent = 'Add Customer';
+            document.getElementById('custSubmitBtn').textContent = 'Add Customer';
+            openModal('customerModal');
+        }
+
+        function editCustomer(id) {
+            var c = appData.customers.find(function(x){ return x.id === id; });
+            if (!c) return;
+            document.getElementById('custEditId').value = id;
+            document.getElementById('custName').value    = c.name    || '';
+            document.getElementById('custEmail').value   = c.email   || '';
+            document.getElementById('custPhone').value   = c.phone   || '';
+            document.getElementById('custAddress').value = c.address || '';
+            document.getElementById('customerModalTitle').textContent = 'Edit Customer';
+            document.getElementById('custSubmitBtn').textContent = 'Save Changes';
+            openModal('customerModal');
+        }
 
         function renderCustomers() {
             const tbody = document.getElementById('customersTable');
@@ -4126,7 +4171,8 @@
                     '<td class="py-3 px-4">' + (c.email || '-') + '</td>' +
                     '<td class="py-3 px-4">' + (c.phone || '-') + '</td>' +
                     '<td class="py-3 px-4">' + (c.address || '-') + '</td>' +
-                    '<td class="py-3 px-4 text-right">' +
+                    '<td class="py-3 px-4 text-right" style="white-space:nowrap;">' +
+                        '<button class="btn-secondary" style="margin-right:6px;padding:6px 12px;font-size:12px;" onclick="editCustomer(\'' + c.id + '\')">✏️ Edit</button>' +
                         '<button class="btn-danger" onclick="deleteCustomer(\'' + c.id + '\')">Delete</button>' +
                     '</td>' +
                 '</tr>';
@@ -4735,6 +4781,9 @@
         function openEstimateModal() {
             document.getElementById('estEditId').value = ''; // clear any pending edit
             window._tempEstId = null;
+            // Clear layout thumbnails from previous estimate
+            var lt = document.getElementById('estLayoutThumbs');
+            if (lt) lt.innerHTML = '';
             document.getElementById('estimateForm').reset();
             estServices = [];
             var container = document.getElementById('estimateServices');
@@ -5076,8 +5125,9 @@
                     if (tmpEst && tmpEst.layouts && tmpEst.layouts.length) {
                         estimate.layouts = tmpEst.layouts.slice();
                     }
-                    // Remove temp draft
+                    // Remove temp draft from memory AND Firestore
                     appData.estimates = appData.estimates.filter(function(e){return e.id!==window._tempEstId;});
+                    _deleteRecord('estimates', window._tempEstId); // delete from Firestore too
                     window._tempEstId = null;
                 }
                 appData.estimates.push(estimate);
@@ -6682,11 +6732,16 @@
             if (docType === 'contract') {
                 var c = (appData.contracts||[]).find(function(x){ return x.id === docId; });
                 if (c) { if (!c.layouts) c.layouts=[]; c.layouts.push(lid); }
-                saveData(); updateContractLayoutThumbs(docId);
+                // Save just this contract immediately to avoid race with Firestore listener
+                if (c) { var _col2 = db ? db.collection('users').doc(currentUserId).collection('contracts') : null; if(_col2) _col2.doc(String(docId)).set(c,{merge:true}).catch(function(){}); }
+                _lsSave();
+                updateContractLayoutThumbs(docId);
             } else {
                 var est = (appData.estimates||[]).find(function(x){ return x.id === docId; });
                 if (est) { if (!est.layouts) est.layouts=[]; est.layouts.push(lid); }
-                saveData(); updateEstLayoutThumbs(docId);
+                // Save just this estimate immediately (no debounce) so Firestore listener can't race
+                saveEstimate(est);
+                updateEstLayoutThumbs(docId);
             }
             var msg = document.getElementById('layoutStatusMsg');
             if (msg) { msg.textContent = '✓ Layout saved and attached!'; msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; },3000); }
@@ -6954,11 +7009,15 @@
             if (docType === 'contract') {
                 var c = (appData.contracts||[]).find(function(x){ return x.id === docId; });
                 if (c) { if (!c.layouts) c.layouts=[]; c.layouts.push(lid); }
-                saveData(); updateContractLayoutThumbs(docId);
+                // Save just this contract immediately to avoid race with Firestore listener
+                if (c) { var _col2 = db ? db.collection('users').doc(currentUserId).collection('contracts') : null; if(_col2) _col2.doc(String(docId)).set(c,{merge:true}).catch(function(){}); }
+                _lsSave();
+                updateContractLayoutThumbs(docId);
             } else {
                 var est = (appData.estimates||[]).find(function(x){ return x.id === docId; });
                 if (est) { if (!est.layouts) est.layouts=[]; est.layouts.push(lid); }
-                saveData(); updateEstLayoutThumbs(docId);
+                saveEstimate(est);
+                updateEstLayoutThumbs(docId);
             }
             var msg = document.getElementById('layoutStatusMsg');
             if (msg) { msg.textContent='Attached to '+docType+' ✓'; msg.style.display='block'; setTimeout(function(){ msg.style.display='none'; },2500); }
@@ -6988,9 +7047,23 @@
         function renderSavedLayoutThumbs() {
             var container = document.getElementById('savedLayoutThumbs');
             if (!container) return;
-            var layouts = (appData.layouts||[]).slice().reverse().slice(0,10);
-            if (!layouts.length) { container.innerHTML='<span style="font-size:12px;color:#cbd5e1;">None saved yet</span>'; return; }
-            container.innerHTML = layouts.map(function(l) {
+            var currentId = _layoutAttachFor && _layoutAttachFor.id;
+            var allLayouts = (appData.layouts||[]).slice().reverse().slice(0,20);
+
+            // Only show layouts that belong to the CURRENT estimate/contract
+            // so layouts from other estimates are never accidentally re-attached
+            var contextLayouts = currentId
+                ? allLayouts.filter(function(l){
+                    return (l.attachedTo||[]).some(function(a){ return a.id===currentId; });
+                  })
+                : allLayouts.filter(function(l){ return !l.attachedTo||!l.attachedTo.length; });
+
+            if (!contextLayouts.length) {
+                container.innerHTML = '<span style="font-size:12px;color:#cbd5e1;">' +
+                    (currentId ? 'No layouts for this estimate yet' : 'None saved yet') + '</span>';
+                return;
+            }
+            container.innerHTML = contextLayouts.map(function(l) {
                 return '<div style="position:relative;" title="' + l.name + '">' +
                     '<img src="' + l.dataUrl + '" onclick="loadLayoutIntoCanvas(\'' + l.id + '\')" style="height:44px;width:72px;object-fit:cover;border-radius:6px;border:2px solid #e2e8f0;cursor:pointer;">' +
                     '<button onclick="deleteLayout(\'' + l.id + '\')" style="position:absolute;top:-5px;right:-5px;width:16px;height:16px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:9px;line-height:16px;cursor:pointer;padding:0;">×</button>' +
