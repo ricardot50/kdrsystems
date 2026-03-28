@@ -706,7 +706,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
-                        <h1 class="logo-text">KDRSYSTEMS</h1>
+                        <h1 class="logo-text" id="logoTap" onclick="kdrDebugTap()" style="user-select:none;">KDRSYSTEMS</h1>
                         <p class="text-sm text-gray-700 ml-4" id="headerBusinessSubtitle">Business Management System</p>
                     </div>
                     <div class="flex items-center gap-2">
@@ -1632,6 +1632,19 @@
                         </div>
                         
                         <button class="btn-primary w-full" onclick="saveSettings()">Save Settings</button>
+                    </div>
+                </div>
+
+                <!-- Firebase Sync Config -->
+                <div class="card max-w-3xl mt-6" style="border:2px solid #1e293b;">
+                    <h3 class="font-bold text-base mb-2">🔥 Firebase Sync Config</h3>
+                    <p class="text-xs text-gray-700 mb-4">Your Firebase credentials allow data to sync across all your devices in real time. Paste your config once per device.</p>
+                    <div id="fbConfigStatus" style="margin-bottom:12px;"></div>
+                    <textarea id="fbConfigSettingsInput" rows="5" placeholder='Paste your Firebase config JSON here...'
+                        style="width:100%;font-size:12px;font-family:monospace;border-radius:8px;border:1px solid #e2e8f0;padding:10px;margin-bottom:10px;box-sizing:border-box;"></textarea>
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn-primary flex-1" onclick="saveFbConfigFromSettings()">💾 Save & Reconnect</button>
+                        <button class="btn-secondary" onclick="clearFbConfig()" style="white-space:nowrap;">🗑 Clear Config</button>
                     </div>
                 </div>
             </div>
@@ -2605,9 +2618,19 @@
         // FIREBASE CONFIG — PASTE YOUR CONFIG HERE
         // =============================================
         // Follow the setup guide to get these values from your Firebase Console
-        // ⚠️  REPLACE THESE WITH YOUR REAL VALUES FROM FIREBASE CONSOLE
-        // ⚠️  If you see "YOUR_" below, sync WILL NOT work — add your real config
-       const firebaseConfig = {
+        // ── Firebase Config ───────────────────────────────────────────────────
+        // Config is loaded from localStorage (set via the setup screen below)
+        // so you never need to edit this file directly.
+        function _getFirebaseConfig() {
+            try {
+                var saved = localStorage.getItem('kdr_firebase_config');
+                if (saved) return JSON.parse(saved);
+            } catch(e) {}
+            return null;
+        }
+
+        const firebaseConfig = _getFirebaseConfig() || {
+            const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -2616,17 +2639,67 @@
   appId: "1:436571279407:web:eeb521438b8ff87cd6b6da"
 };
 
-        // Block app from starting if config is still placeholder
+        // Show setup screen if config is still placeholder
         (function() {
             if (firebaseConfig.apiKey === "YOUR_API_KEY_HERE") {
                 document.addEventListener('DOMContentLoaded', function() {
-                    document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0f172a;font-family:Inter,sans-serif;">' +
-                        '<div style="background:#1e293b;border:2px solid #ff6b35;border-radius:16px;padding:40px;max-width:500px;text-align:center;">' +
-                        '<div style="font-size:40px;margin-bottom:16px;">⚠️</div>' +
-                        '<h2 style="color:#ff6b35;font-size:20px;font-weight:800;margin:0 0 12px;">Firebase Config Missing</h2>' +
-                        '<p style="color:#94a3b8;font-size:14px;margin:0 0 20px;">Open index.html, find the firebaseConfig section near the top, and replace the placeholder values with your real Firebase project credentials.</p>' +
-                        '<p style="color:#64748b;font-size:12px;">Firebase Console → Project Settings → Your apps → Config</p>' +
-                        '</div></div>';
+                    document.body.innerHTML = `
+                    <div style="min-height:100vh;background:#0f172a;display:flex;align-items:center;justify-content:center;padding:20px;font-family:Inter,Arial,sans-serif;">
+                      <div style="background:#1e293b;border:2px solid #ff6b35;border-radius:20px;padding:36px;max-width:560px;width:100%;">
+                        <div style="text-align:center;margin-bottom:24px;">
+                          <div style="font-size:36px;margin-bottom:8px;">🔥</div>
+                          <h2 style="color:#ff6b35;font-size:22px;font-weight:800;margin:0 0 8px;">Connect Firebase to Sync Data</h2>
+                          <p style="color:#94a3b8;font-size:13px;margin:0;">Paste your Firebase config below — your data will sync in real time across all devices.</p>
+                        </div>
+
+                        <div style="background:#0f172a;border-radius:10px;padding:16px;margin-bottom:16px;font-size:12px;color:#64748b;line-height:1.7;">
+                          <strong style="color:#ff6b35;">How to get your config:</strong><br>
+                          1. Go to <a href="https://console.firebase.google.com" target="_blank" style="color:#60a5fa;">console.firebase.google.com</a><br>
+                          2. Open your project → Project Settings (gear icon)<br>
+                          3. Scroll to "Your apps" → click the web app (&lt;/&gt;)<br>
+                          4. Copy the <code style="color:#ff6b35;">firebaseConfig</code> object and paste it below
+                        </div>
+
+                        <div style="margin-bottom:8px;">
+                          <label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Paste your firebaseConfig object (or just the JSON values):</label>
+                          <textarea id="fbConfigInput" rows="7" placeholder='{\n  "apiKey": "AIza...",\n  "authDomain": "myapp.firebaseapp.com",\n  "projectId": "myapp-12345",\n  "storageBucket": "myapp-12345.appspot.com",\n  "messagingSenderId": "123456789",\n  "appId": "1:123...:web:abc..."\n}'
+                            style="width:100%;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:12px;color:#e2e8f0;font-size:12px;font-family:monospace;resize:vertical;box-sizing:border-box;"></textarea>
+                        </div>
+
+                        <p id="fbConfigError" style="color:#ef4444;font-size:12px;margin:0 0 12px;display:none;"></p>
+
+                        <button onclick="saveFbConfig()" style="width:100%;padding:14px;background:#ff6b35;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;">
+                          🔗 Connect & Save Config
+                        </button>
+
+                        <p style="color:#475569;font-size:11px;text-align:center;margin-top:12px;">
+                          Your config is saved in this browser only. Repeat this once on each device.
+                        </p>
+                      </div>
+                    </div>`;
+
+                    window.saveFbConfig = function() {
+                        var raw = document.getElementById('fbConfigInput').value.trim();
+                        var errEl = document.getElementById('fbConfigError');
+                        errEl.style.display = 'none';
+
+                        // Try to extract JSON — handle both "const x = {...}" and raw {...}
+                        var jsonStr = raw;
+                        var match = raw.match(/\{[\s\S]*\}/);
+                        if (match) jsonStr = match[0];
+
+                        try {
+                            // Replace JS keys (unquoted) with JSON keys (quoted)
+                            jsonStr = jsonStr.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)(\s*:)/g, '$1"$2"$3');
+                            var cfg = JSON.parse(jsonStr);
+                            if (!cfg.apiKey || !cfg.projectId) throw new Error('Missing apiKey or projectId');
+                            localStorage.setItem('kdr_firebase_config', JSON.stringify(cfg));
+                            window.location.reload();
+                        } catch(e) {
+                            errEl.textContent = 'Could not parse config: ' + e.message + '. Make sure you copied the full { } object.';
+                            errEl.style.display = 'block';
+                        }
+                    };
                 });
             }
         })();
@@ -2641,7 +2714,8 @@
             // settings() MUST come before getFirestore / enablePersistence
             // experimentalForceLongPolling = true fixes Safari/iOS WebSocket drops
             db = firebase.firestore();
-            db.settings({ experimentalForceLongPolling: true });
+            // Do NOT use enablePersistence — it causes stuck "Saving..." on mobile Chrome
+            // Our own localStorage layer handles offline caching instead
 
         } catch(e) {
             console.error('Firebase init error:', e);
@@ -3285,9 +3359,11 @@
             if (!currentUserId || !db || !record || !record.id) return;
             _lsSave();
             showSaveStatus('saving');
+            var _done = false;
+            var _t = setTimeout(function(){ if(!_done){ _done=true; showSaveStatus('timeout'); } }, 12000);
             _col(colName).doc(String(record.id)).set(_stripPhoto(record), { merge: true })
-                .then(function() { showSaveStatus('saved'); })
-                .catch(function(e) { console.error('Save '+colName+' error:', e); showSaveStatus('error'); });
+                .then(function() { _done=true; clearTimeout(_t); showSaveStatus('saved'); })
+                .catch(function(e) { _done=true; clearTimeout(_t); console.error('Save '+colName+' error:', e); showSaveStatus('error', e.code); });
         }
 
         function _deleteRecord(colName, id) {
@@ -3340,40 +3416,88 @@
 
         // ── saveData: batch-saves everything (used for bulk operations) ──────
         var _saveTimer = null;
+        var _saveQueue = []; // pending individual writes
+        var _saveInFlight = false;
+
         function saveData() {
             if (!currentUserId) return;
-            _lsSave();
+            _lsSave(); // always save to localStorage immediately
             showSaveStatus('saving');
             if (!db) { showSaveStatus('saved'); return; }
+
+            // Debounce — collect rapid calls then flush
             if (_saveTimer) clearTimeout(_saveTimer);
-            _saveTimer = setTimeout(function() {
-                _saveTimer = null;
-                var batch = db.batch();
-                var base  = db.collection('users').doc(currentUserId);
+            _saveTimer = setTimeout(_flushSaveQueue, 300);
 
-                // Config doc
-                var cfg = { settings: JSON.parse(JSON.stringify(appData.settings)), calculator: appData.calculator, teamMembers: appData.teamMembers, expenses: appData.expenses, notifications: appData.notifications, scheduledJobs: appData.scheduledJobs };
-                cfg.settings.logo = '';
-                batch.set(base.collection('config').doc('main'), cfg, { merge: true });
+            // Queue all current records for saving
+            _saveQueue = [];
+            var base = db.collection('users').doc(currentUserId);
 
-                // All subcollection records
-                [['customers',appData.customers],['estimates',appData.estimates],['invoices',appData.invoices],
-                 ['materials',appData.materials],['templates',appData.templates],['terms',appData.terms],
-                 ['contracts',appData.contracts]
-                ].forEach(function(pair) {
-                    (pair[1]||[]).forEach(function(rec) {
-                        if (rec && rec.id) batch.set(base.collection(pair[0]).doc(String(rec.id)), _stripPhoto(rec), { merge: true });
-                    });
+            // Config
+            var cfg = {
+                settings: JSON.parse(JSON.stringify(appData.settings)),
+                calculator: appData.calculator,
+                teamMembers: appData.teamMembers,
+                expenses: appData.expenses,
+                notifications: appData.notifications,
+                scheduledJobs: appData.scheduledJobs
+            };
+            cfg.settings.logo = '';
+            _saveQueue.push({ ref: base.collection('config').doc('main'), data: cfg });
+
+            // Records
+            [['customers',appData.customers],['estimates',appData.estimates],
+             ['invoices',appData.invoices],['materials',appData.materials],
+             ['templates',appData.templates],['terms',appData.terms],
+             ['contracts',appData.contracts]
+            ].forEach(function(pair) {
+                (pair[1]||[]).forEach(function(rec) {
+                    if (rec && rec.id) {
+                        _saveQueue.push({ ref: base.collection(pair[0]).doc(String(rec.id)), data: _stripPhoto(rec) });
+                    }
                 });
+            });
+        }
 
-                batch.commit()
-                    .then(function() { showSaveStatus('saved'); })
+        function _flushSaveQueue() {
+            _saveTimer = null;
+            if (!_saveQueue.length || !currentUserId || !db) {
+                showSaveStatus('saved');
+                return;
+            }
+            if (_saveInFlight) return; // already writing, will retry
+            _saveInFlight = true;
+
+            var items = _saveQueue.slice();
+            _saveQueue = [];
+            var done = 0, total = items.length, failed = false;
+
+            var _timeout = setTimeout(function() {
+                if (!failed) { failed = true; _saveInFlight = false; showSaveStatus('timeout'); }
+            }, 15000);
+
+            items.forEach(function(item) {
+                item.ref.set(item.data, { merge: true })
+                    .then(function() {
+                        done++;
+                        if (done === total && !failed) {
+                            clearTimeout(_timeout);
+                            _saveInFlight = false;
+                            showSaveStatus('saved');
+                            // Flush any new items queued while we were writing
+                            if (_saveQueue.length) _flushSaveQueue();
+                        }
+                    })
                     .catch(function(err) {
-                        console.error('Batch save failed:', err);
-                        showSaveStatus('error');
-                        setTimeout(function() { saveData(); }, 5000);
+                        clearTimeout(_timeout);
+                        if (!failed) {
+                            failed = true;
+                            _saveInFlight = false;
+                            console.error('Save failed:', err.code, err.message);
+                            showSaveStatus('error', err.code || err.message);
+                        }
                     });
-            }, 800);
+            });
         }
 
         document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') { _lsSave(); } });
@@ -3381,22 +3505,93 @@
         window.addEventListener('beforeunload', function() { _lsSave(); });
         window.addEventListener('online', function() { if (currentUserId) { loadData(); } });
 
-        function showSaveStatus(status) {
+        function showSaveStatus(status, detail) {
             var el = document.getElementById('saveIndicator');
             if (!el) return;
             if (status === 'saving') {
-                el.textContent = 'Saving...';
+                el.innerHTML = 'Saving...';
                 el.style.color = '#f59e0b';
                 el.style.display = 'inline';
+                el.style.cursor = 'default';
+                el.onclick = null;
             } else if (status === 'saved') {
-                el.textContent = 'Saved';
+                el.innerHTML = 'Saved ✓';
                 el.style.color = '#22c55e';
                 el.style.display = 'inline';
+                el.style.cursor = 'default';
+                el.onclick = null;
                 setTimeout(function() { el.style.display = 'none'; }, 3000);
-            } else {
-                el.textContent = 'Retrying...';
+            } else if (status === 'timeout') {
+                el.innerHTML = '⚠️ Sync stuck — <u style="cursor:pointer;">tap to fix</u>';
                 el.style.color = '#ef4444';
                 el.style.display = 'inline';
+                el.style.cursor = 'pointer';
+                el.onclick = function() { forceReconnect(); };
+            } else {
+                var msg = detail ? ('⚠️ ' + detail) : '⚠️ Sync error';
+                el.innerHTML = msg + ' — <u style="cursor:pointer;">tap to retry</u>';
+                el.style.color = '#ef4444';
+                el.style.display = 'inline';
+                el.style.cursor = 'pointer';
+                el.onclick = function() { forceReconnect(); };
+            }
+        }
+
+        function forceReconnect() {
+            toast('Reconnecting...');
+            showSaveStatus('saving');
+            try {
+                if (db && db.terminate) {
+                    db.terminate().then(function() {
+                        db = firebase.firestore();
+                        setTimeout(function() { loadData(); }, 500);
+                        setTimeout(function() { saveData(); }, 2000);
+                    }).catch(function() { window.location.reload(); });
+                } else {
+                    window.location.reload();
+                }
+
+        // ── Firebase Config helpers (settings tab) ───────────────────────────
+        function _parseFbConfigStr(raw) {
+            var jsonStr = raw.trim();
+            var match = jsonStr.match(/\{[\s\S]*\}/);
+            if (match) jsonStr = match[0];
+            // Quote unquoted JS keys
+            jsonStr = jsonStr.replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)(\s*:)/g, '$1"$2"$3');
+            return JSON.parse(jsonStr);
+        }
+
+        function saveFbConfigFromSettings() {
+            var raw = (document.getElementById('fbConfigSettingsInput')||{}).value || '';
+            var statusEl = document.getElementById('fbConfigStatus');
+            try {
+                var cfg = _parseFbConfigStr(raw);
+                if (!cfg.apiKey || !cfg.projectId) throw new Error('Missing apiKey or projectId');
+                localStorage.setItem('kdr_firebase_config', JSON.stringify(cfg));
+                if (statusEl) statusEl.innerHTML = '<p style="color:#22c55e;font-size:12px;font-weight:600;">✓ Config saved! Reloading to connect...</p>';
+                setTimeout(function(){ window.location.reload(); }, 1200);
+            } catch(e) {
+                if (statusEl) statusEl.innerHTML = '<p style="color:#ef4444;font-size:12px;">Error: ' + e.message + '</p>';
+            }
+        }
+
+        function clearFbConfig() {
+            kdrConfirm('Clear Firebase config?', 'You will need to re-enter it to sync across devices.', 'Clear', function() {
+                localStorage.removeItem('kdr_firebase_config');
+                window.location.reload();
+            });
+        }
+
+        function _populateFbConfigSection() {
+            var statusEl = document.getElementById('fbConfigStatus');
+            var inputEl  = document.getElementById('fbConfigSettingsInput');
+            if (!statusEl || !inputEl) return;
+            var saved = _getFirebaseConfig ? _getFirebaseConfig() : null;
+            if (saved && saved.apiKey !== 'YOUR_API_KEY_HERE') {
+                statusEl.innerHTML = '<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:8px 12px;font-size:12px;color:#166534;margin-bottom:4px;">✓ Connected to project: <strong>' + (saved.projectId||'unknown') + '</strong></div>';
+                inputEl.value = JSON.stringify(saved, null, 2);
+            } else {
+                statusEl.innerHTML = '<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;font-size:12px;color:#92400e;">⚠️ No Firebase config — data is only saved on this device.</div>';
             }
         }
 
@@ -3458,7 +3653,7 @@
             // Record collection listeners
             ['customers','estimates','invoices','materials','templates','terms','contracts'].forEach(function(colName) {
                 _listeners.push(base.collection(colName).onSnapshot(function(snap) {
-                    if (snap.metadata.hasPendingWrites) return;
+                    // Don't skip on hasPendingWrites — we need the listener to always fire
                     var arr = [];
                     snap.forEach(function(d){ arr.push(d.data()); });
                     arr.sort(function(a,b){ return (a.id||'') < (b.id||'') ? -1 : 1; });
@@ -3514,6 +3709,7 @@
             if (tabName === 'templates') renderTemplates();
             if (tabName === 'schedule') renderCalendar();
             if (tabName === 'leads') { renderLeads(); updateLeadCounts(); }
+            if (tabName === 'settings') { setTimeout(_populateFbConfigSection, 50); }
 
             // Close sidebar on mobile after selecting
             closeSidebar();
@@ -9031,6 +9227,50 @@
         });
 
         // ── Toast & Confirm helpers ─────────────────────────────────────────
+        // ── In-app debug panel (tap KDRSYSTEMS logo 5 times) ────────────────
+        var _debugTapCount = 0, _debugTapTimer = null;
+        function kdrDebugTap() {
+            _debugTapCount++;
+            clearTimeout(_debugTapTimer);
+            _debugTapTimer = setTimeout(function(){ _debugTapCount = 0; }, 1500);
+            if (_debugTapCount >= 5) {
+                _debugTapCount = 0;
+                showDebugPanel();
+            }
+        }
+
+        function showDebugPanel() {
+            var info = [
+                'User ID: ' + (currentUserId || 'NOT LOGGED IN'),
+                'DB ready: ' + (!!db),
+                'Auth ready: ' + (!!auth),
+                'Data loaded: ' + dataLoaded,
+                'Customers: ' + (appData.customers||[]).length,
+                'Estimates: ' + (appData.estimates||[]).length,
+                'Invoices: ' + (appData.invoices||[]).length,
+                'Listeners: ' + ((_listeners||[]).length),
+                'Online: ' + navigator.onLine,
+                'User Agent: ' + navigator.userAgent.substring(0,60)
+            ].join('
+');
+
+            var panel = document.createElement('div');
+            panel.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            panel.innerHTML = '<div style="background:#0f172a;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:80vh;overflow-y:auto;">'
+                + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
+                + '<h3 style="color:#ff6b35;font-size:16px;font-weight:800;margin:0;">🔧 Debug Info</h3>'
+                + '<button onclick="this.closest('div[style*=fixed]').remove()" style="background:#1e293b;border:none;color:#94a3b8;font-size:20px;cursor:pointer;border-radius:6px;padding:2px 8px;">×</button>'
+                + '</div>'
+                + '<pre style="color:#e2e8f0;font-size:12px;white-space:pre-wrap;margin:0 0 16px;line-height:1.7;">' + info + '</pre>'
+                + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
+                + '<button onclick="forceReconnect()" style="flex:1;padding:10px;background:#ff6b35;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">🔄 Force Reconnect</button>'
+                + '<button onclick="saveData();toast('Retrying save...');" style="flex:1;padding:10px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">💾 Retry Save</button>'
+                + '<button onclick="window.location.reload()" style="flex:1;padding:10px;background:#64748b;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">↺ Reload</button>'
+                + '</div>'
+                + '</div>';
+            document.body.appendChild(panel);
+        }
+
         var _toastTimer = null;
         function toast(msg, duration) {
             duration = duration || 2200;
