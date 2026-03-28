@@ -2607,7 +2607,7 @@
         // FIREBASE CONFIG — PASTE YOUR CONFIG HERE
         // =============================================
         // ── Firebase Config ───────────────────────────────────────────────────
-        const firebaseConfig = {
+       const firebaseConfig = {
   apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
   authDomain: "kdrsystems-c269c.firebaseapp.com",
   projectId: "kdrsystems-c269c",
@@ -3456,8 +3456,9 @@
                 } else {
                     window.location.reload();
                 }
+            } catch(e) { window.location.reload(); }
+        }
 
-        // ── Firebase Config helpers (settings tab) ───────────────────────────
         // ── loadData: real-time subcollection listeners ──────────────────────
         // Each collection is its own listener. Changes on any device fire
         // only that collection's listener — no full overwrites ever.
