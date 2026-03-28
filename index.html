@@ -2615,6 +2615,7 @@
   messagingSenderId: "436571279407",
   appId: "1:436571279407:web:eeb521438b8ff87cd6b6da"
 };
+
         // ── Firebase init ─────────────────────────────────────────────────
         var auth, db;
         try {
@@ -9112,24 +9113,28 @@
                 'Listeners: ' + ((_listeners||[]).length),
                 'Online: ' + navigator.onLine,
                 'User Agent: ' + navigator.userAgent.substring(0,60)
-            ].join('
-');
+            ].join('\n');
 
             var panel = document.createElement('div');
             panel.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:999999;display:flex;align-items:center;justify-content:center;padding:20px;';
-            panel.innerHTML = '<div style="background:#0f172a;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:80vh;overflow-y:auto;">'
-                + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
-                + '<h3 style="color:#ff6b35;font-size:16px;font-weight:800;margin:0;">🔧 Debug Info</h3>'
-                + '<button onclick="this.closest('div[style*=fixed]').remove()" style="background:#1e293b;border:none;color:#94a3b8;font-size:20px;cursor:pointer;border-radius:6px;padding:2px 8px;">×</button>'
+            var inner = document.createElement('div');
+            inner.style.cssText = 'background:#0f172a;border-radius:16px;padding:24px;max-width:500px;width:100%;max-height:80vh;overflow-y:auto;';
+            inner.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">'
+                + '<h3 style="color:#ff6b35;font-size:16px;font-weight:800;margin:0;">Debug Info</h3>'
+                + '<button id="dbgClose" style="background:#1e293b;border:none;color:#94a3b8;font-size:20px;cursor:pointer;border-radius:6px;padding:2px 8px;">x</button>'
                 + '</div>'
                 + '<pre style="color:#e2e8f0;font-size:12px;white-space:pre-wrap;margin:0 0 16px;line-height:1.7;">' + info + '</pre>'
                 + '<div style="display:flex;gap:8px;flex-wrap:wrap;">'
-                + '<button onclick="forceReconnect()" style="flex:1;padding:10px;background:#ff6b35;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">🔄 Force Reconnect</button>'
-                + '<button onclick="saveData();toast('Retrying save...');" style="flex:1;padding:10px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">💾 Retry Save</button>'
-                + '<button onclick="window.location.reload()" style="flex:1;padding:10px;background:#64748b;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">↺ Reload</button>'
-                + '</div>'
+                + '<button id="dbgReconnect" style="flex:1;padding:10px;background:#ff6b35;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Force Reconnect</button>'
+                + '<button id="dbgRetry" style="flex:1;padding:10px;background:#3b82f6;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Retry Save</button>'
+                + '<button id="dbgReload" style="flex:1;padding:10px;background:#64748b;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Reload</button>'
                 + '</div>';
+            panel.appendChild(inner);
             document.body.appendChild(panel);
+            document.getElementById('dbgClose').onclick = function(){ panel.remove(); };
+            document.getElementById('dbgReconnect').onclick = function(){ panel.remove(); forceReconnect(); };
+            document.getElementById('dbgRetry').onclick = function(){ saveData(); toast('Retrying...'); };
+            document.getElementById('dbgReload').onclick = function(){ window.location.reload(); };
         }
 
         var _toastTimer = null;
