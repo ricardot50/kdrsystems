@@ -22,13 +22,50 @@
             letter-spacing: -0.025em;
         }
         
+        :root {
+            --bg-main: #f8f9fb;
+            --bg-card: #ffffff;
+            --bg-sidebar: #ffffff;
+            --bg-header: #ffffff;
+            --border-color: #e8e8ec;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --brand: #ff6b35;
+        }
+        body.dark-mode {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-sidebar: #1e293b;
+            --bg-header: #1e293b;
+            --border-color: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+        }
         body {
             overscroll-behavior: none;
             -webkit-tap-highlight-color: transparent;
-            background: #f8f9fb;
+            background: var(--bg-main);
             min-height: 100vh;
-            color: #1a1a2e;
+            color: var(--text-primary);
+            transition: background 0.2s, color 0.2s;
         }
+        body.dark-mode .card { background: var(--bg-card); border-color: var(--border-color); }
+        body.dark-mode .stat-card { background: var(--bg-card); border-color: var(--border-color); }
+        body.dark-mode header { background: var(--bg-header) !important; border-color: var(--border-color) !important; }
+        body.dark-mode nav#sidebarNav { background: var(--bg-sidebar) !important; border-color: var(--border-color) !important; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a; border-color: #334155; color: #e2e8f0; }
+        body.dark-mode table thead { background: #1e293b; }
+        body.dark-mode table tbody tr { border-color: #334155; }
+        body.dark-mode table tbody tr:hover { background: #1e293b; }
+        body.dark-mode .notification-item { background: #1e293b; border-color: #334155; }
+        body.dark-mode .gradient-dark { background: #1e293b; }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 { color: #f1f5f9; }
+        body.dark-mode label { color: #94a3b8; }
+        body.dark-mode .text-gray-700, body.dark-mode .text-gray-900 { color: #94a3b8 !important; }
+        body.dark-mode .border-gray-200 { border-color: #334155 !important; }
+        body.dark-mode .bg-gray-50, body.dark-mode .bg-gray-100 { background: #0f172a !important; }
         
         .gradient-orange {
             background: #ff6b35;
@@ -632,57 +669,307 @@
         </div>
     </div>
     <!-- Login Screen -->
-    <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4" style="background: #f5f5f5;">
-        <div class="w-full max-w-md">
-            <div class="text-center mb-8">
-                <h1 class="logo-text text-4xl mb-2">KDRSYSTEMS</h1>
-                <p class="text-gray-900">Business Management System</p>
+    <div id="loginScreen" style="min-height:100vh;background:#0f172a;display:flex;flex-direction:column;">
+
+        <!-- NAV -->
+        <nav style="padding:18px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:36px;height:36px;background:#ff6b35;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;">K</div>
+                <span style="color:#fff;font-size:18px;font-weight:900;letter-spacing:-0.03em;">KDRSYSTEMS</span>
             </div>
-            <div class="card">
-                <!-- Login Tab / Signup Tab -->
-                <div class="flex mb-6 border-b border-gray-200">
-                    <button id="loginTabBtn" class="flex-1 py-3 text-center font-semibold text-orange-400 border-b-2 border-orange-500 transition-all" onclick="showLoginTab('login')" style="color: #ff8c42; border-bottom-color: #ff8c42;">Log In</button>
-                    <button id="signupTabBtn" class="flex-1 py-3 text-center font-semibold text-gray-700 border-b-2 border-transparent transition-all" onclick="showLoginTab('signup')">Sign Up</button>
+            <div style="display:flex;gap:10px;">
+                <button onclick="showLoginTab('login');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
+                    style="background:transparent;color:#94a3b8;border:1px solid #334155;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Log In</button>
+                <button onclick="showLoginTab('signup');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
+                    style="background:#ff6b35;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">Start Free Trial</button>
+            </div>
+        </nav>
+
+        <!-- HERO -->
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:60px 24px 40px;">
+
+            <!-- Badge -->
+            <div style="background:rgba(255,107,53,0.15);border:1px solid rgba(255,107,53,0.35);color:#ff6b35;font-size:12px;font-weight:700;padding:6px 16px;border-radius:20px;letter-spacing:0.5px;margin-bottom:28px;">
+                🚀 Built for Contractors — 7-Day Free Trial
+            </div>
+
+            <!-- Headline -->
+            <h1 style="color:#fff;font-size:clamp(32px,5vw,56px);font-weight:900;text-align:center;line-height:1.1;letter-spacing:-0.03em;margin:0 0 20px;max-width:800px;">
+                Run Your Contracting Business<br>
+                <span style="color:#ff6b35;">Like a Pro</span>
+            </h1>
+            <p style="color:#94a3b8;font-size:clamp(15px,2vw,18px);text-align:center;max-width:560px;line-height:1.6;margin:0 0 40px;">
+                Estimates, invoices, contracts, leads, scheduling and profitability tools — all in one app. Works on any device. Syncs instantly.
+            </p>
+
+            <!-- CTA buttons -->
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:48px;">
+                <button onclick="showLoginTab('signup');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
+                    style="background:#ff6b35;color:#fff;border:none;padding:16px 36px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:-0.01em;box-shadow:0 8px 32px rgba(255,107,53,0.35);">
+                    Start Free — 7 Days Free Trial
+                </button>
+                <button onclick="showLoginTab('login');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
+                    style="background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.15);padding:16px 36px;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;">
+                    Log In
+                </button>
+            </div>
+
+            <!-- Trust badges -->
+            <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-bottom:64px;">
+                <span style="color:#475569;font-size:13px;display:flex;align-items:center;gap:6px;">🔒 Bank-level encryption</span>
+                <span style="color:#475569;font-size:13px;display:flex;align-items:center;gap:6px;">📱 iOS & Android ready</span>
+                <span style="color:#475569;font-size:13px;display:flex;align-items:center;gap:6px;">☁️ Real-time cloud sync</span>
+                <span style="color:#475569;font-size:13px;display:flex;align-items:center;gap:6px;">🚫 No credit card to start</span>
+            </div>
+
+            <!-- Features grid -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:960px;width:100%;margin-bottom:60px;">
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
+                    <div style="font-size:28px;margin-bottom:12px;">📋</div>
+                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Estimates & Invoices</h3>
+                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Send professional estimates with your branding. Convert to invoice in one tap. Get paid faster.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
+                    <div style="font-size:28px;margin-bottom:12px;">✍️</div>
+                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Digital Contracts</h3>
+                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Send contracts to customers and get e-signatures directly on their phone. No printing needed.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
+                    <div style="font-size:28px;margin-bottom:12px;">🎯</div>
+                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Lead Management</h3>
+                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Connect your website form — leads flow straight into your dashboard. Never miss a customer again.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
+                    <div style="font-size:28px;margin-bottom:12px;">📅</div>
+                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Job Scheduling</h3>
+                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Calendar view of all your jobs. Get notified before each one. Never double-book again.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
+                    <div style="font-size:28px;margin-bottom:12px;">💰</div>
+                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Profitability Tools</h3>
+                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Know your true hourly rate. Track expenses and labor. Stop guessing if you made money on a job.</p>
+                </div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
+                    <div style="font-size:28px;margin-bottom:12px;">🎨</div>
+                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Your Brand, Your Colors</h3>
+                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Upload your logo and pick your brand color. Every estimate and invoice looks like it came from your company.</p>
+                </div>
+            </div>
+
+            <!-- Pricing -->
+            <div style="max-width:400px;width:100%;background:rgba(255,255,255,0.04);border:2px solid #ff6b35;border-radius:20px;padding:32px;text-align:center;margin-bottom:64px;">
+                <div style="background:#ff6b35;color:#fff;font-size:11px;font-weight:800;padding:4px 14px;border-radius:20px;display:inline-block;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px;">Most Popular</div>
+                <div style="color:#ff6b35;font-size:52px;font-weight:900;line-height:1;margin-bottom:4px;">$49</div>
+                <div style="color:#64748b;font-size:14px;margin-bottom:24px;">per month · cancel anytime</div>
+                <div style="text-align:left;margin-bottom:24px;">
+                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <span style="color:#ff6b35;font-weight:700;">✓</span> Unlimited estimates & invoices
+                    </div>
+                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <span style="color:#ff6b35;font-weight:700;">✓</span> Digital contracts with e-signatures
+                    </div>
+                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <span style="color:#ff6b35;font-weight:700;">✓</span> Website lead capture
+                    </div>
+                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <span style="color:#ff6b35;font-weight:700;">✓</span> Job scheduling & reminders
+                    </div>
+                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
+                        <span style="color:#ff6b35;font-weight:700;">✓</span> Profitability calculator
+                    </div>
+                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;">
+                        <span style="color:#ff6b35;font-weight:700;">✓</span> Cloud sync — all devices
+                    </div>
+                </div>
+                <button onclick="showLoginTab('signup');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
+                    style="width:100%;background:#ff6b35;color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;">
+                    Start 7-Day Free Trial
+                </button>
+                <p style="color:#475569;font-size:11px;margin:10px 0 0;">No credit card required to start</p>
+            </div>
+
+            <!-- AUTH SECTION (login/signup) -->
+            <div id="authSection" style="max-width:440px;width:100%;scroll-margin-top:20px;">
+                <div style="background:#1e293b;border-radius:20px;padding:32px;border:1px solid #334155;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+                    <!-- Tabs -->
+                    <div style="display:flex;background:#0f172a;border-radius:10px;padding:4px;margin-bottom:28px;">
+                        <button id="loginTabBtn" onclick="showLoginTab('login')"
+                            style="flex:1;padding:10px;border-radius:8px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:#ff6b35;color:#fff;transition:all 0.15s;">
+                            Log In
+                        </button>
+                        <button id="signupTabBtn" onclick="showLoginTab('signup')"
+                            style="flex:1;padding:10px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;background:transparent;color:#64748b;transition:all 0.15s;">
+                            Sign Up Free
+                        </button>
+                    </div>
+
+                    <!-- Login Form -->
+                    <div id="loginForm" class="space-y-4">
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Email Address</label>
+                            <input type="email" id="loginEmail" placeholder="you@yourcompany.com" autocomplete="username" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;">
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Password</label>
+                            <input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;" onkeydown="if(event.key==='Enter') doLogin()">
+                        </div>
+                        <p id="loginError" class="text-red-400 text-sm hidden"></p>
+                        <button class="btn-primary w-full" style="padding:14px;font-size:16px;border-radius:10px;margin-top:8px;" onclick="doLogin()">Log In to My Account</button>
+                    </div>
+
+                    <!-- Signup Form -->
+                    <div id="signupForm" class="space-y-4 hidden">
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Business Name</label>
+                            <input type="text" id="signupBusiness" placeholder="e.g. Smith Contracting LLC" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;">
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Email Address</label>
+                            <input type="email" id="signupEmail" placeholder="you@yourcompany.com" autocomplete="username" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;">
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Password</label>
+                            <input type="password" id="signupPassword" placeholder="Create a strong password" autocomplete="new-password" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;">
+                        </div>
+                        <div>
+                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Confirm Password</label>
+                            <input type="password" id="signupConfirm" placeholder="Confirm your password" autocomplete="new-password" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;" onkeydown="if(event.key==='Enter') doSignup()">
+                        </div>
+                        <p id="signupError" class="text-red-400 text-sm hidden"></p>
+                        <p id="signupSuccess" class="text-green-400 text-sm hidden"></p>
+                        <button class="btn-primary w-full" style="padding:14px;font-size:16px;border-radius:10px;margin-top:8px;" onclick="doSignup()">Start Free — 7 Days Free</button>
+                        <p style="font-size:11px;color:#475569;text-align:center;margin-top:8px;">No credit card required. Cancel anytime.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="text-align:center;margin-top:40px;padding-bottom:32px;">
+                <p style="color:#334155;font-size:12px;">🔒 256-bit encryption &nbsp;·&nbsp; ☁️ Real-time sync &nbsp;·&nbsp; 📱 All devices</p>
+                <p style="color:#1e293b;font-size:11px;margin-top:8px;">© 2026 KDRSYSTEMS · <a href="admin.html" style="color:#1e293b;">Admin</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PAYWALL SCREEN ──────────────────────────────────────────────── -->
+    <div id="paywallScreen" style="display:none;min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);align-items:center;justify-content:center;padding:20px;flex-direction:column;">
+        <div style="max-width:480px;width:100%;">
+            <div style="text-align:center;margin-bottom:32px;">
+                <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:12px;">
+                    <div style="width:48px;height:48px;background:#ff6b35;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:900;color:#fff;">K</div>
+                    <span style="color:#fff;font-size:26px;font-weight:900;letter-spacing:-0.03em;">KDRSYSTEMS</span>
+                </div>
+            </div>
+            <div style="background:#fff;border-radius:20px;padding:36px;box-shadow:0 24px 64px rgba(0,0,0,0.4);text-align:center;">
+                <div style="width:64px;height:64px;background:#fef3c7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;">⏰</div>
+                <h2 style="font-size:22px;font-weight:800;color:#0f172a;margin:0 0 8px;">Subscription Required</h2>
+                <p id="paywallReason" style="color:#64748b;font-size:14px;margin:0 0 6px;"></p>
+                <p id="paywallEmail" style="color:#ff6b35;font-size:13px;font-weight:600;margin:0 0 28px;"></p>
+
+                <!-- What they get -->
+                <div style="background:#f8f9fb;border-radius:12px;padding:20px;margin-bottom:24px;text-align:left;">
+                    <p style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px;">What's included:</p>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#374151;"><span style="color:#22c55e;font-weight:700;">✓</span> Estimates & Invoices</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#374151;"><span style="color:#22c55e;font-weight:700;">✓</span> E-Signatures</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#374151;"><span style="color:#22c55e;font-weight:700;">✓</span> Contracts</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#374151;"><span style="color:#22c55e;font-weight:700;">✓</span> Lead Tracking</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#374151;"><span style="color:#22c55e;font-weight:700;">✓</span> Job Scheduling</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#374151;"><span style="color:#22c55e;font-weight:700;">✓</span> Material Calculator</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#374151;"><span style="color:#22c55e;font-weight:700;">✓</span> Profitability Tools</div>
+                        <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#374151;"><span style="color:#22c55e;font-weight:700;">✓</span> Cloud Sync</div>
+                    </div>
                 </div>
 
-                <!-- Login Form -->
-                <div id="loginForm" class="space-y-4">
-                    <div>
-                        <label class="block mb-2 text-sm">Email</label>
-                        <input type="email" id="loginEmail" placeholder="Enter your email" autocomplete="username">
-                    </div>
-                    <div>
-                        <label class="block mb-2 text-sm">Password</label>
-                        <input type="password" id="loginPassword" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()">
-                    </div>
-                    <p id="loginError" class="text-red-600 text-sm hidden"></p>
-                    <button class="btn-primary w-full text-lg" onclick="doLogin()">Log In</button>
+                <!-- Price -->
+                <div style="margin-bottom:24px;">
+                    <span style="font-size:48px;font-weight:900;color:#0f172a;">$49</span>
+                    <span style="font-size:16px;color:#94a3b8;font-weight:500;">/month</span>
+                    <p style="color:#94a3b8;font-size:12px;margin:4px 0 0;">Cancel anytime. No contracts.</p>
                 </div>
 
-                <!-- Signup Form -->
-                <div id="signupForm" class="space-y-4 hidden">
-                    <div>
-                        <label class="block mb-2 text-sm">Business Name</label>
-                        <input type="text" id="signupBusiness" placeholder="Your business name">
-                    </div>
-                    <div>
-                        <label class="block mb-2 text-sm">Email</label>
-                        <input type="email" id="signupEmail" placeholder="Enter your email" autocomplete="username">
-                    </div>
-                    <div>
-                        <label class="block mb-2 text-sm">Password</label>
-                        <input type="password" id="signupPassword" placeholder="Create a password" autocomplete="new-password">
-                    </div>
-                    <div>
-                        <label class="block mb-2 text-sm">Confirm Password</label>
-                        <input type="password" id="signupConfirm" placeholder="Confirm your password" autocomplete="new-password" onkeydown="if(event.key==='Enter') doSignup()">
-                    </div>
-                    <p id="signupError" class="text-red-600 text-sm hidden"></p>
-                    <p id="signupSuccess" class="text-green-600 text-sm hidden"></p>
-                    <button class="btn-primary w-full text-lg" onclick="doSignup()">Create Account</button>
+                <button onclick="goToCheckout()" style="width:100%;padding:16px;background:#ff6b35;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:-0.01em;margin-bottom:12px;">
+                    Subscribe Now — $49/mo
+                </button>
+                <button onclick="logoutFromPaywall()" style="width:100%;padding:12px;background:transparent;color:#94a3b8;border:1px solid #e2e8f0;border-radius:12px;font-size:14px;cursor:pointer;">
+                    Log Out
+                </button>
+                <p style="color:#94a3b8;font-size:11px;margin:16px 0 0;">After payment, refresh this page to access your account.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── ADMIN PANEL ──────────────────────────────────────────────────── -->
+    <div id="adminScreen" style="display:none;min-height:100vh;background:#f8f9fb;">
+        <!-- Admin Header -->
+        <div style="background:#0f172a;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:36px;height:36px;background:#ff6b35;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px;">K</div>
+                <div>
+                    <div style="color:#fff;font-weight:800;font-size:16px;">KDRSYSTEMS Admin</div>
+                    <div style="color:#64748b;font-size:11px;">Subscription Management</div>
                 </div>
             </div>
-            <p class="text-center text-gray-900 text-xs mt-6">Your data is securely stored and syncs across all your devices.</p>
+            <div style="display:flex;gap:10px;align-items:center;">
+                <button onclick="loadAdminData()" style="background:#1e293b;color:#94a3b8;border:1px solid #334155;padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;">↻ Refresh</button>
+                <button onclick="exitAdmin()" style="background:#ff6b35;color:#fff;border:none;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">Exit to App</button>
+            </div>
+        </div>
+
+        <div style="max-width:1100px;margin:0 auto;padding:28px 20px;">
+            <!-- Stats row -->
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:28px;" id="adminStats">
+                <div style="background:#fff;border-radius:12px;padding:20px;border:1px solid #e5e5e5;text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Total Users</div>
+                    <div style="font-size:32px;font-weight:900;color:#0f172a;" id="adminStatTotal">—</div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:20px;border:1px solid #e5e5e5;border-top:3px solid #22c55e;text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Active</div>
+                    <div style="font-size:32px;font-weight:900;color:#22c55e;" id="adminStatActive">—</div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:20px;border:1px solid #e5e5e5;border-top:3px solid #f59e0b;text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Trialing</div>
+                    <div style="font-size:32px;font-weight:900;color:#f59e0b;" id="adminStatTrial">—</div>
+                </div>
+                <div style="background:#fff;border-radius:12px;padding:20px;border:1px solid #e5e5e5;border-top:3px solid #ef4444;text-align:center;">
+                    <div style="font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Locked</div>
+                    <div style="font-size:32px;font-weight:900;color:#ef4444;" id="adminStatLocked">—</div>
+                </div>
+                <div style="background:linear-gradient(135deg,#ff6b35,#e85d2c);border-radius:12px;padding:20px;text-align:center;">
+                    <div style="font-size:11px;color:rgba(255,255,255,0.7);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Monthly Revenue</div>
+                    <div style="font-size:32px;font-weight:900;color:#fff;" id="adminStatRevenue">—</div>
+                </div>
+            </div>
+
+            <!-- Subscribers table -->
+            <div style="background:#fff;border-radius:14px;border:1px solid #e5e5e5;overflow:hidden;">
+                <div style="padding:18px 20px;border-bottom:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                    <h3 style="font-size:16px;font-weight:800;color:#0f172a;margin:0;">All Subscribers</h3>
+                    <input type="text" placeholder="Search by email or name..." id="adminSearch" oninput="filterAdminTable()" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;width:220px;">
+                </div>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%;border-collapse:collapse;" id="adminTable">
+                        <thead>
+                            <tr style="background:#f8f9fb;border-bottom:2px solid #e5e5e5;">
+                                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Business</th>
+                                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Email</th>
+                                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Status</th>
+                                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Joined</th>
+                                <th style="padding:12px 16px;text-align:left;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Trial Ends</th>
+                                <th style="padding:12px 16px;text-align:center;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody">
+                            <tr><td colspan="6" style="text-align:center;padding:40px;color:#94a3b8;">Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Manual approve note -->
+            <div style="margin-top:16px;padding:14px 18px;background:#fef7f4;border:1px solid #fed7c5;border-radius:10px;">
+                <p style="margin:0;font-size:13px;color:#92400e;"><strong>💡 Tip:</strong> When a contractor pays via Stripe, click <strong>Activate</strong> to give them access. In the future this will be automatic via Stripe webhooks. To lock someone out, click <strong>Lock</strong>.</p>
+            </div>
         </div>
     </div>
 
@@ -715,6 +1002,10 @@
                             <span class="hidden sm:inline">Notifications</span>
                             <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
                         </button>
+                        <button id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle Dark/Light Mode"
+                            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:16px;line-height:1;">
+                            🌙
+                        </button>
                         <button class="btn-secondary" onclick="doLogout()" title="Log Out">
                             <span class="hidden sm:inline">Log Out</span>
                         </button>
@@ -722,6 +1013,11 @@
                 </div>
             </div>
         </header>
+
+        <!-- Trial / Grace warning banner -->
+        <div id="trialBanner" style="display:none;background:#f59e0b;color:#000;text-align:center;padding:10px;font-size:13px;font-weight:600;position:sticky;top:73px;z-index:49;">
+            <span id="trialBannerMsg">⏰ Your free trial expires soon — <a href="#" onclick="goToCheckout();return false;" style="color:#000;font-weight:800;text-decoration:underline;">Subscribe now</a> to keep access.</span>
+        </div>
 
         <!-- Notifications Panel -->
         <div id="notificationsPanel" class="hidden fixed right-4 top-20 w-96 max-h-[500px] overflow-y-auto bg-white border border-gray-200 shadow-lg rounded-xl p-4 z-50 shadow-2xl">
@@ -767,11 +1063,14 @@
                     <button class="nav-btn-side w-full text-left" onclick="switchTab('calculator', this)">
                         Profitability
                     </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('qtycalc', this)">
+                    <button id="qtycalcNavBtn" class="nav-btn-side w-full text-left" onclick="switchTab('qtycalc', this)" style="display:none;">
                         🧱 Qty Calculator
                     </button>
                     <button class="nav-btn-side w-full text-left" onclick="switchTab('settings', this)">
                          Settings
+                    </button>
+                    <button id="adminNavBtn" class="nav-btn-side w-full text-left" onclick="openAdminPanel()" style="display:none;margin-top:8px;border-top:1px solid #f1f1f1;padding-top:16px;color:#ff6b35;font-weight:700;">
+                        🔑 Admin Panel
                     </button>
                 </div>
             </nav>
@@ -1488,6 +1787,44 @@
                                 <input type="email" id="settingsEmail" placeholder="business@example.com">
                             </div>
                         </div>
+
+                        <!-- Brand Color + Trade + Dark Mode -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block mb-2">Brand Color</label>
+                                <div style="display:flex;gap:8px;align-items:center;">
+                                    <input type="color" id="settingsBrandColor" value="#ff6b35" style="width:48px;height:40px;padding:2px;border-radius:8px;cursor:pointer;border:1px solid #e2e8f0;">
+                                    <input type="text" id="settingsBrandColorHex" placeholder="#ff6b35" style="flex:1;" oninput="syncColorPicker()">
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Applied to all your estimates, invoices & contracts</p>
+                            </div>
+                            <div>
+                                <label class="block mb-2">Your Trade / Industry</label>
+                                <select id="settingsTrade">
+                                    <option value="">Select your trade...</option>
+                                    <option value="Fencing">Fencing</option>
+                                    <option value="Roofing">Roofing</option>
+                                    <option value="Landscaping">Landscaping</option>
+                                    <option value="Painting">Painting</option>
+                                    <option value="Plumbing">Plumbing</option>
+                                    <option value="Electrical">Electrical</option>
+                                    <option value="HVAC">HVAC</option>
+                                    <option value="General Contracting">General Contracting</option>
+                                    <option value="Concrete">Concrete</option>
+                                    <option value="Carpentry">Carpentry</option>
+                                    <option value="Cleaning">Cleaning</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block mb-2">App Appearance</label>
+                                <div style="display:flex;gap:0;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">
+                                    <button id="lightModeBtn" onclick="setAppMode('light')" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#fff;color:#374151;">☀️ Light</button>
+                                    <button id="darkModeBtn" onclick="setAppMode('dark')" style="flex:1;padding:10px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:#f8f9fb;color:#94a3b8;">🌙 Dark</button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Changes the app background and colors</p>
+                            </div>
+                        </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
@@ -2121,11 +2458,19 @@
                             <option value="">Select a service...</option>
                             <option>Fencing — Residential</option>
                             <option>Fencing — Commercial</option>
+                            <option>Roofing</option>
+                            <option>Landscaping</option>
+                            <option>Painting</option>
+                            <option>Plumbing</option>
+                            <option>Electrical</option>
+                            <option>HVAC</option>
+                            <option>General Contracting</option>
+                            <option>Concrete / Masonry</option>
+                            <option>Carpentry</option>
+                            <option>Cleaning Services</option>
                             <option>Gutter Cleaning</option>
-                            <option>Exterior Home Cleaning</option>
                             <option>Snow Removal</option>
-                            <option>Fall Cleanup</option>
-                            <option>Multiple Services</option>
+                            <option>Other
                         </select>
                     </div>
                     <div>
@@ -2607,14 +2952,34 @@
         // FIREBASE CONFIG — PASTE YOUR CONFIG HERE
         // =============================================
         // ── Firebase Config ───────────────────────────────────────────────────
-       const firebaseConfig = {
-  apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
-  authDomain: "kdrsystems-c269c.firebaseapp.com",
-  projectId: "kdrsystems-c269c",
-  storageBucket: "kdrsystems-c269c.firebasestorage.app",
-  messagingSenderId: "436571279407",
-  appId: "1:436571279407:web:eeb521438b8ff87cd6b6da"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
+            authDomain: "kdrsystems-c269c.firebaseapp.com",
+            projectId: "kdrsystems-c269c",
+            storageBucket: "kdrsystems-c269c.firebasestorage.app",
+            messagingSenderId: "436571279407",
+            appId: "1:436571279407:web:eeb521438b8ff87cd6b6da"
+        };
+
+
+        // ── SUBSCRIPTION SYSTEM ───────────────────────────────────────────────
+        // YOUR email — you never see a paywall and you can access /admin
+        var ADMIN_EMAIL = 'kdrsystemsllc@gmail.com'; // ← change this to your email
+
+        var SUBSCRIPTION_PRICE = 49; // dollars per month
+        var GRACE_PERIOD_DAYS  = 3;  // days after payment fails before lockout
+
+        // Stripe publishable key — replace with yours from stripe.com/dashboard
+        // This is the PUBLIC key (safe to put in frontend)
+        var STRIPE_PUBLISHABLE_KEY = 'pk_live_REPLACE_WITH_YOUR_STRIPE_KEY';
+
+        // Stripe Payment Link — create one at dashboard.stripe.com → Payment Links
+        // Set price to $49/month recurring, copy the link here
+        var STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/REPLACE_WITH_YOUR_LINK';
+
+        var currentUserEmail = '';
+        var currentUserStatus = ''; // 'admin' | 'active' | 'trialing' | 'locked'
+        // ─────────────────────────────────────────────────────────────────────
 
         // ── Firebase init ─────────────────────────────────────────────────
         var auth, db;
@@ -2639,27 +3004,27 @@
         // AUTH SYSTEM (Firebase)
         // =============================================
         function showLoginTab(tab) {
-            var loginForm = document.getElementById('loginForm');
-            var signupForm = document.getElementById('signupForm');
+            var loginForm   = document.getElementById('loginForm');
+            var signupForm  = document.getElementById('signupForm');
             var loginTabBtn = document.getElementById('loginTabBtn');
-            var signupTabBtn = document.getElementById('signupTabBtn');
+            var signupTabBtn= document.getElementById('signupTabBtn');
             document.getElementById('loginError').classList.add('hidden');
             document.getElementById('signupError').classList.add('hidden');
             document.getElementById('signupSuccess').classList.add('hidden');
             if (tab === 'login') {
                 loginForm.classList.remove('hidden');
                 signupForm.classList.add('hidden');
-                loginTabBtn.style.color = '#ff8c42';
-                loginTabBtn.style.borderBottomColor = '#ff8c42';
-                signupTabBtn.style.color = '#6b7280';
-                signupTabBtn.style.borderBottomColor = 'transparent';
+                loginTabBtn.style.background  = '#ff6b35';
+                loginTabBtn.style.color       = '#fff';
+                signupTabBtn.style.background = 'transparent';
+                signupTabBtn.style.color      = '#64748b';
             } else {
                 loginForm.classList.add('hidden');
                 signupForm.classList.remove('hidden');
-                signupTabBtn.style.color = '#ff8c42';
-                signupTabBtn.style.borderBottomColor = '#ff8c42';
-                loginTabBtn.style.color = '#6b7280';
-                loginTabBtn.style.borderBottomColor = 'transparent';
+                signupTabBtn.style.background = '#ff6b35';
+                signupTabBtn.style.color      = '#fff';
+                loginTabBtn.style.background  = 'transparent';
+                loginTabBtn.style.color       = '#64748b';
             }
         }
 
@@ -2702,7 +3067,23 @@
                     var initialData = JSON.parse(JSON.stringify(appData));
                     initialData.settings.businessName = business;
                     initialData.settings.email = email;
-                    return db.collection('users').doc(uid).set({ appData: initialData });
+                    var trialEnd = new Date();
+                    trialEnd.setDate(trialEnd.getDate() + 7);
+                    var batch2 = db.batch();
+                    batch2.set(db.collection('users').doc(uid).collection('config').doc('main'), {
+                        settings: initialData.settings,
+                        calculator: initialData.calculator,
+                        teamMembers: [], expenses: [], notifications: [], scheduledJobs: []
+                    });
+                    batch2.set(db.collection('subscriptions').doc(uid), {
+                        uid:          uid,
+                        email:        email,
+                        status:       'trialing',
+                        trialEnd:     trialEnd.toISOString(),
+                        createdAt:    new Date().toISOString(),
+                        businessName: business || ''
+                    });
+                    return batch2.commit();
                 })
                 .then(function() {
                     successEl.textContent = 'Account created! Logging you in...';
@@ -2785,18 +3166,123 @@
 
         function enterApp() {
             document.getElementById('loginScreen').style.display = 'none';
+            var pw = document.getElementById('paywallScreen');
+            if (pw) pw.style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             loadData();
         }
 
+        // ── Subscription Status Check ─────────────────────────────────────────
+        function checkSubscriptionStatus(user) {
+            db.collection('subscriptions').doc(user.uid).get()
+                .then(function(doc) {
+                    if (!doc.exists) {
+                        // New user — create free trial record (7 days)
+                        var trialEnd = new Date();
+                        trialEnd.setDate(trialEnd.getDate() + 7);
+                        var subData = {
+                            uid:          user.uid,
+                            email:        user.email,
+                            status:       'trialing',
+                            trialEnd:     trialEnd.toISOString(),
+                            createdAt:    new Date().toISOString(),
+                            businessName: appData.settings.businessName || ''
+                        };
+                        return db.collection('subscriptions').doc(user.uid).set(subData)
+                            .then(function() {
+                                currentUserStatus = 'trialing';
+                                enterApp();
+                            });
+                    }
+
+                    var sub = doc.data();
+                    currentUserStatus = sub.status;
+
+                    if (sub.status === 'active') {
+                        enterApp();
+                        return;
+                    }
+
+                    if (sub.status === 'trialing') {
+                        var now = new Date();
+                        var trialEnd = new Date(sub.trialEnd);
+                        if (now < trialEnd) {
+                            enterApp(); // still in trial
+                        } else {
+                            currentUserStatus = 'locked';
+                            showPaywall(user, sub, 'Your 7-day free trial has ended.');
+                        }
+                        return;
+                    }
+
+                    if (sub.status === 'locked' || sub.status === 'cancelled') {
+                        showPaywall(user, sub, 'Your subscription is inactive.');
+                        return;
+                    }
+
+                    if (sub.status === 'grace') {
+                        // Check if grace period has expired (3 days after graceStart)
+                        var graceStart = sub.graceStart ? new Date(sub.graceStart) : new Date();
+                        var graceEnd   = new Date(graceStart.getTime() + GRACE_PERIOD_DAYS * 86400000);
+                        var now2       = new Date();
+                        if (now2 > graceEnd) {
+                            // Grace expired — lock them out
+                            db.collection('subscriptions').doc(user.uid).update({ status: 'locked', lockedAt: now2.toISOString() });
+                            currentUserStatus = 'locked';
+                            showPaywall(user, sub, 'Your payment grace period has expired. Please subscribe to continue.');
+                        } else {
+                            var daysLeft = Math.ceil((graceEnd - now2) / 86400000);
+                            currentUserStatus = 'grace';
+                            enterApp();
+                            setTimeout(function() {
+                                toast('⚠️ Payment failed — ' + daysLeft + ' day(s) left before lockout. Update billing now.', 8000);
+                            }, 2000);
+                        }
+                        return;
+                    }
+
+                    // Unknown status — deny
+                    showPaywall(user, sub, 'Account access restricted.');
+                })
+                .catch(function(err) {
+                    console.error('Subscription check error:', err);
+                    // On error, let them in (don't lock people out due to connectivity)
+                    enterApp();
+                });
+        }
+
+        function showPaywall(user, sub, reason) {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'none';
+            var pw = document.getElementById('paywallScreen');
+            if (pw) {
+                pw.style.display = 'flex';
+                var msgEl = document.getElementById('paywallReason');
+                if (msgEl) msgEl.textContent = reason;
+                var emailEl = document.getElementById('paywallEmail');
+                if (emailEl) emailEl.textContent = user.email;
+            }
+        }
+
+        function goToCheckout() {
+            // Open Stripe payment link in same tab
+            // After payment, Stripe webhook updates Firestore (or you do it manually in admin)
+            window.open(STRIPE_PAYMENT_LINK + '?prefilled_email=' + encodeURIComponent(currentUserEmail), '_blank');
+        }
+
+        function logoutFromPaywall() {
+            auth.signOut();
+        }
+
         function initApp() {
+            _initSubscriptionUI();
             renderTeamMembers();
             renderExpenses();
             calculateAll();
             updateDashboard();
             renderCalendar();
             checkNotifications();
-            setInterval(checkNotifications, 5 * 60 * 1000);
+            setInterval(checkNotifications, 15 * 60 * 1000); // 15 min
             startLeadsListener();
             initKanbanDrag();
             updateCalculatorViewButtons();
@@ -2854,11 +3340,11 @@
                         updateDashboard();
                     }
                 });
-            }, 30000);
+            }, 300000); // 5 min — reduces Firebase reads by 10x
         }
 
         // Global Data
-        let appData = {
+        var appData = {
             customers: [],
             estimates: [],
             invoices: [],
@@ -2899,7 +3385,7 @@
             }
         };
 
-        let currentCalendarDate = new Date();
+        var currentCalendarDate = new Date();
 
         // =============================================
         // CHECK FOR PUBLIC SIGNATURE PAGE FIRST
@@ -2940,15 +3426,26 @@
             if (typeof auth !== 'undefined' && auth) {
                 auth.onAuthStateChanged(function(user) {
                     if (user) {
-                        currentUserId = user.uid;
-                        enterApp();
+                        currentUserId    = user.uid;
+                        currentUserEmail = (user.email || '').toLowerCase();
+                        // Admin always gets in free
+                        if (currentUserEmail === ADMIN_EMAIL.toLowerCase()) {
+                            currentUserStatus = 'admin';
+                            enterApp();
+                            return;
+                        }
+                        // Everyone else — check subscription status in Firestore
+                        checkSubscriptionStatus(user);
                     } else {
-                        // Detach Firestore listener on logout
                         if (typeof _dataListener === 'function') { _dataListener(); _dataListener = null; }
-                        currentUserId = null;
+                        currentUserId    = null;
+                        currentUserEmail = '';
+                        currentUserStatus= '';
                         dataLoaded = false;
                         document.getElementById('mainApp').style.display = 'none';
                         document.getElementById('loginScreen').style.display = 'flex';
+                        var pw = document.getElementById('paywallScreen');
+                        if (pw) pw.style.display = 'none';
                     }
                 });
             } else {
@@ -3322,88 +3819,44 @@
 
         // ── saveData: batch-saves everything (used for bulk operations) ──────
         var _saveTimer = null;
-        var _saveQueue = []; // pending individual writes
-        var _saveInFlight = false;
-
         function saveData() {
             if (!currentUserId) return;
-            _lsSave(); // always save to localStorage immediately
+            _lsSave();
             showSaveStatus('saving');
             if (!db) { showSaveStatus('saved'); return; }
-
-            // Debounce — collect rapid calls then flush
             if (_saveTimer) clearTimeout(_saveTimer);
-            _saveTimer = setTimeout(_flushSaveQueue, 300);
+            _saveTimer = setTimeout(function() {
+                _saveTimer = null;
+                var batch = db.batch();
+                var base  = db.collection('users').doc(currentUserId);
 
-            // Queue all current records for saving
-            _saveQueue = [];
-            var base = db.collection('users').doc(currentUserId);
+                var cfg = {
+                    settings: JSON.parse(JSON.stringify(appData.settings)),
+                    calculator: appData.calculator,
+                    teamMembers: appData.teamMembers,
+                    expenses: appData.expenses,
+                    notifications: appData.notifications,
+                    scheduledJobs: appData.scheduledJobs
+                };
+                cfg.settings.logo = '';
+                batch.set(base.collection('config').doc('main'), cfg, { merge: true });
 
-            // Config
-            var cfg = {
-                settings: JSON.parse(JSON.stringify(appData.settings)),
-                calculator: appData.calculator,
-                teamMembers: appData.teamMembers,
-                expenses: appData.expenses,
-                notifications: appData.notifications,
-                scheduledJobs: appData.scheduledJobs
-            };
-            cfg.settings.logo = '';
-            _saveQueue.push({ ref: base.collection('config').doc('main'), data: cfg });
-
-            // Records
-            [['customers',appData.customers],['estimates',appData.estimates],
-             ['invoices',appData.invoices],['materials',appData.materials],
-             ['templates',appData.templates],['terms',appData.terms],
-             ['contracts',appData.contracts]
-            ].forEach(function(pair) {
-                (pair[1]||[]).forEach(function(rec) {
-                    if (rec && rec.id) {
-                        _saveQueue.push({ ref: base.collection(pair[0]).doc(String(rec.id)), data: _stripPhoto(rec) });
-                    }
-                });
-            });
-        }
-
-        function _flushSaveQueue() {
-            _saveTimer = null;
-            if (!_saveQueue.length || !currentUserId || !db) {
-                showSaveStatus('saved');
-                return;
-            }
-            if (_saveInFlight) return; // already writing, will retry
-            _saveInFlight = true;
-
-            var items = _saveQueue.slice();
-            _saveQueue = [];
-            var done = 0, total = items.length, failed = false;
-
-            var _timeout = setTimeout(function() {
-                if (!failed) { failed = true; _saveInFlight = false; showSaveStatus('timeout'); }
-            }, 15000);
-
-            items.forEach(function(item) {
-                item.ref.set(item.data, { merge: true })
-                    .then(function() {
-                        done++;
-                        if (done === total && !failed) {
-                            clearTimeout(_timeout);
-                            _saveInFlight = false;
-                            showSaveStatus('saved');
-                            // Flush any new items queued while we were writing
-                            if (_saveQueue.length) _flushSaveQueue();
-                        }
-                    })
-                    .catch(function(err) {
-                        clearTimeout(_timeout);
-                        if (!failed) {
-                            failed = true;
-                            _saveInFlight = false;
-                            console.error('Save failed:', err.code, err.message);
-                            showSaveStatus('error', err.code || err.message);
-                        }
+                [['customers',appData.customers],['estimates',appData.estimates],
+                 ['invoices',appData.invoices],['materials',appData.materials],
+                 ['templates',appData.templates],['terms',appData.terms],
+                 ['contracts',appData.contracts]
+                ].forEach(function(pair) {
+                    (pair[1]||[]).forEach(function(rec) {
+                        if (rec && rec.id) batch.set(base.collection(pair[0]).doc(String(rec.id)), _stripPhoto(rec), { merge: true });
                     });
-            });
+                });
+
+                var _done = false;
+                var _t = setTimeout(function(){ if(!_done){ _done=true; showSaveStatus('timeout'); }}, 15000);
+                batch.commit()
+                    .then(function() { _done=true; clearTimeout(_t); showSaveStatus('saved'); })
+                    .catch(function(err) { _done=true; clearTimeout(_t); console.error('Save failed:',err.code,err.message); showSaveStatus('error', err.code); });
+            }, 2000); // 2 second debounce — reduces write frequency dramatically
         }
 
         document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') { _lsSave(); } });
@@ -3750,7 +4203,7 @@
                 }
             });
             
-            saveData();
+            _saveConfig(); // only save config doc, not full batch
             updateNotificationBadge();
             renderNotifications();
         }
@@ -5297,6 +5750,7 @@
 
             var s = appData.settings;
             var bizName = s.businessName || 'KDRSYSTEMS';
+            var bizColor = s.brandColor || appData.settings.brandColor || '#ff6b35';
             var docType = doc.type === 'estimate' ? 'Estimate' : 'Invoice';
             var docNum = '#' + doc.id.slice(-6);
             var siteUrl = window.location.origin + window.location.pathname;
@@ -5447,6 +5901,7 @@
                     businessPhone: s.phone || '',
                     businessAddress: s.address || '',
                     businessLogo: s.logo || '',
+                        businessColor: bizColor,
                     customerName: doc.customerName,
                     customerEmail: doc.customerEmail,
                     customerPhone: doc.customerPhone || '',
@@ -6051,6 +6506,15 @@
             if (appData.settings.businessName) {
                 document.getElementById('headerBusinessSubtitle').textContent = appData.settings.businessName;
             }
+            if (appData.settings.brandColor) {
+                var cp = document.getElementById('settingsBrandColor');
+                var ch = document.getElementById('settingsBrandColorHex');
+                if (cp) cp.value = appData.settings.brandColor;
+                if (ch) ch.value = appData.settings.brandColor;
+                applyBrandColor(appData.settings.brandColor);
+            }
+            var tradeEl = document.getElementById('settingsTrade');
+            if (tradeEl && appData.settings.trade) tradeEl.value = appData.settings.trade;
             
             if (appData.settings.logo) {
                 displayLogoPreview(appData.settings.logo);
@@ -6114,6 +6578,8 @@
         }
 
         function saveSettings() {
+            var newColor = (document.getElementById('settingsBrandColor')||{}).value || '#ff6b35';
+            applyBrandColor(newColor);
             appData.settings = {
                 businessName: document.getElementById('settingsBusinessName').value,
                 email: document.getElementById('settingsEmail').value,
@@ -6131,7 +6597,9 @@
                 reminder1Days: parseInt(document.getElementById('reminder1Days').value) || 7,
                 reminder2Days: parseInt(document.getElementById('reminder2Days').value) || 7,
                 reminder3Days: parseInt(document.getElementById('reminder3Days').value) || 14,
-                jobNotificationHours: parseInt(document.getElementById('jobNotificationHours').value) || 24
+                jobNotificationHours: parseInt(document.getElementById('jobNotificationHours').value) || 24,
+                brandColor: (document.getElementById('settingsBrandColor')||{}).value || '#ff6b35',
+                trade: (document.getElementById('settingsTrade')||{}).value || ''
             };
             
             _saveConfig();
@@ -8683,7 +9151,7 @@
             Promise.all(promises).then(function() {
                 if (changed) { saveData(); renderContracts(); }
             });
-        }, 35000);
+        }, 300000); // 5 min — reduces Firebase reads by 8x
 
         // ── Fence Quantity Calculator ──────────────────────────────────────
         // Material presets — span, post type, rails, caps, extras, notes
@@ -9137,6 +9605,235 @@
             document.getElementById('dbgRetry').onclick = function(){ saveData(); toast('Retrying...'); };
             document.getElementById('dbgReload').onclick = function(){ window.location.reload(); };
         }
+
+        // ── ADMIN PANEL FUNCTIONS ─────────────────────────────────────────────
+        var _adminData = [];
+
+        function openAdminPanel() {
+            if (currentUserStatus !== 'admin') { toast('Admin access only'); return; }
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('adminScreen').style.display = 'block';
+            loadAdminData();
+        }
+
+        function exitAdmin() {
+            document.getElementById('adminScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        }
+
+        function loadAdminData() {
+            var tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#94a3b8;">Loading...</td></tr>';
+            db.collection('subscriptions').orderBy('createdAt','desc').get()
+                .then(function(snap) {
+                    _adminData = [];
+                    snap.forEach(function(doc){ _adminData.push(doc.data()); });
+                    renderAdminTable(_adminData);
+                    updateAdminStats(_adminData);
+                })
+                .catch(function(err){ toast('Error loading: ' + err.message); });
+        }
+
+        function updateAdminStats(data) {
+            var active   = data.filter(function(d){ return d.status === 'active'; }).length;
+            var trial    = data.filter(function(d){ return d.status === 'trialing'; }).length;
+            var locked   = data.filter(function(d){ return d.status === 'locked' || d.status === 'cancelled'; }).length;
+            var revenue  = active * SUBSCRIPTION_PRICE;
+            var el = function(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; };
+            el('adminStatTotal',   data.length);
+            el('adminStatActive',  active);
+            el('adminStatTrial',   trial);
+            el('adminStatLocked',  locked);
+            el('adminStatRevenue', '$' + revenue.toLocaleString() + '/mo');
+        }
+
+        function renderAdminTable(data) {
+            var tbody = document.getElementById('adminTableBody');
+            if (!data.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:#94a3b8;">No subscribers yet.</td></tr>';
+                return;
+            }
+            var statusColors = { active:'#22c55e', trialing:'#f59e0b', locked:'#ef4444', cancelled:'#94a3b8', grace:'#f97316' };
+            tbody.innerHTML = data.map(function(sub) {
+                var sc = statusColors[sub.status] || '#94a3b8';
+                var joined = sub.createdAt ? new Date(sub.createdAt).toLocaleDateString() : '—';
+                var trialEnd = sub.trialEnd ? new Date(sub.trialEnd).toLocaleDateString() : '—';
+                var isLocked = sub.status === 'locked' || sub.status === 'cancelled';
+                return '<tr style="border-bottom:1px solid #f1f5f9;" data-email="' + (sub.email||'').toLowerCase() + '" data-biz="' + (sub.businessName||'').toLowerCase() + '">' +
+                    '<td style="padding:12px 16px;font-weight:600;color:#0f172a;font-size:13px;">' + (sub.businessName || '—') + '</td>' +
+                    '<td style="padding:12px 16px;color:#475569;font-size:13px;">' + (sub.email || '—') + '</td>' +
+                    '<td style="padding:12px 16px;"><span style="background:' + sc + '22;color:' + sc + ';padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;">' + sub.status + '</span></td>' +
+                    '<td style="padding:12px 16px;color:#64748b;font-size:12px;">' + joined + '</td>' +
+                    '<td style="padding:12px 16px;color:#64748b;font-size:12px;">' + (sub.status === 'trialing' ? trialEnd : '—') + '</td>' +
+                    '<td style="padding:12px 16px;text-align:center;">' +
+                        '<div style="display:flex;gap:6px;justify-content:center;">' +
+                            (!isLocked && sub.status !== 'active' ? '<button onclick="adminActivate('' + sub.uid + '')" style="padding:5px 10px;background:#22c55e;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Activate</button>' : '') +
+                            (sub.status === 'active' ? '<span style="color:#22c55e;font-size:11px;font-weight:700;">✓ Active</span>' : '') +
+                            (!isLocked ? '<button onclick="adminLock('' + sub.uid + '')" style="padding:5px 10px;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Lock</button>' : '') +
+                            (isLocked ? '<button onclick="adminActivate('' + sub.uid + '')" style="padding:5px 10px;background:#f0fdf4;color:#22c55e;border:1px solid #bbf7d0;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Unlock</button>' : '') +
+                        '</div>' +
+                    '</td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        function filterAdminTable() {
+            var q = (document.getElementById('adminSearch').value || '').toLowerCase();
+            var filtered = q ? _adminData.filter(function(d){
+                return (d.email||'').toLowerCase().includes(q) || (d.businessName||'').toLowerCase().includes(q);
+            }) : _adminData;
+            renderAdminTable(filtered);
+        }
+
+        function adminActivate(uid) {
+            db.collection('subscriptions').doc(uid).update({ status: 'active', activatedAt: new Date().toISOString() })
+                .then(function(){ toast('Account activated ✓'); loadAdminData(); })
+                .catch(function(e){ toast('Error: ' + e.message); });
+        }
+
+        function adminLock(uid) {
+            kdrConfirm('Lock this account?', 'The contractor will see the paywall on next login.', 'Lock', function() {
+                db.collection('subscriptions').doc(uid).update({ status: 'locked', lockedAt: new Date().toISOString() })
+                    .then(function(){ toast('Account locked'); loadAdminData(); })
+                    .catch(function(e){ toast('Error: ' + e.message); });
+            });
+        }
+
+        // Show admin button and trial banner after login
+        function _initSubscriptionUI() {
+            // Show admin button if admin
+            var adminBtn = document.getElementById('adminNavBtn');
+            if (adminBtn) adminBtn.style.display = currentUserStatus === 'admin' ? '' : 'none';
+            // Show fence qty calculator ONLY for admin account
+            var qtyBtn = document.getElementById('qtycalcNavBtn');
+            if (qtyBtn) qtyBtn.style.display = currentUserStatus === 'admin' ? '' : 'none';
+            // Apply saved brand color
+            var savedColor = appData.settings && appData.settings.brandColor;
+            if (savedColor) applyBrandColor(savedColor);
+            // Apply saved dark mode
+            initDarkMode();
+
+            // Show trial banner if trialing and < 3 days left
+            if (currentUserStatus === 'trialing') {
+                db.collection('subscriptions').doc(currentUserId).get().then(function(doc) {
+                    if (!doc.exists) return;
+                    var sub = doc.data();
+                    var daysLeft = Math.ceil((new Date(sub.trialEnd) - new Date()) / 86400000);
+                    if (daysLeft <= 3) {
+                        var banner = document.getElementById('trialBanner');
+                        var msg    = document.getElementById('trialBannerMsg');
+                        if (banner && msg) {
+                            msg.innerHTML = '⏰ ' + daysLeft + ' day' + (daysLeft===1?'':'s') + ' left in your free trial — <a href="#" onclick="goToCheckout();return false;" style="color:#000;font-weight:800;text-decoration:underline;">Subscribe now</a> to keep access.';
+                            banner.style.display = 'block';
+                        }
+                    }
+                }).catch(function(){});
+            }
+        }
+
+        // ── END ADMIN FUNCTIONS ──────────────────────────────────────────────
+
+        // ── DARK MODE ─────────────────────────────────────────────────────────
+        function toggleDarkMode() {
+            var isDark = document.body.classList.toggle('dark-mode');
+            try { localStorage.setItem('kdr_dark_mode', isDark ? '1' : '0'); } catch(e) {}
+            var btn = document.getElementById('darkModeToggle');
+            if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+            updateModeButtons(isDark);
+        }
+
+        function setAppMode(mode) {
+            var isDark = mode === 'dark';
+            document.body.classList.toggle('dark-mode', isDark);
+            try { localStorage.setItem('kdr_dark_mode', isDark ? '1' : '0'); } catch(e) {}
+            var btn = document.getElementById('darkModeToggle');
+            if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+            updateModeButtons(isDark);
+        }
+
+        function updateModeButtons(isDark) {
+            var lb = document.getElementById('lightModeBtn');
+            var db = document.getElementById('darkModeBtn');
+            if (lb) { lb.style.background = isDark ? '#1e293b' : '#fff'; lb.style.color = isDark ? '#64748b' : '#374151'; }
+            if (db) { db.style.background = isDark ? '#334155' : '#f8f9fb'; db.style.color = isDark ? '#fff' : '#94a3b8'; }
+        }
+
+        function initDarkMode() {
+            try {
+                var saved = localStorage.getItem('kdr_dark_mode');
+                var isDark = saved === '1';
+                document.body.classList.toggle('dark-mode', isDark);
+                var btn = document.getElementById('darkModeToggle');
+                if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+                updateModeButtons(isDark);
+            } catch(e) {}
+        }
+
+        // ── BRAND COLOR ────────────────────────────────────────────────────────
+        var _brandColor = '#ff6b35'; // default
+
+        function applyBrandColor(color) {
+            if (!color || !color.startsWith('#')) return;
+            _brandColor = color;
+            // Update all CSS orange references via style tag
+            var styleId = 'kdr-brand-style';
+            var existing = document.getElementById(styleId);
+            if (existing) existing.remove();
+            var style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = [
+                '.text-orange { color: ' + color + ' !important; }',
+                '.logo-text { color: ' + color + ' !important; }',
+                '.btn-primary { background: ' + color + ' !important; }',
+                '.btn-primary:hover { background: ' + shadeColor(color, -15) + ' !important; }',
+                '.nav-btn-side.active { color: ' + color + ' !important; border-left-color: ' + color + ' !important; background: ' + color + '15 !important; }',
+                '.nav-btn-side.active:hover { color: ' + color + ' !important; }',
+                '.nav-btn-side:hover { color: ' + color + ' !important; background: ' + color + '12 !important; }',
+                '.gradient-orange { background: ' + color + ' !important; }',
+                'input:focus, select:focus, textarea:focus { border-color: ' + color + ' !important; box-shadow: 0 0 0 3px ' + color + '22 !important; }',
+                '.calendar-day.today { border-color: ' + color + ' !important; background: ' + color + '12 !important; }',
+                '.calendar-event { background: ' + color + ' !important; }',
+                '.notification-item.unread { border-left-color: ' + color + ' !important; background: ' + color + '10 !important; }',
+                '::-webkit-scrollbar-thumb:hover { background: ' + color + ' !important; }',
+            ].join('
+');
+            document.head.appendChild(style);
+            // sync color picker in settings
+            var cp = document.getElementById('settingsBrandColor');
+            var ch = document.getElementById('settingsBrandColorHex');
+            if (cp) cp.value = color;
+            if (ch) ch.value = color;
+        }
+
+        function shadeColor(color, percent) {
+            var num = parseInt(color.replace('#',''), 16);
+            var amt = Math.round(2.55 * percent);
+            var R = Math.max(0, Math.min(255, (num >> 16) + amt));
+            var G = Math.max(0, Math.min(255, ((num >> 8) & 0xff) + amt));
+            var B = Math.max(0, Math.min(255, (num & 0xff) + amt));
+            return '#' + [R,G,B].map(function(v){ return ('0'+v.toString(16)).slice(-2); }).join('');
+        }
+
+        function syncColorPicker() {
+            var hex = (document.getElementById('settingsBrandColorHex')||{}).value || '';
+            if (hex.match(/^#[0-9A-Fa-f]{6}$/)) {
+                var cp = document.getElementById('settingsBrandColor');
+                if (cp) cp.value = hex;
+                applyBrandColor(hex);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initDarkMode();
+            // Listen for color picker changes
+            var cp = document.getElementById('settingsBrandColor');
+            if (cp) cp.addEventListener('input', function() {
+                document.getElementById('settingsBrandColorHex').value = cp.value;
+                applyBrandColor(cp.value);
+            });
+        });
+
+        // ── END DARK MODE & BRAND COLOR ────────────────────────────────────────
 
         var _toastTimer = null;
         function toast(msg, duration) {
