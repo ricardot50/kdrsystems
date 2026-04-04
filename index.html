@@ -669,184 +669,260 @@
         </div>
     </div>
     <!-- Login Screen -->
-    <div id="loginScreen" style="min-height:100vh;background:#0f172a;display:flex;flex-direction:column;">
+    <div id="loginScreen" style="min-height:100vh;background:#080c14;display:flex;flex-direction:column;font-family:'Inter',-apple-system,sans-serif;">
+
+        <!-- Subtle grid background -->
+        <div style="position:fixed;inset:0;background-image:linear-gradient(rgba(255,107,53,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,107,53,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0;"></div>
+        <!-- Glow top center -->
+        <div style="position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(ellipse,rgba(255,107,53,0.12) 0%,transparent 70%);pointer-events:none;z-index:0;"></div>
 
         <!-- NAV -->
-        <nav style="padding:18px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
-            <div style="display:flex;align-items:center;gap:10px;">
-                <div style="width:36px;height:36px;background:#ff6b35;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;">K</div>
-                <span style="color:#fff;font-size:18px;font-weight:900;letter-spacing:-0.03em;">KDRSYSTEMS</span>
+        <nav style="position:relative;z-index:10;padding:20px 40px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:38px;height:38px;background:linear-gradient(135deg,#ff6b35,#e85d2c);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:#fff;letter-spacing:-1px;">K</div>
+                <span style="color:#fff;font-size:17px;font-weight:800;letter-spacing:-0.04em;">KDRSYSTEMS</span>
             </div>
-            <div style="display:flex;gap:10px;">
+            <div style="display:flex;gap:8px;align-items:center;">
                 <button onclick="showLoginTab('login');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
-                    style="background:transparent;color:#94a3b8;border:1px solid #334155;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Log In</button>
+                    style="background:transparent;color:#64748b;border:1px solid rgba(255,255,255,0.08);padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;"
+                    onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.color='#64748b';this.style.borderColor='rgba(255,255,255,0.08)'">
+                    Log In
+                </button>
                 <button onclick="showLoginTab('signup');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
-                    style="background:#ff6b35;color:#fff;border:none;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">Start Free Trial</button>
+                    style="background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(255,107,53,0.3);">
+                    Get Started Free
+                </button>
             </div>
         </nav>
 
-        <!-- HERO -->
-        <div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:60px 24px 40px;">
+        <!-- MAIN CONTENT -->
+        <div style="position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;padding:80px 24px 60px;">
 
-            <!-- Badge -->
-            <div style="background:rgba(255,107,53,0.15);border:1px solid rgba(255,107,53,0.35);color:#ff6b35;font-size:12px;font-weight:700;padding:6px 16px;border-radius:20px;letter-spacing:0.5px;margin-bottom:28px;">
-                🚀 Built for Contractors — 7-Day Free Trial
+            <!-- Pill label -->
+            <div style="background:rgba(255,107,53,0.1);border:1px solid rgba(255,107,53,0.25);color:#ff6b35;font-size:11px;font-weight:700;padding:5px 16px;border-radius:100px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:32px;">
+                Built for Contractors &nbsp;·&nbsp; 7-Day Free Trial
             </div>
 
             <!-- Headline -->
-            <h1 style="color:#fff;font-size:clamp(32px,5vw,56px);font-weight:900;text-align:center;line-height:1.1;letter-spacing:-0.03em;margin:0 0 20px;max-width:800px;">
-                Run Your Contracting Business<br>
-                <span style="color:#ff6b35;">Like a Pro</span>
+            <h1 style="color:#fff;font-size:clamp(36px,5.5vw,64px);font-weight:900;text-align:center;line-height:1.05;letter-spacing:-0.04em;margin:0 0 12px;max-width:860px;">
+                The Business Platform<br>
+                <span style="background:linear-gradient(135deg,#ff6b35 0%,#ff9a6c 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Built for the Field</span>
             </h1>
-            <p style="color:#94a3b8;font-size:clamp(15px,2vw,18px);text-align:center;max-width:560px;line-height:1.6;margin:0 0 40px;">
-                Estimates, invoices, contracts, leads, scheduling and profitability tools — all in one app. Works on any device. Syncs instantly.
+            <p style="color:#475569;font-size:clamp(15px,2vw,19px);text-align:center;max-width:580px;line-height:1.65;margin:0 0 16px;font-weight:400;">
+                Stop running your business from a notebook. KDRSYSTEMS gives you everything you need to win more jobs, get paid faster, and know exactly where your money is going.
+            </p>
+            <p style="color:#334155;font-size:14px;text-align:center;margin:0 0 44px;">
+                Estimates &nbsp;·&nbsp; Invoices &nbsp;·&nbsp; Contracts &nbsp;·&nbsp; Leads &nbsp;·&nbsp; Scheduling &nbsp;·&nbsp; Profitability
             </p>
 
-            <!-- CTA buttons -->
-            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:48px;">
+            <!-- CTA Row -->
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:20px;">
                 <button onclick="showLoginTab('signup');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
-                    style="background:#ff6b35;color:#fff;border:none;padding:16px 36px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:-0.01em;box-shadow:0 8px 32px rgba(255,107,53,0.35);">
-                    Start Free — 7 Days Free Trial
+                    style="background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;border:none;padding:16px 40px;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;letter-spacing:-0.02em;box-shadow:0 8px 40px rgba(255,107,53,0.4);transition:transform 0.15s;"
+                    onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                    Start Free Trial — No Card Required
                 </button>
                 <button onclick="showLoginTab('login');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
-                    style="background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.15);padding:16px 36px;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;">
+                    style="background:rgba(255,255,255,0.04);color:#94a3b8;border:1px solid rgba(255,255,255,0.1);padding:16px 32px;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;transition:all 0.15s;"
+                    onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.1)'">
                     Log In
                 </button>
             </div>
+            <p style="color:#1e293b;font-size:12px;margin:0 0 80px;">7 days free &nbsp;·&nbsp; $49/month after &nbsp;·&nbsp; Cancel anytime</p>
 
-            <!-- Trust badges -->
-            <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;margin-bottom:64px;">
-                <span style="color:#475569;font-size:13px;display:flex;align-items:center;gap:6px;">🔒 Bank-level encryption</span>
-                <span style="color:#475569;font-size:13px;display:flex;align-items:center;gap:6px;">📱 iOS & Android ready</span>
-                <span style="color:#475569;font-size:13px;display:flex;align-items:center;gap:6px;">☁️ Real-time cloud sync</span>
-                <span style="color:#475569;font-size:13px;display:flex;align-items:center;gap:6px;">🚫 No credit card to start</span>
-            </div>
-
-            <!-- Features grid -->
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:960px;width:100%;margin-bottom:60px;">
-                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
-                    <div style="font-size:28px;margin-bottom:12px;">📋</div>
-                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Estimates & Invoices</h3>
-                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Send professional estimates with your branding. Convert to invoice in one tap. Get paid faster.</p>
+            <!-- STATS ROW -->
+            <div style="display:flex;gap:0;border:1px solid rgba(255,255,255,0.06);border-radius:16px;overflow:hidden;margin-bottom:80px;flex-wrap:wrap;max-width:720px;width:100%;">
+                <div style="flex:1;min-width:150px;padding:24px 28px;border-right:1px solid rgba(255,255,255,0.06);text-align:center;">
+                    <div style="color:#fff;font-size:28px;font-weight:900;letter-spacing:-0.03em;">$49</div>
+                    <div style="color:#475569;font-size:12px;margin-top:4px;font-weight:500;">Per Month</div>
                 </div>
-                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
-                    <div style="font-size:28px;margin-bottom:12px;">✍️</div>
-                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Digital Contracts</h3>
-                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Send contracts to customers and get e-signatures directly on their phone. No printing needed.</p>
+                <div style="flex:1;min-width:150px;padding:24px 28px;border-right:1px solid rgba(255,255,255,0.06);text-align:center;">
+                    <div style="color:#fff;font-size:28px;font-weight:900;letter-spacing:-0.03em;">7</div>
+                    <div style="color:#475569;font-size:12px;margin-top:4px;font-weight:500;">Days Free Trial</div>
                 </div>
-                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
-                    <div style="font-size:28px;margin-bottom:12px;">🎯</div>
-                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Lead Management</h3>
-                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Connect your website form — leads flow straight into your dashboard. Never miss a customer again.</p>
+                <div style="flex:1;min-width:150px;padding:24px 28px;border-right:1px solid rgba(255,255,255,0.06);text-align:center;">
+                    <div style="color:#fff;font-size:28px;font-weight:900;letter-spacing:-0.03em;">All</div>
+                    <div style="color:#475569;font-size:12px;margin-top:4px;font-weight:500;">Devices Synced</div>
                 </div>
-                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
-                    <div style="font-size:28px;margin-bottom:12px;">📅</div>
-                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Job Scheduling</h3>
-                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Calendar view of all your jobs. Get notified before each one. Never double-book again.</p>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
-                    <div style="font-size:28px;margin-bottom:12px;">💰</div>
-                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Profitability Tools</h3>
-                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Know your true hourly rate. Track expenses and labor. Stop guessing if you made money on a job.</p>
-                </div>
-                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:22px;">
-                    <div style="font-size:28px;margin-bottom:12px;">🎨</div>
-                    <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 6px;">Your Brand, Your Colors</h3>
-                    <p style="color:#64748b;font-size:13px;margin:0;line-height:1.5;">Upload your logo and pick your brand color. Every estimate and invoice looks like it came from your company.</p>
+                <div style="flex:1;min-width:150px;padding:24px 28px;text-align:center;">
+                    <div style="color:#ff6b35;font-size:28px;font-weight:900;letter-spacing:-0.03em;">Live</div>
+                    <div style="color:#475569;font-size:12px;margin-top:4px;font-weight:500;">Real-Time Data</div>
                 </div>
             </div>
 
-            <!-- Pricing -->
-            <div style="max-width:400px;width:100%;background:rgba(255,255,255,0.04);border:2px solid #ff6b35;border-radius:20px;padding:32px;text-align:center;margin-bottom:64px;">
-                <div style="background:#ff6b35;color:#fff;font-size:11px;font-weight:800;padding:4px 14px;border-radius:20px;display:inline-block;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px;">Most Popular</div>
-                <div style="color:#ff6b35;font-size:52px;font-weight:900;line-height:1;margin-bottom:4px;">$49</div>
-                <div style="color:#64748b;font-size:14px;margin-bottom:24px;">per month · cancel anytime</div>
-                <div style="text-align:left;margin-bottom:24px;">
-                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
-                        <span style="color:#ff6b35;font-weight:700;">✓</span> Unlimited estimates & invoices
+            <!-- FEATURES -->
+            <div style="max-width:960px;width:100%;margin-bottom:80px;">
+                <p style="color:#334155;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;text-align:center;margin:0 0 40px;">Everything your business needs in one place</p>
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1px;background:rgba(255,255,255,0.06);border-radius:20px;overflow:hidden;">
+
+                    <div style="background:#0d1117;padding:28px 30px;">
+                        <div style="width:36px;height:36px;background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                            <div style="width:14px;height:14px;border:2px solid #ff6b35;border-radius:3px;"></div>
+                        </div>
+                        <h3 style="color:#e2e8f0;font-size:15px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em;">Estimates & Invoices</h3>
+                        <p style="color:#475569;font-size:13px;margin:0;line-height:1.6;">Create professional, branded estimates in minutes. Send directly to your customer via email. Convert to invoice in one tap and track payment status in real time.</p>
                     </div>
-                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
-                        <span style="color:#ff6b35;font-weight:700;">✓</span> Digital contracts with e-signatures
+
+                    <div style="background:#0d1117;padding:28px 30px;">
+                        <div style="width:36px;height:36px;background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                            <div style="width:12px;height:16px;border:2px solid #ff6b35;border-radius:2px;position:relative;"><div style="position:absolute;bottom:2px;left:1px;right:1px;height:2px;background:#ff6b35;border-radius:1px;"></div></div>
+                        </div>
+                        <h3 style="color:#e2e8f0;font-size:15px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em;">Digital Contracts & E-Signatures</h3>
+                        <p style="color:#475569;font-size:13px;margin:0;line-height:1.6;">Build detailed job contracts with payment terms, scope of work, and warranty language. Customers sign directly on their phone. No printing, no scanning, no delays.</p>
                     </div>
-                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
-                        <span style="color:#ff6b35;font-weight:700;">✓</span> Website lead capture
+
+                    <div style="background:#0d1117;padding:28px 30px;">
+                        <div style="width:36px;height:36px;background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                            <div style="width:16px;height:10px;border:2px solid #ff6b35;border-radius:2px;position:relative;"><div style="position:absolute;top:-4px;left:3px;right:3px;height:4px;border:2px solid #ff6b35;border-bottom:none;border-radius:2px 2px 0 0;"></div></div>
+                        </div>
+                        <h3 style="color:#e2e8f0;font-size:15px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em;">Lead Management & Pipeline</h3>
+                        <p style="color:#475569;font-size:13px;margin:0;line-height:1.6;">Capture leads directly from your website with a copy-paste form code. Every new inquiry lands in your Kanban board — drag it from New to Contacted to Converted without ever losing track.</p>
                     </div>
-                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
-                        <span style="color:#ff6b35;font-weight:700;">✓</span> Job scheduling & reminders
+
+                    <div style="background:#0d1117;padding:28px 30px;">
+                        <div style="width:36px;height:36px;background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:2px;width:16px;">
+                                <div style="height:4px;background:#ff6b35;border-radius:1px;"></div>
+                                <div style="height:4px;background:#ff6b35;border-radius:1px;"></div>
+                                <div style="height:4px;background:#ff6b35;border-radius:1px;"></div>
+                                <div style="height:4px;background:#ff6b35;border-radius:1px;"></div>
+                                <div style="height:4px;background:rgba(255,107,53,0.3);border-radius:1px;"></div>
+                                <div style="height:4px;background:#ff6b35;border-radius:1px;"></div>
+                                <div style="height:4px;background:#ff6b35;border-radius:1px;"></div>
+                                <div style="height:4px;background:rgba(255,107,53,0.3);border-radius:1px;"></div>
+                            </div>
+                        </div>
+                        <h3 style="color:#e2e8f0;font-size:15px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em;">Job Scheduling & Calendar</h3>
+                        <p style="color:#475569;font-size:13px;margin:0;line-height:1.6;">Schedule every job on a visual calendar. Assign customers, set start times, and log duration. Get notified before each job so you never show up late or double-booked.</p>
                     </div>
-                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);">
-                        <span style="color:#ff6b35;font-weight:700;">✓</span> Profitability calculator
+
+                    <div style="background:#0d1117;padding:28px 30px;">
+                        <div style="width:36px;height:36px;background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                            <div style="font-size:13px;font-weight:900;color:#ff6b35;letter-spacing:-1px;">$/h</div>
+                        </div>
+                        <h3 style="color:#e2e8f0;font-size:15px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em;">Profitability & True Hourly Rate</h3>
+                        <p style="color:#475569;font-size:13px;margin:0;line-height:1.6;">Enter your monthly overhead, labor costs, and target profit — and see exactly what you need to charge per hour to hit your goals. Stop guessing. Stop underbidding.</p>
                     </div>
-                    <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;align-items:center;">
-                        <span style="color:#ff6b35;font-weight:700;">✓</span> Cloud sync — all devices
+
+                    <div style="background:#0d1117;padding:28px 30px;">
+                        <div style="width:36px;height:36px;background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.2);border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                            <div style="width:16px;height:16px;border-radius:50%;border:2px solid #ff6b35;position:relative;"><div style="position:absolute;top:1px;left:1px;right:1px;bottom:1px;border-radius:50%;background:rgba(255,107,53,0.25);"></div></div>
+                        </div>
+                        <h3 style="color:#e2e8f0;font-size:15px;font-weight:700;margin:0 0 8px;letter-spacing:-0.02em;">Your Brand on Everything</h3>
+                        <p style="color:#475569;font-size:13px;margin:0;line-height:1.6;">Upload your logo and select your brand color. Every estimate, invoice, and contract your customer receives reflects your company — not generic software. Look as big as you work.</p>
                     </div>
+
                 </div>
-                <button onclick="showLoginTab('signup');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
-                    style="width:100%;background:#ff6b35;color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;">
-                    Start 7-Day Free Trial
-                </button>
-                <p style="color:#475569;font-size:11px;margin:10px 0 0;">No credit card required to start</p>
             </div>
 
-            <!-- AUTH SECTION (login/signup) -->
-            <div id="authSection" style="max-width:440px;width:100%;scroll-margin-top:20px;">
-                <div style="background:#1e293b;border-radius:20px;padding:32px;border:1px solid #334155;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+            <!-- PRICING -->
+            <div style="max-width:860px;width:100%;margin-bottom:80px;">
+                <p style="color:#334155;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;text-align:center;margin:0 0 40px;">Simple pricing. No surprises.</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.06);border-radius:20px;overflow:hidden;">
+
+                    <!-- Free trial -->
+                    <div style="background:#0d1117;padding:40px;">
+                        <div style="color:#475569;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;">Free Trial</div>
+                        <div style="color:#fff;font-size:42px;font-weight:900;letter-spacing:-0.04em;line-height:1;margin-bottom:8px;">7 Days</div>
+                        <div style="color:#475569;font-size:14px;margin-bottom:32px;">Full access. No credit card.</div>
+                        <div style="space-y:8px;">
+                            <div style="color:#64748b;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">Full platform access</div>
+                            <div style="color:#64748b;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">Unlimited estimates & invoices</div>
+                            <div style="color:#64748b;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);">E-signatures & contracts</div>
+                            <div style="color:#64748b;font-size:13px;padding:6px 0;">Cancel before trial ends — pay nothing</div>
+                        </div>
+                    </div>
+
+                    <!-- Paid -->
+                    <div style="background:linear-gradient(135deg,#1a0f08,#0d1117);padding:40px;position:relative;overflow:hidden;">
+                        <div style="position:absolute;top:0;right:0;background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;font-size:10px;font-weight:800;padding:6px 16px;letter-spacing:1px;text-transform:uppercase;border-radius:0 0 0 10px;">Most Popular</div>
+                        <div style="color:#ff6b35;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;">Monthly Plan</div>
+                        <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px;">
+                            <span style="color:#fff;font-size:42px;font-weight:900;letter-spacing:-0.04em;line-height:1;">$49</span>
+                            <span style="color:#475569;font-size:14px;">/month</span>
+                        </div>
+                        <div style="color:#475569;font-size:14px;margin-bottom:32px;">Everything included. Cancel anytime.</div>
+                        <div>
+                            <div style="color:#e2e8f0;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:8px;"><span style="color:#ff6b35;font-weight:700;flex-shrink:0;">—</span>Unlimited estimates, invoices & contracts</div>
+                            <div style="color:#e2e8f0;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:8px;"><span style="color:#ff6b35;font-weight:700;flex-shrink:0;">—</span>E-signatures & digital contracts</div>
+                            <div style="color:#e2e8f0;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:8px;"><span style="color:#ff6b35;font-weight:700;flex-shrink:0;">—</span>Lead pipeline & website integration</div>
+                            <div style="color:#e2e8f0;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:8px;"><span style="color:#ff6b35;font-weight:700;flex-shrink:0;">—</span>Job scheduling & customer notifications</div>
+                            <div style="color:#e2e8f0;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:8px;"><span style="color:#ff6b35;font-weight:700;flex-shrink:0;">—</span>Profitability & true hourly rate calculator</div>
+                            <div style="color:#e2e8f0;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:8px;"><span style="color:#ff6b35;font-weight:700;flex-shrink:0;">—</span>Custom brand colors & logo</div>
+                            <div style="color:#e2e8f0;font-size:13px;padding:6px 0;display:flex;gap:8px;"><span style="color:#ff6b35;font-weight:700;flex-shrink:0;">—</span>Real-time sync across all devices</div>
+                        </div>
+                        <button onclick="showLoginTab('signup');document.getElementById('authSection').scrollIntoView({behavior:'smooth'})"
+                            style="width:100%;margin-top:28px;background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;border:none;padding:15px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:-0.01em;box-shadow:0 6px 24px rgba(255,107,53,0.35);">
+                            Start Your Free Trial
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- AUTH SECTION -->
+            <div id="authSection" style="max-width:420px;width:100%;scroll-margin-top:24px;margin-bottom:60px;">
+                <p style="color:#334155;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;text-align:center;margin:0 0 24px;">Get started now</p>
+                <div style="background:#0d1117;border-radius:18px;padding:32px;border:1px solid rgba(255,255,255,0.07);box-shadow:0 32px 80px rgba(0,0,0,0.6);">
                     <!-- Tabs -->
-                    <div style="display:flex;background:#0f172a;border-radius:10px;padding:4px;margin-bottom:28px;">
+                    <div style="display:flex;background:rgba(255,255,255,0.04);border-radius:10px;padding:4px;margin-bottom:28px;border:1px solid rgba(255,255,255,0.06);">
                         <button id="loginTabBtn" onclick="showLoginTab('login')"
-                            style="flex:1;padding:10px;border-radius:8px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:#ff6b35;color:#fff;transition:all 0.15s;">
+                            style="flex:1;padding:10px;border-radius:8px;border:none;font-size:14px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;transition:all 0.15s;">
                             Log In
                         </button>
                         <button id="signupTabBtn" onclick="showLoginTab('signup')"
-                            style="flex:1;padding:10px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;background:transparent;color:#64748b;transition:all 0.15s;">
-                            Sign Up Free
+                            style="flex:1;padding:10px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;background:transparent;color:#475569;transition:all 0.15s;">
+                            Create Account
                         </button>
                     </div>
 
                     <!-- Login Form -->
                     <div id="loginForm" class="space-y-4">
                         <div>
-                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Email Address</label>
-                            <input type="email" id="loginEmail" placeholder="you@yourcompany.com" autocomplete="username" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;">
+                            <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">Email Address</label>
+                            <input type="email" id="loginEmail" placeholder="you@yourcompany.com" autocomplete="username" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;">
                         </div>
                         <div>
-                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Password</label>
-                            <input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;" onkeydown="if(event.key==='Enter') doLogin()">
+                            <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">Password</label>
+                            <input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;" onkeydown="if(event.key==='Enter') doLogin()">
                         </div>
-                        <p id="loginError" class="text-red-400 text-sm hidden"></p>
-                        <button class="btn-primary w-full" style="padding:14px;font-size:16px;border-radius:10px;margin-top:8px;" onclick="doLogin()">Log In to My Account</button>
+                        <p id="loginError" style="color:#f87171;font-size:13px;" class="hidden"></p>
+                        <button onclick="doLogin()" style="width:100%;background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px;box-shadow:0 4px 20px rgba(255,107,53,0.3);">
+                            Log In to My Account
+                        </button>
                     </div>
 
                     <!-- Signup Form -->
                     <div id="signupForm" class="space-y-4 hidden">
                         <div>
-                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Business Name</label>
-                            <input type="text" id="signupBusiness" placeholder="e.g. Smith Contracting LLC" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;">
+                            <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">Business Name</label>
+                            <input type="text" id="signupBusiness" placeholder="Your Company Name" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;">
                         </div>
                         <div>
-                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Email Address</label>
-                            <input type="email" id="signupEmail" placeholder="you@yourcompany.com" autocomplete="username" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;">
+                            <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">Email Address</label>
+                            <input type="email" id="signupEmail" placeholder="you@yourcompany.com" autocomplete="username" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;">
                         </div>
                         <div>
-                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Password</label>
-                            <input type="password" id="signupPassword" placeholder="Create a strong password" autocomplete="new-password" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;">
+                            <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">Password</label>
+                            <input type="password" id="signupPassword" placeholder="Create a strong password" autocomplete="new-password" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;">
                         </div>
                         <div>
-                            <label class="block mb-2 text-sm font-semibold" style="color:#94a3b8;">Confirm Password</label>
-                            <input type="password" id="signupConfirm" placeholder="Confirm your password" autocomplete="new-password" style="background:#0f172a;border-color:#334155;color:#e2e8f0;font-size:16px;" onkeydown="if(event.key==='Enter') doSignup()">
+                            <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">Confirm Password</label>
+                            <input type="password" id="signupConfirm" placeholder="Confirm your password" autocomplete="new-password" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;" onkeydown="if(event.key==='Enter') doSignup()">
                         </div>
-                        <p id="signupError" class="text-red-400 text-sm hidden"></p>
-                        <p id="signupSuccess" class="text-green-400 text-sm hidden"></p>
-                        <button class="btn-primary w-full" style="padding:14px;font-size:16px;border-radius:10px;margin-top:8px;" onclick="doSignup()">Start Free — 7 Days Free</button>
-                        <p style="font-size:11px;color:#475569;text-align:center;margin-top:8px;">No credit card required. Cancel anytime.</p>
+                        <p id="signupError" style="color:#f87171;font-size:13px;" class="hidden"></p>
+                        <p id="signupSuccess" style="color:#4ade80;font-size:13px;" class="hidden"></p>
+                        <button onclick="doSignup()" style="width:100%;background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px;box-shadow:0 4px 20px rgba(255,107,53,0.3);">
+                            Start 7-Day Free Trial
+                        </button>
+                        <p style="font-size:11px;color:#334155;text-align:center;margin-top:4px;">No credit card required &nbsp;·&nbsp; Cancel anytime</p>
                     </div>
                 </div>
             </div>
 
             <!-- Footer -->
-            <div style="text-align:center;margin-top:40px;padding-bottom:32px;">
-                <p style="color:#334155;font-size:12px;">🔒 256-bit encryption &nbsp;·&nbsp; ☁️ Real-time sync &nbsp;·&nbsp; 📱 All devices</p>
-                <p style="color:#1e293b;font-size:11px;margin-top:8px;">© 2026 KDRSYSTEMS · <a href="admin.html" style="color:#1e293b;">Admin</a></p>
+            <div style="text-align:center;padding-bottom:32px;border-top:1px solid rgba(255,255,255,0.04);width:100%;max-width:960px;padding-top:32px;">
+                <p style="color:#1e293b;font-size:13px;margin:0;">© 2026 KDRSYSTEMS &nbsp;·&nbsp; All rights reserved &nbsp;·&nbsp; <a href="kdradmin.html" style="color:#1e293b;text-decoration:none;">Admin</a></p>
             </div>
         </div>
     </div>
@@ -9667,10 +9743,10 @@
                     '<td style="padding:12px 16px;color:#64748b;font-size:12px;">' + (sub.status === 'trialing' ? trialEnd : '—') + '</td>' +
                     '<td style="padding:12px 16px;text-align:center;">' +
                         '<div style="display:flex;gap:6px;justify-content:center;">' +
-                            (!isLocked && sub.status !== 'active' ? '<button onclick="adminActivate('' + sub.uid + '')" style="padding:5px 10px;background:#22c55e;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Activate</button>' : '') +
+                            (!isLocked && sub.status !== 'active' ? '<button onclick="adminActivate(\'' + sub.uid + '\')" style="padding:5px 10px;background:#22c55e;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Activate</button>' : '') +
                             (sub.status === 'active' ? '<span style="color:#22c55e;font-size:11px;font-weight:700;">✓ Active</span>' : '') +
-                            (!isLocked ? '<button onclick="adminLock('' + sub.uid + '')" style="padding:5px 10px;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Lock</button>' : '') +
-                            (isLocked ? '<button onclick="adminActivate('' + sub.uid + '')" style="padding:5px 10px;background:#f0fdf4;color:#22c55e;border:1px solid #bbf7d0;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Unlock</button>' : '') +
+                            (!isLocked ? '<button onclick="adminLock(\'' + sub.uid + '\')" style="padding:5px 10px;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Lock</button>' : '') +
+                            (isLocked ? '<button onclick="adminActivate(\'' + sub.uid + '\')" style="padding:5px 10px;background:#f0fdf4;color:#22c55e;border:1px solid #bbf7d0;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">Unlock</button>' : '') +
                         '</div>' +
                     '</td>' +
                 '</tr>';
@@ -9795,8 +9871,7 @@
                 '.calendar-event { background: ' + color + ' !important; }',
                 '.notification-item.unread { border-left-color: ' + color + ' !important; background: ' + color + '10 !important; }',
                 '::-webkit-scrollbar-thumb:hover { background: ' + color + ' !important; }',
-            ].join('
-');
+            ].join('\n');
             document.head.appendChild(style);
             // sync color picker in settings
             var cp = document.getElementById('settingsBrandColor');
