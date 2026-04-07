@@ -2980,7 +2980,7 @@
             clearTimeout(_addrTimers[id]);
             _addrTimers[id] = setTimeout(function() {
                 _fetchAddr(val, drop, inp);
-            }, 320); // debounce 320ms so we don't spam on every keystroke
+            }, 320); // debounce 320ms so we do not spam on every keystroke
         }
 
         function _fetchAddr(query, drop, inp) {
@@ -3015,7 +3015,7 @@
                         var sub  = [city, 'NJ', zip].filter(Boolean).join(', ');
                         var full = (num + road + (city ? ', ' + city : '') + ', NJ' + (zip ? ' ' + zip : '')).trim();
                         if (!full || full === ', NJ') full = r.display_name.split(',').slice(0,3).join(',').trim();
-                        return '<div class="addr-option" onmousedown="pickAddr(\'' + inp.id + '\',\'' + full.replace(/'/g, "\\'") + '\')">' +
+                        return '<div class="addr-option" onmousedown="pickAddr(\'' + inp.id + '\',\'' + full.replace(/'/g, '&#39;') + '\')">' +
                             '<span class="addr-icon">📍</span>' +
                             '<div><div class="addr-main">' + main + '</div><div class="addr-sub">' + sub + '</div></div>' +
                         '</div>';
@@ -3328,7 +3328,7 @@
                 })
                 .catch(function(err) {
                     console.error('Subscription check error:', err);
-                    // On error, let them in (don't lock people out due to connectivity)
+                    // On error, let them in (do not lock people out due to connectivity)
                     enterApp();
                 });
         }
@@ -4350,7 +4350,7 @@
         })();
 
         function clearAllNotifications() {
-            // Remember all current IDs as dismissed so they don't re-appear
+            // Remember all current IDs as dismissed so they do not re-appear
             (appData.notifications||[]).forEach(function(n){ _dismissedNotifIds[n.id]=true; });
             try { localStorage.setItem('kdr_dismissed_notifs', JSON.stringify(_dismissedNotifIds)); } catch(e) {}
             appData.notifications = [];
@@ -5494,7 +5494,7 @@
                     var lineTotal = ((svc.qty||1) * (svc.rate||0) * (1 + (svc.markup||0)/100)).toFixed(2);
                     return '<div class="grid grid-cols-12 gap-2 items-center" style="position:relative;">' +
                         '<div class="col-span-5" style="position:relative;">' +
-                            '<input type="text" value="' + (svc.description || '').replace(/"/g, '&quot;') + '" placeholder="Type to search materials or describe..." class="p-2 border rounded text-sm w-full" data-s="' + sIdx + '" data-f="description" oninput="onEstLineDescInput(this,' + sIdx + ')" onchange="updEstCustom(this)" autocomplete="off">' +
+                            '<input type="text" value="' + (svc.description || '').replace(/"/g, "\x26quot;") + '" placeholder="Type to search materials or describe..." class="p-2 border rounded text-sm w-full" data-s="' + sIdx + '" data-f="description" oninput="onEstLineDescInput(this,' + sIdx + ')" onchange="updEstCustom(this)" autocomplete="off">' +
                             '<div id="matSuggest_' + sIdx + '" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:999;max-height:180px;overflow-y:auto;margin-top:2px;"></div>' +
                         '</div>' +
                         '<input type="number" value="' + (svc.qty || 1) + '" step="0.01" placeholder="Qty" class="col-span-2 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="qty" onchange="updEstCustom(this)">' +
@@ -5866,7 +5866,7 @@
             if (doc.type !== 'estimate' && s.stripeLink) {
                 payNowHtml = '<div style="text-align:center;margin:28px 0;padding:24px;background:#f0fdf4;border-radius:10px;border:2px solid #22c55e;">' +
                     '<p style="font-size:16px;font-weight:700;color:#166534;margin:0 0 8px;">Ready to pay this invoice?</p>' +
-                    '<p style="font-size:13px;color:#64748b;margin:0 0 16px;">Click below to pay securely online by card. You'll receive a receipt immediately.</p>' +
+                    '<p style="font-size:13px;color:#64748b;margin:0 0 16px;">Click below to pay securely online by card. You will receive a receipt immediately.</p>' +
                     '<a href="' + s.stripeLink + '" style="display:inline-block;background:#22c55e;color:#fff;padding:14px 40px;border-radius:8px;text-decoration:none;font-weight:800;font-size:15px;">Pay Now — $' + doc.total + '</a>' +
                     (s.paymentInstructions ? '<p style="font-size:12px;color:#94a3b8;margin:12px 0 0;">' + s.paymentInstructions + '</p>' : '') +
                 '</div>';
@@ -7044,7 +7044,7 @@
                 if (drag) return; // already dragging something
                 var card = e.target.closest && e.target.closest('.lcard');
                 if (!card) return;
-                // if touching a button or link, don't drag
+                // if touching a button or link, do not drag
                 if (e.target.closest('button') || e.target.closest('a')) return;
 
                 var rect = card.getBoundingClientRect();
@@ -7430,7 +7430,7 @@
             } else {
                 var est = (appData.estimates||[]).find(function(x){ return x.id === docId; });
                 if (est) { if (!est.layouts) est.layouts=[]; est.layouts.push(lid); }
-                // Save just this estimate immediately (no debounce) so Firestore listener can't race
+                // Save just this estimate immediately (no debounce) so Firestore listener cannot race
                 saveEstimate(est);
                 updateEstLayoutThumbs(docId);
             }
