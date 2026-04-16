@@ -51,21 +51,51 @@
             color: var(--text-primary);
             transition: background 0.2s, color 0.2s;
         }
-        body.dark-mode .card { background: var(--bg-card); border-color: var(--border-color); }
-        body.dark-mode .stat-card { background: var(--bg-card); border-color: var(--border-color); }
+        body.dark-mode .card { background: var(--bg-card); border-color: var(--border-color); color: #e2e8f0; }
+        body.dark-mode .stat-card { background: var(--bg-card); border-color: var(--border-color); color: #e2e8f0; }
         body.dark-mode header { background: var(--bg-header) !important; border-color: var(--border-color) !important; }
         body.dark-mode nav#sidebarNav { background: var(--bg-sidebar) !important; border-color: var(--border-color) !important; }
-        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a; border-color: #334155; color: #e2e8f0; }
-        body.dark-mode table thead { background: #1e293b; }
-        body.dark-mode table tbody tr { border-color: #334155; }
+        body.dark-mode nav#sidebarNav button { color: #94a3b8 !important; }
+        body.dark-mode nav#sidebarNav button:hover { color: #f1f5f9 !important; background: rgba(255,255,255,0.06) !important; }
+        body.dark-mode nav#sidebarNav button.active { color: #ff6b35 !important; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a !important; border-color: #334155 !important; color: #e2e8f0 !important; }
+        body.dark-mode input::placeholder, body.dark-mode textarea::placeholder { color: #475569 !important; }
+        body.dark-mode table { color: #e2e8f0; }
+        body.dark-mode table thead { background: #0f172a !important; }
+        body.dark-mode table thead th { color: #64748b !important; }
+        body.dark-mode table tbody tr { border-color: #334155; color: #cbd5e1; }
         body.dark-mode table tbody tr:hover { background: #1e293b; }
+        body.dark-mode table tbody td { color: #cbd5e1 !important; }
         body.dark-mode .notification-item { background: #1e293b; border-color: #334155; }
         body.dark-mode .gradient-dark { background: #1e293b; }
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4 { color: #f1f5f9; }
-        body.dark-mode label { color: #94a3b8; }
-        body.dark-mode .text-gray-700, body.dark-mode .text-gray-900 { color: #94a3b8 !important; }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 { color: #f1f5f9 !important; }
+        body.dark-mode p, body.dark-mode span, body.dark-mode div { color: inherit; }
+        body.dark-mode label { color: #94a3b8 !important; }
+        body.dark-mode .text-gray-400 { color: #64748b !important; }
+        body.dark-mode .text-gray-500 { color: #64748b !important; }
+        body.dark-mode .text-gray-600 { color: #94a3b8 !important; }
+        body.dark-mode .text-gray-700 { color: #94a3b8 !important; }
+        body.dark-mode .text-gray-800 { color: #cbd5e1 !important; }
+        body.dark-mode .text-gray-900 { color: #e2e8f0 !important; }
+        body.dark-mode .text-black { color: #e2e8f0 !important; }
         body.dark-mode .border-gray-200 { border-color: #334155 !important; }
-        body.dark-mode .bg-gray-50, body.dark-mode .bg-gray-100 { background: #0f172a !important; }
+        body.dark-mode .border-gray-300 { border-color: #475569 !important; }
+        body.dark-mode .bg-white { background: #1e293b !important; }
+        body.dark-mode .bg-gray-50 { background: #0f172a !important; }
+        body.dark-mode .bg-gray-100 { background: #1e293b !important; }
+        body.dark-mode .bg-gray-200 { background: #334155 !important; }
+        body.dark-mode .shadow, body.dark-mode .shadow-lg, body.dark-mode .shadow-xl { box-shadow: 0 4px 24px rgba(0,0,0,0.4) !important; }
+        body.dark-mode .modal-content { background: #1e293b !important; color: #e2e8f0 !important; border-color: #334155 !important; }
+        body.dark-mode .modal-content h2, body.dark-mode .modal-content h3 { color: #f1f5f9 !important; }
+        body.dark-mode .modal-content label { color: #94a3b8 !important; }
+        body.dark-mode .modal-content p { color: #94a3b8 !important; }
+        body.dark-mode .btn-secondary { background: #334155 !important; color: #e2e8f0 !important; border-color: #475569 !important; }
+        body.dark-mode .kanban-col { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .kanban-col h3 { color: #e2e8f0 !important; }
+        body.dark-mode .notification-panel-bg { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode #notificationsPanel { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode #notificationsPanel h3 { color: #f1f5f9 !important; }
+        body.dark-mode .sub-sidebar-section { background: #0f172a !important; border-color: #334155 !important; }
         
         .gradient-orange {
             background: #ff6b35;
@@ -1070,21 +1100,10 @@
                     <div class="flex items-center gap-2">
                         <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
                         <h1 class="logo-text" id="logoTap" onclick="kdrDebugTap()" style="user-select:none;">KDRSYSTEMS</h1>
-                        <p class="text-sm text-gray-700 ml-4" id="headerBusinessSubtitle">Business Management System</p>
+                        <p class="text-sm text-gray-700 ml-4 hidden sm:block" id="headerBusinessSubtitle">Business Management System</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <span id="saveIndicator" class="text-xs hidden sm:inline"></span>
-                        <button class="btn-secondary relative" onclick="toggleNotifications()">
-                            <span class="hidden sm:inline">Notifications</span>
-                            <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
-                        </button>
-                        <button id="darkModeToggle" onclick="toggleDarkMode()" title="Toggle Dark/Light Mode"
-                            style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:16px;line-height:1;">
-                            🌙
-                        </button>
-                        <button class="btn-secondary" onclick="doLogout()" title="Log Out">
-                            <span class="hidden sm:inline">Log Out</span>
-                        </button>
                     </div>
                 </div>
             </div>
@@ -1110,46 +1129,61 @@
             <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
             <!-- Left Sidebar Navigation -->
-            <nav id="sidebarNav" class="fixed left-0 top-[73px] bottom-0 w-64 overflow-y-auto z-40" style="background:#fff;border-right:1px solid #e5e5e5;">
-                <div class="p-4 space-y-2">
-                    <button class="nav-btn-side active w-full text-left" onclick="switchTab('dashboard', this)">
-                        Dashboard
+            <nav id="sidebarNav" class="fixed left-0 top-[73px] bottom-0 w-64 overflow-y-auto z-40" style="background:#fff;border-right:1px solid #e5e5e5;display:flex;flex-direction:column;">
+                <!-- Main Nav -->
+                <div class="p-4 space-y-1 flex-1">
+                    <button class="nav-btn-side active w-full text-left" onclick="switchTab('dashboard', this)">Dashboard</button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('customers', this)">Customers</button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('leads', this)">Leads</button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('schedule', this)">Schedule</button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('estimates', this)">Estimates &amp; Invoices</button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('contracts', this)">Contracts</button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('materials', this)">Materials</button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('templates', this)">Templates</button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('calculator', this)">Profitability</button>
+                    <button id="qtycalcNavBtn" class="nav-btn-side w-full text-left" onclick="switchTab('qtycalc', this)" style="display:none;">Qty Calculator</button>
+                    <button class="nav-btn-side w-full text-left" onclick="switchTab('settings', this)">Settings</button>
+                    <button id="adminNavBtn" class="nav-btn-side w-full text-left" onclick="openAdminPanel()" style="display:none;color:#ff6b35;font-weight:700;">Admin Panel</button>
+                </div>
+
+                <!-- Bottom Section — fixed to bottom of sidebar -->
+                <div style="border-top:1px solid #e5e5e5;padding:12px 16px;display:flex;flex-direction:column;gap:4px;">
+
+                    <!-- Subscription status -->
+                    <div id="sidebarSubStatus" style="padding:10px 12px;background:#f8f9fb;border-radius:10px;margin-bottom:6px;cursor:pointer;" onclick="switchTab('subscription', document.getElementById('subscriptionNavBtn'))">
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span id="sidebarSubLabel" style="font-size:12px;font-weight:700;color:#374151;">My Plan</span>
+                            <span id="sidebarSubBadge" style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#fef3c7;color:#92400e;">Trial</span>
+                        </div>
+                        <div id="sidebarSubDetail" style="font-size:11px;color:#64748b;margin-top:2px;">Tap to manage</div>
+                    </div>
+
+                    <!-- Notifications button -->
+                    <button onclick="toggleNotifications()" style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:transparent;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#374151;text-align:left;"
+                        onmouseover="this.style.background='#f8f9fb'" onmouseout="this.style.background='transparent'">
+                        <span>Notifications</span>
+                        <span id="notificationBadge" class="notification-badge" style="display:none;position:relative;transform:none;top:auto;right:auto;">0</span>
                     </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('customers', this)">
-                        Customers
-                    </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('leads', this)">
-                        Leads
-                    </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('schedule', this)">
-                        Schedule
-                    </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('estimates', this)">
-                         Estimates & Invoices
-                    </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('contracts', this)">
-                        📋 Contracts
-                    </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('materials', this)">
-                        Materials
-                    </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('templates', this)">
-                        Templates
-                    </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('calculator', this)">
-                        Profitability
-                    </button>
-                    <button id="qtycalcNavBtn" class="nav-btn-side w-full text-left" onclick="switchTab('qtycalc', this)" style="display:none;">
-                        🧱 Qty Calculator
-                    </button>
-                    <button class="nav-btn-side w-full text-left" onclick="switchTab('settings', this)">
-                         Settings
-                    </button>
-                    <button id="adminNavBtn" class="nav-btn-side w-full text-left" onclick="openAdminPanel()" style="display:none;margin-top:8px;border-top:1px solid #f1f1f1;padding-top:16px;color:#ff6b35;font-weight:700;">
-                        🔑 Admin Panel
+
+                    <!-- Dark / Light mode toggle -->
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;">
+                        <span style="font-size:13px;font-weight:600;color:#374151;">Appearance</span>
+                        <div style="display:flex;background:#f1f5f9;border-radius:8px;padding:2px;gap:2px;">
+                            <button id="lightModeBtn" onclick="setAppMode('light')" style="padding:5px 10px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:#374151;transition:all 0.15s;">Light</button>
+                            <button id="darkModeBtn" onclick="setAppMode('dark')" style="padding:5px 10px;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;background:transparent;color:#94a3b8;transition:all 0.15s;">Dark</button>
+                        </div>
+                    </div>
+
+                    <!-- Log Out -->
+                    <button onclick="doLogout()" style="width:100%;display:flex;align-items:center;padding:9px 12px;background:transparent;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#ef4444;text-align:left;"
+                        onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
+                        Log Out
                     </button>
                 </div>
             </nav>
+
+            <!-- Hidden nav btn for subscription tab switching -->
+            <button id="subscriptionNavBtn" style="display:none;" onclick="switchTab('subscription', this)"></button>
 
             <!-- Main Content Area -->
             <main class="main-content flex-1 ml-64 p-8">
@@ -1848,6 +1882,68 @@
             </div>
 
             <!-- Settings -->
+            <!-- ── SUBSCRIPTION TAB ────────────────────────────────────────── -->
+            <div id="subscription" class="tab-content">
+                <h2 class="text-3xl font-bold mb-8">My Subscription</h2>
+                <div style="max-width:640px;">
+
+                    <!-- Plan status card -->
+                    <div class="card mb-6" id="subStatusCard">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+                            <div>
+                                <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#94a3b8;margin:0 0 6px;">Current Plan</p>
+                                <h3 style="font-size:24px;font-weight:900;margin:0 0 4px;" id="subPlanName">Loading...</h3>
+                                <p style="font-size:13px;color:#64748b;margin:0;" id="subPlanDetail">—</p>
+                            </div>
+                            <span id="subPlanBadge" style="font-size:12px;font-weight:700;padding:6px 16px;border-radius:20px;background:#fef3c7;color:#92400e;">Loading</span>
+                        </div>
+                        <div style="margin-top:20px;padding-top:20px;border-top:1px solid #f1f5f9;" id="subActions"></div>
+                    </div>
+
+                    <!-- What's included -->
+                    <div class="card mb-6">
+                        <h4 style="font-size:15px;font-weight:700;margin:0 0 16px;">What's included in your plan</h4>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                            <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:#22c55e;font-weight:700;">✓</span>Unlimited Estimates & Invoices</div>
+                            <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:#22c55e;font-weight:700;">✓</span>Digital Contracts & E-Signatures</div>
+                            <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:#22c55e;font-weight:700;">✓</span>Lead Management Pipeline</div>
+                            <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:#22c55e;font-weight:700;">✓</span>Job Scheduling & Calendar</div>
+                            <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:#22c55e;font-weight:700;">✓</span>Profitability Calculator</div>
+                            <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:#22c55e;font-weight:700;">✓</span>Custom Brand Colors & Logo</div>
+                            <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:#22c55e;font-weight:700;">✓</span>Website Lead Capture</div>
+                            <div style="display:flex;align-items:center;gap:8px;font-size:13px;"><span style="color:#22c55e;font-weight:700;">✓</span>Real-Time Cloud Sync</div>
+                        </div>
+                    </div>
+
+                    <!-- Pricing info -->
+                    <div class="card">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+                            <div>
+                                <h4 style="font-size:15px;font-weight:700;margin:0 0 4px;">Monthly Plan</h4>
+                                <p style="font-size:13px;color:#64748b;margin:0;">Billed monthly. Cancel anytime. No contracts.</p>
+                            </div>
+                            <div style="text-align:right;">
+                                <span style="font-size:32px;font-weight:900;color:#0f172a;">$49</span>
+                                <span style="font-size:14px;color:#64748b;">/month</span>
+                            </div>
+                        </div>
+                        <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9;display:flex;gap:10px;flex-wrap:wrap;">
+                            <button onclick="goToCheckout()" style="flex:1;min-width:140px;padding:12px;background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">
+                                Subscribe — $49/mo
+                            </button>
+                            <button onclick="manageBilling()" style="flex:1;min-width:140px;padding:12px;background:#f8f9fb;color:#374151;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">
+                                Manage Billing
+                            </button>
+                            <button onclick="cancelSubscription()" style="flex:1;min-width:140px;padding:12px;background:#fef2f2;color:#ef4444;border:1px solid #fecaca;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">
+                                Cancel Plan
+                            </button>
+                        </div>
+                        <p style="font-size:11px;color:#94a3b8;margin:10px 0 0;text-align:center;">To cancel or modify billing, contact support at kdrsystemsnet@gmail.com</p>
+                    </div>
+
+                </div>
+            </div>
+
             <div id="settings" class="tab-content">
                 <h2 class="text-3xl font-bold mb-6">Business Settings</h2>
                 
@@ -1932,6 +2028,11 @@
                             <h4 class="text-lg font-semibold mb-4 text-orange">Social Media Links</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
+                                    <label class="block mb-2">Your Website URL</label>
+                                    <input type="text" id="settingsWebsiteUrl" placeholder="https://yourwebsite.com">
+                                    <p class="text-xs text-gray-500 mt-1">Paste your website URL — leads from your site will flow into your Leads board</p>
+                                </div>
+                                <div>
                                     <label class="block mb-2">Instagram</label>
                                     <input type="text" id="settingsInstagram" placeholder="@yourbusiness">
                                 </div>
@@ -2004,28 +2105,14 @@
                         </div>
                         
                         <div class="pt-4 border-t border-gray-200">
-                            <h4 class="text-lg font-semibold mb-4 text-orange">Email Settings (EmailJS)</h4>
-                            <p class="text-xs text-gray-700 mb-4">Set up EmailJS to send invoices and estimates directly to customer emails. Free for up to 200 emails/month. <a href="https://www.emailjs.com" target="_blank" class="text-orange underline">Get your keys at emailjs.com</a></p>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block mb-2">EmailJS Public Key</label>
-                                    <input type="text" id="settingsEmailjsPublicKey" placeholder="Paste your Public Key here">
-                                </div>
-                                <div>
-                                    <label class="block mb-2">EmailJS Service ID</label>
-                                    <input type="text" id="settingsEmailjsServiceId" placeholder="e.g. service_abc123">
-                                </div>
-                                <div>
-                                    <label class="block mb-2">EmailJS Template ID</label>
-                                    <input type="text" id="settingsEmailjsTemplateId" placeholder="e.g. template_xyz789">
-                                </div>
-                                <div class="p-3 bg-gray-100 rounded-lg">
-                                    <p class="text-xs text-gray-700 font-semibold mb-2">Quick Setup Guide:</p>
-                                    <p class="text-xs text-gray-900">1. Go to <a href="https://www.emailjs.com" target="_blank" class="text-orange underline">emailjs.com</a> → Sign up (free)</p>
-                                    <p class="text-xs text-gray-900">2. Add an Email Service (Gmail, Outlook, etc.)</p>
-                                    <p class="text-xs text-gray-900">3. Create a Template with these variables: <span class="text-orange">{{to_email}}</span>, <span class="text-orange">{{to_name}}</span>, <span class="text-orange">{{from_name}}</span>, <span class="text-orange">{{subject}}</span>, <span class="text-orange">{{message}}</span></p>
-                                    <p class="text-xs text-gray-900">4. Copy your Public Key, Service ID, and Template ID above</p>
-                                </div>
+                            <h4 class="text-lg font-semibold mb-4 text-orange">Sharing Estimates &amp; Invoices</h4>
+                            <p class="text-xs text-gray-700 mb-4">No setup needed. Click Send on any estimate or invoice — the app generates a link you share via text, WhatsApp, email, or any app. Your customer taps the link and sees a professional page where they can sign or pay.</p>
+                            <div class="p-3 rounded" style="background:#f0fdf4;border:1px solid #bbf7d0;">
+                                <p class="text-xs font-semibold" style="color:#15803d;">How it works:</p>
+                                <p class="text-xs" style="color:#166534;margin-top:4px;">1. Create an estimate or invoice</p>
+                                <p class="text-xs" style="color:#166534;">2. Click Send — the link copies to your clipboard automatically</p>
+                                <p class="text-xs" style="color:#166534;">3. Paste it in a text message or email to your customer</p>
+                                <p class="text-xs" style="color:#166534;">4. Customer taps it, sees the document, and can sign or pay</p>
                             </div>
                         </div>
                         
@@ -2635,7 +2722,7 @@
                 
                 <div style="background:#fef7f4;border:1px solid #fed7c5;border-radius:8px;padding:12px;margin-top:4px;">
                     <p class="text-xs font-semibold text-orange mb-1">Firebase Rule Required</p>
-                    <p class="text-xs text-gray-700 mb-2">Add this to your Firestore Rules so the website form can write leads:</p>
+                    <p class="text-xs text-gray-700 mb-2">Add your website URL in Settings to track where leads come from. Then add this to your Firestore Rules:</p>
                     <code style="font-size:10px;background:#0f172a;color:#e2e8f0;display:block;padding:8px;border-radius:4px;white-space:pre-wrap;">match /users/{userId}/leads/{leadId} {
   allow read: if request.auth != null && request.auth.uid == userId;
   allow create: if true;
@@ -2955,8 +3042,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-    <!-- EmailJS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
         // =============================================
@@ -3057,7 +3142,7 @@
 
         // ── SUBSCRIPTION SYSTEM ───────────────────────────────────────────────
         // YOUR email — you never see a paywall and you can access /admin
-        var ADMIN_EMAIL = 'kdrsystemsllc@gmail.com'; // ← change this to your email
+        var ADMIN_EMAIL = 'kdrfencing@gmail.com'; // ← change this to your email
 
         var SUBSCRIPTION_PRICE = 49; // dollars per month
         var GRACE_PERIOD_DAYS  = 3;  // days after payment fails before lockout
@@ -3456,9 +3541,7 @@
                 facebook: '',
                 tiktok: '',
                 google: '',
-                emailjsPublicKey: '',
-                emailjsServiceId: '',
-                emailjsTemplateId: '',
+                websiteUrl: '',
                 invoiceReminderEnabled: true,
                 reminder1Days: 7,
                 reminder2Days: 7,
@@ -5813,214 +5896,142 @@
         }
 
         function sendDocument(id) {
-            const allDocs = appData.estimates.concat(appData.invoices);
-            const doc = allDocs.find(function(d) { return d.id === id; });
+            var allDocs = appData.estimates.concat(appData.invoices);
+            var doc = allDocs.find(function(d) { return d.id === id; });
             if (!doc) return;
+            if (!doc.customerEmail && !doc.customerName) { toast('Add a customer to this document first'); return; }
 
-            var pubKey = appData.settings.emailjsPublicKey;
-            var serviceId = appData.settings.emailjsServiceId;
-            var templateId = appData.settings.emailjsTemplateId;
-
-            if (!pubKey || !serviceId || !templateId) {
-                toast('Set up email in Settings first');
-                return;
-            }
-            if (!doc.customerEmail) {
-                toast('No email on file for this customer');
-                return;
-            }
-
-            var s = appData.settings;
-            var bizName = s.businessName || 'KDRSYSTEMS';
-            var bizColor = s.brandColor || appData.settings.brandColor || '#ff6b35';
+            var s       = appData.settings;
+            var bizName = s.businessName || 'My Business';
+            var bizColor= s.brandColor || '#ff6b35';
             var docType = doc.type === 'estimate' ? 'Estimate' : 'Invoice';
-            var docNum = '#' + doc.id.slice(-6);
-            var siteUrl = window.location.origin + window.location.pathname;
+            var docNum  = '#' + doc.id.slice(-6).toUpperCase();
+            var signToken = doc.signToken || (doc.id + '_' + Date.now());
 
-            // Line items (K-DR orange row style)
-            var itemsHtml = doc.lineItems.map(function(item, idx) {
-                var bgColor = idx % 2 === 0 ? '#fff3ec' : '#ffe8d9';
-                var descHtml = '<span style="font-weight:600;text-transform:uppercase;">' + item.description + '</span>';
-                if (item.detail) descHtml += '<br><span style="font-weight:400;font-size:12px;color:#666;text-transform:none;">' + item.detail + '</span>';
-                return '<tr style="background:' + bgColor + ';">' +
-                    '<td style="padding:14px 16px;color:#000;font-size:14px;">' + descHtml + '</td>' +
-                    '<td style="padding:14px 16px;text-align:right;font-weight:700;color:#000;font-size:14px;">$' + item.amount + '</td>' +
-                '</tr>';
-            }).join('');
-
-            // Social icons
-            var socialIcons = [];
-            if (s.instagram) socialIcons.push('<a href="' + (s.instagram.startsWith('http') ? s.instagram : 'https://instagram.com/' + s.instagram.replace('@','')) + '" style="display:inline-block;margin:0 8px;" target="_blank"><img src="https://img.icons8.com/fluency/28/instagram-new.png" alt="Instagram" style="width:28px;height:28px;"></a>');
-            if (s.facebook) socialIcons.push('<a href="' + (s.facebook.startsWith('http') ? s.facebook : 'https://facebook.com/' + s.facebook) + '" style="display:inline-block;margin:0 8px;" target="_blank"><img src="https://img.icons8.com/fluency/28/facebook-new.png" alt="Facebook" style="width:28px;height:28px;"></a>');
-            if (s.tiktok) socialIcons.push('<a href="' + (s.tiktok.startsWith('http') ? s.tiktok : 'https://tiktok.com/@' + s.tiktok.replace('@','')) + '" style="display:inline-block;margin:0 8px;" target="_blank"><img src="https://img.icons8.com/fluency/28/tiktok.png" alt="TikTok" style="width:28px;height:28px;"></a>');
-            if (s.google) socialIcons.push('<a href="' + (s.google.startsWith('http') ? s.google : 'https://g.page/' + s.google) + '" style="display:inline-block;margin:0 8px;" target="_blank"><img src="https://img.icons8.com/fluency/28/google-logo.png" alt="Google" style="width:28px;height:28px;"></a>');
-            var socialsRow = socialIcons.length ? '<div style="margin:16px 0;">' + socialIcons.join('') + '</div>' : '';
-
-            // Create public estimate for signing (estimates only)
-            var signToken = doc.id + '_' + Date.now();
-            var signLinkHtml = '';
-
-            function buildAndSendEmail() {
-                // Build pay now section for invoices
-            var payNowHtml = '';
-            if (doc.type !== 'estimate' && s.stripeLink) {
-                payNowHtml = '<div style="text-align:center;margin:28px 0;padding:24px;background:#f0fdf4;border-radius:10px;border:2px solid #22c55e;">' +
-                    '<p style="font-size:16px;font-weight:700;color:#166534;margin:0 0 8px;">Ready to pay this invoice?</p>' +
-                    '<p style="font-size:13px;color:#64748b;margin:0 0 16px;">Click below to pay securely online by card. You will receive a receipt immediately.</p>' +
-                    '<a href="' + s.stripeLink + '" style="display:inline-block;background:#22c55e;color:#fff;padding:14px 40px;border-radius:8px;text-decoration:none;font-weight:800;font-size:15px;">Pay Now — $' + doc.total + '</a>' +
-                    (s.paymentInstructions ? '<p style="font-size:12px;color:#94a3b8;margin:12px 0 0;">' + s.paymentInstructions + '</p>' : '') +
-                '</div>';
-            }
-
-            if (doc.type === 'estimate') {
-                    signLinkHtml = '<div style="text-align:center;margin:30px 0;padding:28px;background:#fff8f0;border-radius:8px;border:2px solid #ff6b35;">' +
-                        '<p style="font-size:18px;font-weight:700;color:#222;margin:0 0 8px;">Ready to approve this estimate?</p>' +
-                        '<p style="font-size:14px;color:#333;margin:0 0 20px;">Click below to review and sign digitally</p>' +
-                        '<a href="' + siteUrl + '?sign=' + signToken + '" style="display:inline-block;background:#ff6b35;color:#ffffff;padding:16px 44px;border-radius:6px;text-decoration:none;font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:1px;">SIGN & APPROVE</a>' +
-                    '</div>';
-                }
-
-                // Email matching the sign page style
-                var emailBody = '' +
-                '<div style="max-width:600px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;padding:20px 0;">' +
-                    '<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">' +
-                        // Orange Header
-                        '<div style="background:#ff6b35;padding:28px 30px;text-align:center;">' +
-                            (s.logo ? '<img src="' + s.logo + '" alt="' + bizName + '" style="max-height:70px;margin:0 auto 10px;display:block;border-radius:8px;">' : '') +
-                            '<h1 style="color:#000;margin:0;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + bizName + '</h1>' +
-                            '<p style="color:#000;margin:4px 0 0;font-size:11px;font-weight:600;letter-spacing:1px;">"YOUR PROPERTY, OUR EXPERIENCE"</p>' +
-                            '<p style="color:#000;margin:8px 0 0;font-size:13px;font-weight:600;">' + (s.phone||'') + (s.phone && s.email ? '  |  ' : '') + (s.email||'') + '</p>' +
-                            (s.address ? '<p style="color:#000;margin:4px 0 0;font-size:12px;">' + s.address + '</p>' : '') +
-                        '</div>' +
-                        // White body
-                        '<div style="background:#fff;padding:28px 30px;">' +
-                            // Estimate title + number + date
-                            '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:8px;">' +
-                                '<div>' +
-                                    '<h2 style="color:#222;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;">' + docType.toUpperCase() + '</h2>' +
-                                    '<p style="color:#555;font-size:13px;margin:4px 0 0;">' + docNum + '</p>' +
-                                '</div>' +
-                                '<div style="text-align:right;">' +
-                                    '<p style="color:#555;font-size:13px;margin:0;">Date: <strong style="color:#222;">' + doc.date + '</strong></p>' +
-                                '</div>' +
-                            '</div>' +
-                            // TO section
-                            '<div style="margin-bottom:20px;padding:16px;background:#f9f9f9;border-radius:10px;border-left:4px solid #ff6b35;">' +
-                                '<p style="color:#555;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;font-weight:700;">TO:</p>' +
-                                '<p style="font-weight:700;color:#222;font-size:16px;margin:0;">' + doc.customerName + '</p>' +
-                                (doc.customerEmail ? '<p style="color:#555;font-size:13px;margin:3px 0 0;">' + doc.customerEmail + '</p>' : '') +
-                                (doc.customerPhone ? '<p style="color:#555;font-size:13px;margin:2px 0 0;">' + doc.customerPhone + '</p>' : '') +
-                                (doc.customerAddress ? '<p style="color:#555;font-size:13px;margin:2px 0 0;">' + doc.customerAddress + '</p>' : '') +
-                            '</div>' +
-                            // Notes
-                            (doc.notes ? '<div style="margin-bottom:16px;padding:12px 16px;background:#fff8f0;border-radius:6px;border-left:4px solid #ff6b35;"><p style="margin:0;font-size:13px;color:#222;font-weight:600;">' + doc.notes + '</p></div>' : '') +
-                            // Items table
-                            '<table style="width:100%;border-collapse:collapse;margin:0 0 16px;">' +
-                                '<tr style="background:#ff6b35;">' +
-                                    '<th style="padding:12px 16px;text-align:left;font-size:12px;color:#000;font-weight:700;text-transform:uppercase;">SERVICE</th>' +
-                                    '<th style="padding:12px 16px;text-align:right;font-size:12px;color:#000;font-weight:700;text-transform:uppercase;">AMOUNT</th>' +
-                                '</tr>' +
-                                itemsHtml +
-                            '</table>' +
-                            // Total box
-                            '<div style="display:flex;justify-content:flex-end;">' +
-                                '<div style="width:260px;">' +
-                                    '<div style="display:flex;justify-content:space-between;padding:8px 14px;"><span style="color:#555;font-size:13px;font-weight:600;">SUBTOTAL</span><span style="color:#222;font-size:13px;">$' + doc.total + '</span></div>' +
-                                    '<div style="display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid #eee;"><span style="color:#555;font-size:13px;font-weight:600;">DISCOUNT</span><span style="color:#222;font-size:13px;">$0</span></div>' +
-                                    '<div style="display:flex;justify-content:space-between;padding:14px;background:#ff6b35;border-radius:8px;margin-top:8px;"><span style="color:#000;font-weight:800;font-size:16px;">TOTAL</span><span style="color:#000;font-weight:800;font-size:22px;">$' + doc.total + '</span></div>' +
-                                '</div>' +
-                            '</div>' +
-                            // Terms
-                            (doc.terms ? '<div style="margin-top:16px;padding:14px;border:1px solid #eee;border-radius:8px;"><p style="font-size:12px;font-weight:700;color:#222;margin:0 0 6px;text-transform:uppercase;">Terms & Conditions</p><p style="font-size:12px;color:#555;margin:0;white-space:pre-wrap;">' + doc.terms + '</p></div>' : '') +
-                            payNowHtml +
-                            signLinkHtml +
-                        '</div>' +
-                        // Footer
-                        '<div style="background:#ff6b35;padding:20px 30px;text-align:center;">' +
-                            '<p style="margin:0;font-size:13px;color:#000;font-weight:700;text-transform:uppercase;">' + bizName + '</p>' +
-                            (s.phone ? '<p style="margin:4px 0 0;font-size:13px;color:#000;">' + s.phone + '</p>' : '') +
-                            (s.email ? '<p style="margin:2px 0 0;font-size:13px;color:#000;">' + s.email + '</p>' : '') +
-                            socialsRow +
-                        '</div>' +
-                    '</div>' +
-                '</div>';
-
-                // Send without confirm — just do it
-
-                var sendBtns = document.querySelectorAll('button');
-                sendBtns.forEach(function(b) { if (b.textContent.indexOf('Send') >= 0) b.disabled = true; });
-
-                emailjs.send(serviceId, templateId, {
-                    to_email: doc.customerEmail,
-                    to_name: doc.customerName,
-                    from_name: bizName,
-                    subject: docType + ' ' + docNum + ' from ' + bizName,
-                    message: emailBody
-                }, pubKey)
-                .then(function() {
-                    doc.sentDate = new Date().toISOString();
-                    doc.status = doc.type === 'estimate' ? 'sent' : doc.status;
-                    if (doc.type === 'estimate') doc.signToken = signToken;
-                    if (!doc.activity) doc.activity = [];
-                    doc.activity.push({ action: 'Estimate sent to ' + doc.customerEmail, date: new Date().toISOString() });
-                    saveData();
-                    renderDocuments();
-                    checkNotifications();
-                    toast(docType + ' sent to ' + doc.customerEmail + ' ✓');
-                })
-                .catch(function(err) {
-                    console.error('EmailJS error:', err);
-                    alert('Failed to send email.\n\nError: ' + (err.text || err.message || 'Unknown error'));
-                })
-                .finally(function() {
-                    sendBtns.forEach(function(b) { b.disabled = false; });
+            // Save public doc to Firestore so customer can view/sign it
+            var layoutImages = [];
+            if (doc.layouts && doc.layouts.length) {
+                doc.layouts.forEach(function(lid) {
+                    var lay = (appData.layouts||[]).find(function(x){ return x.id===lid; });
+                    if (lay && lay.dataUrl) layoutImages.push({ name: lay.name, dataUrl: lay.dataUrl });
                 });
             }
 
-            // For estimates: create public document for signing, then send
-            if (doc.type === 'estimate') {
-                // Resolve layout image data urls to embed in the public doc
-                var layoutImages = [];
-                if (doc.layouts && doc.layouts.length) {
-                    doc.layouts.forEach(function(lid) {
-                        var lay = (appData.layouts||[]).find(function(x){return x.id===lid;});
-                        if (lay && lay.dataUrl) layoutImages.push({name:lay.name, dataUrl:lay.dataUrl});
+            var pubDoc = {
+                id: doc.id,
+                ownerId: currentUserId,
+                businessName: bizName,
+                businessEmail: s.email || '',
+                businessPhone: s.phone || '',
+                businessAddress: s.address || '',
+                businessLogo: s.logo || '',
+                businessColor: bizColor,
+                stripeLink: s.stripeLink || '',
+                paymentInstructions: s.paymentInstructions || '',
+                customerName: doc.customerName,
+                customerEmail: doc.customerEmail || '',
+                customerPhone: doc.customerPhone || '',
+                customerAddress: doc.customerAddress || '',
+                date: doc.date,
+                lineItems: doc.lineItems,
+                total: doc.total,
+                notes: doc.notes || '',
+                terms: doc.terms || '',
+                layoutImages: layoutImages,
+                status: 'sent',
+                signature: null,
+                signedBy: null,
+                signedDate: null
+            };
+
+            var siteBase = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/') + 'index.html';
+            var shareUrl = siteBase + '?sign=' + signToken;
+
+            function finishSend() {
+                // Copy link to clipboard
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareUrl).then(function() {
+                        _showShareModal(shareUrl, doc, docType, docNum, bizName);
+                    }).catch(function() {
+                        _showShareModal(shareUrl, doc, docType, docNum, bizName);
                     });
+                } else {
+                    _showShareModal(shareUrl, doc, docType, docNum, bizName);
                 }
-                var pubDoc = {
-                    id: doc.id,
-                    ownerId: currentUserId,
-                    businessName: bizName,
-                    businessEmail: s.email || '',
-                    businessPhone: s.phone || '',
-                    businessAddress: s.address || '',
-                    businessLogo: s.logo || '',
-                        businessColor: bizColor,
-                    customerName: doc.customerName,
-                    customerEmail: doc.customerEmail,
-                    customerPhone: doc.customerPhone || '',
-                    customerAddress: doc.customerAddress || '',
-                    date: doc.date,
-                    lineItems: doc.lineItems,
-                    total: doc.total,
-                    notes: doc.notes || '',
-                    terms: doc.terms || '',
-                    layoutImages: layoutImages,
-                    status: 'sent',
-                    signature: null,
-                    signedBy: null,
-                    signedDate: null
-                };
+
+                // Update doc status
+                doc.sentDate   = new Date().toISOString();
+                doc.signToken  = signToken;
+                if (doc.type === 'estimate') doc.status = 'sent';
+                if (!doc.activity) doc.activity = [];
+                doc.activity.push({ action: docType + ' link generated', date: new Date().toISOString() });
+                saveData();
+                renderDocuments();
+                checkNotifications();
+            }
+
+            // Save to Firestore then show share modal
+            if (doc.type === 'estimate') {
                 db.collection('public_estimates').doc(signToken).set(pubDoc)
-                    .then(function() { buildAndSendEmail(); })
-                    .catch(function(err) { console.error(err); buildAndSendEmail(); });
+                    .then(finishSend).catch(function(err) { console.error(err); finishSend(); });
             } else {
-                signLinkHtml = '';
-                buildAndSendEmail();
+                // For invoices save to public_estimates too so customer can view it
+                db.collection('public_estimates').doc(signToken).set(pubDoc)
+                    .then(finishSend).catch(function(err) { console.error(err); finishSend(); });
             }
         }
 
-        function deleteDocument(id, type) {
+        function _showShareModal(url, doc, docType, docNum, bizName) {
+            // Build share modal HTML
+            var modalHtml = '<div style="text-align:center;padding:8px 0;">' +
+                '<div style="width:56px;height:56px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;">🔗</div>' +
+                '<h3 style="font-size:18px;font-weight:800;margin:0 0 6px;">' + docType + ' Link Ready</h3>' +
+                '<p style="color:#64748b;font-size:13px;margin:0 0 20px;">Share this link with <strong>' + (doc.customerName||'your customer') + '</strong></p>' +
+                '<div style="background:#f8f9fb;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:20px;word-break:break-all;font-size:12px;color:#374151;text-align:left;">' + url + '</div>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">' +
+                    '<button onclick="_copyDocLink('' + url.replace(/'/g,'&#39;') + '')" style="padding:12px;background:#0f172a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">Copy Link</button>' +
+                    '<button onclick="_smsDocLink('' + url.replace(/'/g,'&#39;') + '','' + (doc.customerName||'').replace(/'/g,'&#39;') + '','' + docType + '','' + docNum + '','' + bizName.replace(/'/g,'&#39;') + '')" style="padding:12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">Send via Text</button>' +
+                '</div>' +
+                '<button onclick="_emailDocLink('' + url.replace(/'/g,'&#39;') + '','' + (doc.customerEmail||'').replace(/'/g,'&#39;') + '','' + (doc.customerName||'').replace(/'/g,'&#39;') + '','' + docType + '','' + docNum + '','' + bizName.replace(/'/g,'&#39;') + '')" style="width:100%;padding:12px;background:#ff6b35;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">Open in Email App</button>' +
+                '<button onclick="closeModal('shareDocModal')" style="width:100%;padding:10px;background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;cursor:pointer;">Close</button>' +
+            '</div>';
+
+            var modal = document.getElementById('shareDocModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'shareDocModal';
+                modal.className = 'modal-backdrop';
+                modal.innerHTML = '<div class="modal-content" style="max-width:400px;"><div id="shareDocModalBody"></div></div>';
+                document.body.appendChild(modal);
+                modal.addEventListener('click', function(e){ if(e.target===modal) closeModal('shareDocModal'); });
+            }
+            document.getElementById('shareDocModalBody').innerHTML = modalHtml;
+            openModal('shareDocModal');
+        }
+
+        function _copyDocLink(url) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(function(){ toast('Link copied to clipboard ✓'); });
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = url; document.body.appendChild(ta); ta.select();
+                document.execCommand('copy'); document.body.removeChild(ta);
+                toast('Link copied ✓');
+            }
+        }
+
+        function _smsDocLink(url, customerName, docType, docNum, bizName) {
+            var msg = 'Hi ' + customerName + ', here is your ' + docType + ' ' + docNum + ' from ' + bizName + ': ' + url;
+            window.open('sms:?body=' + encodeURIComponent(msg));
+        }
+
+        function _emailDocLink(url, email, customerName, docType, docNum, bizName) {
+            var subject = docType + ' ' + docNum + ' from ' + bizName;
+            var body = 'Hi ' + customerName + ',\n\nPlease review your ' + docType + ' at the link below:\n\n' + url + '\n\nThank you,\n' + bizName;
+            window.open('mailto:' + email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body));
+        }
+
+                function deleteDocument(id, type) {
             kdrConfirm('Delete this ' + type + '?', 'This cannot be undone.', 'Delete', function() {
                 if (type === 'estimate') {
                     appData.estimates = appData.estimates.filter(function(e) { return e.id !== id; });
@@ -6652,9 +6663,8 @@
             document.getElementById('settingsFacebook').value = appData.settings.facebook || '';
             document.getElementById('settingsTiktok').value = appData.settings.tiktok || '';
             document.getElementById('settingsGoogle').value = appData.settings.google || '';
-            document.getElementById('settingsEmailjsPublicKey').value = appData.settings.emailjsPublicKey || '';
-            document.getElementById('settingsEmailjsServiceId').value = appData.settings.emailjsServiceId || '';
-            document.getElementById('settingsEmailjsTemplateId').value = appData.settings.emailjsTemplateId || '';
+            var wuEl = document.getElementById('settingsWebsiteUrl');
+            if (wuEl) wuEl.value = appData.settings.websiteUrl || '';
             document.getElementById('invoiceReminderEnabled').value = String(appData.settings.invoiceReminderEnabled !== false);
             document.getElementById('reminder1Days').value = appData.settings.reminder1Days || 7;
             document.getElementById('reminder2Days').value = appData.settings.reminder2Days || 7;
@@ -6752,9 +6762,7 @@
                 facebook: document.getElementById('settingsFacebook').value,
                 tiktok: document.getElementById('settingsTiktok').value,
                 google: document.getElementById('settingsGoogle').value,
-                emailjsPublicKey: document.getElementById('settingsEmailjsPublicKey').value,
-                emailjsServiceId: document.getElementById('settingsEmailjsServiceId').value,
-                emailjsTemplateId: document.getElementById('settingsEmailjsTemplateId').value,
+                websiteUrl: (document.getElementById('settingsWebsiteUrl')||{}).value || '',
                 invoiceReminderEnabled: document.getElementById('invoiceReminderEnabled').value === 'true',
                 reminder1Days: parseInt(document.getElementById('reminder1Days').value) || 7,
                 reminder2Days: parseInt(document.getElementById('reminder2Days').value) || 7,
@@ -6853,42 +6861,8 @@
         // SIGNATURE EMAIL NOTIFICATION TO OWNER
         // =============================================
         function sendSignatureNotificationEmail(est) {
-            if (est._signatureEmailSent) return;
-            est._signatureEmailSent = true;
-            
-            var pubKey = appData.settings.emailjsPublicKey;
-            var serviceId = appData.settings.emailjsServiceId;
-            var templateId = appData.settings.emailjsTemplateId;
-            var ownerEmail = appData.settings.email;
-            
-            if (!pubKey || !serviceId || !templateId || !ownerEmail) return;
-            
-            emailjs.send(serviceId, templateId, {
-                to_email: ownerEmail,
-                to_name: appData.settings.businessName || 'Owner',
-                from_name: appData.settings.businessName || 'KDR Flow',
-                subject: 'Estimate Signed - ' + est.customerName + ' (#' + est.id.slice(-6) + ')',
-                message: '<div style="font-family:Inter,Arial,sans-serif;max-width:500px;margin:0 auto;">' +
-                    '<div style="background:#22c55e;padding:24px;border-radius:12px 12px 0 0;text-align:center;">' +
-                        '<h1 style="color:#fff;margin:0;font-size:22px;">Estimate Approved!</h1>' +
-                    '</div>' +
-                    '<div style="background:#fff;padding:30px;border:1px solid #e5e5e5;border-radius:0 0 12px 12px;">' +
-                        '<p style="font-size:16px;color:#222;margin:0 0 16px;"><strong>' + est.customerName + '</strong> signed and approved your estimate.</p>' +
-                        '<table style="width:100%;margin:16px 0;">' +
-                            '<tr><td style="padding:8px 0;color:#666;font-size:14px;">Estimate</td><td style="padding:8px 0;color:#222;font-size:14px;text-align:right;font-weight:600;">#' + est.id.slice(-6) + '</td></tr>' +
-                            '<tr><td style="padding:8px 0;color:#666;font-size:14px;">Amount</td><td style="padding:8px 0;color:#222;font-size:14px;text-align:right;font-weight:600;">$' + est.total + '</td></tr>' +
-                            '<tr><td style="padding:8px 0;color:#666;font-size:14px;">Signed By</td><td style="padding:8px 0;color:#222;font-size:14px;text-align:right;font-weight:600;">' + (est.signedBy || est.customerName) + '</td></tr>' +
-                            '<tr><td style="padding:8px 0;color:#666;font-size:14px;">Date</td><td style="padding:8px 0;color:#222;font-size:14px;text-align:right;font-weight:600;">' + (est.signedDate || new Date().toLocaleDateString()) + '</td></tr>' +
-                        '</table>' +
-                        '<p style="font-size:13px;color:#666;margin:16px 0 0;">Open your KDR Flow app to view the signed estimate and start the job.</p>' +
-                    '</div>' +
-                '</div>'
-            }, pubKey).then(function() {
-                console.log('Signature notification email sent to owner');
-            }).catch(function(err) {
-                console.error('Signature notification email failed:', err);
-                est._signatureEmailSent = false; // Retry next sync
-            });
+            // Notification shown in-app when customer signs
+            toast('Estimate signed by ' + est.customerName + ' ✓');
         }
         
         // =============================================
@@ -6936,11 +6910,13 @@
         }
         
         function sendLeadNotificationEmail(lead) {
-            var pubKey = appData.settings.emailjsPublicKey;
-            var serviceId = appData.settings.emailjsServiceId;
-            var templateId = appData.settings.emailjsTemplateId;
+            // In-app notification for new lead
+            toast('New lead: ' + (lead.name || 'Website visitor') + ' ✓');
+            if (typeof checkNotifications === 'function') checkNotifications();
+            // Skip email sending - notification shown in app
+            return;
             var ownerEmail = appData.settings.email;
-            if (!pubKey || !serviceId || !templateId || !ownerEmail) return;
+            if (!ownerEmail) return;
             
             emailjs.send(serviceId, templateId, {
                 to_email: ownerEmail,
@@ -9053,20 +9029,8 @@
                     '</div>' +
                 '</div></div>';
 
-                emailjs.init(pubKey);
-                emailjs.send(serviceId, templateId, {
-                    to_email: c.customerEmail,
-                    to_name: c.customerName,
-                    from_name: bizName,
-                    subject: 'Your Fence Contract from ' + bizName + ' — Please Review & Sign',
-                    message_html: emailBody,
-                    message: 'Please review and sign your fence installation contract at: ' + signLink
-                }).then(function() {
-                    toast('Contract sent to ' + c.customerEmail + ' ✓');
-                }).catch(function(err) {
-                    console.error('EmailJS error', err);
-                    toast('Saved! Email may need manual sending — check Settings.');
-                });
+                // Show share modal for contract link
+                _showShareModal(signLink, { customerName: c.customerName, customerEmail: c.customerEmail||'' }, 'Contract', '#' + c.id.slice(-6).toUpperCase(), bizName);
             }).catch(function(err) {
                 console.error('Firestore error', err);
                 toast('Error saving contract link');
@@ -9718,6 +9682,7 @@
             window.switchTab = function(tab, btn) {
                 if (typeof origSwitch === 'function') origSwitch(tab, btn);
                 if (tab === 'qtycalc') { initQtyMaterialGrid(); initQtySides(); }
+                if (tab === 'subscription') { _updateSidebarSubStatus(); }
             };
         });
 
@@ -9868,14 +9833,17 @@
             // Show admin button if admin
             var adminBtn = document.getElementById('adminNavBtn');
             if (adminBtn) adminBtn.style.display = currentUserStatus === 'admin' ? '' : 'none';
-            // Show fence qty calculator ONLY for admin account
+            // Show fence qty calculator ONLY for admin email
+            var isAdminEmail = currentUserEmail && currentUserEmail.toLowerCase() === ADMIN_EMAIL.toLowerCase();
             var qtyBtn = document.getElementById('qtycalcNavBtn');
-            if (qtyBtn) qtyBtn.style.display = currentUserStatus === 'admin' ? '' : 'none';
+            if (qtyBtn) qtyBtn.style.display = (currentUserStatus === 'admin' || isAdminEmail) ? '' : 'none';
             // Apply saved brand color
             var savedColor = appData.settings && appData.settings.brandColor;
             if (savedColor) applyBrandColor(savedColor);
             // Apply saved dark mode
             initDarkMode();
+            // Update sidebar subscription status
+            _updateSidebarSubStatus();
 
             // Show trial banner if trialing and < 3 days left
             if (currentUserStatus === 'trialing') {
@@ -9997,6 +9965,112 @@
         });
 
         // ── END DARK MODE & BRAND COLOR ────────────────────────────────────────
+
+        // ── SUBSCRIPTION TAB FUNCTIONS ───────────────────────────────────────
+        function _updateSidebarSubStatus() {
+            if (!currentUserId) return;
+            db.collection('subscriptions').doc(currentUserId).get().then(function(doc) {
+                var label  = document.getElementById('sidebarSubLabel');
+                var badge  = document.getElementById('sidebarSubBadge');
+                var detail = document.getElementById('sidebarSubDetail');
+                if (!doc.exists) {
+                    if (label) label.textContent = 'Free Trial';
+                    if (badge) { badge.textContent = 'Trial'; badge.style.background='#fef3c7'; badge.style.color='#92400e'; }
+                    if (detail) detail.textContent = 'Tap to manage';
+                    return;
+                }
+                var sub = doc.data();
+                var statusMap = {
+                    active:   { label: 'Active Plan', badge: 'Active', bg: '#dcfce7', color: '#15803d' },
+                    trialing: { label: 'Free Trial', badge: 'Trial', bg: '#fef3c7', color: '#92400e' },
+                    grace:    { label: 'Payment Issue', badge: 'Grace', bg: '#fee2e2', color: '#dc2626' },
+                    locked:   { label: 'Locked', badge: 'Locked', bg: '#fee2e2', color: '#dc2626' },
+                    admin:    { label: 'Admin Account', badge: 'Admin', bg: '#e0e7ff', color: '#3730a3' }
+                };
+                var st = statusMap[currentUserStatus] || statusMap[sub.status] || { label: sub.status, badge: sub.status, bg: '#f1f5f9', color: '#64748b' };
+                if (label) label.textContent = st.label;
+                if (badge) { badge.textContent = st.badge; badge.style.background = st.bg; badge.style.color = st.color; }
+                if (sub.status === 'trialing' && sub.trialEnd) {
+                    var daysLeft = Math.ceil((new Date(sub.trialEnd) - new Date()) / 86400000);
+                    if (detail) detail.textContent = daysLeft > 0 ? daysLeft + ' days left in trial' : 'Trial ended';
+                } else if (sub.status === 'active' && sub.activatedAt) {
+                    if (detail) detail.textContent = 'Since ' + new Date(sub.activatedAt).toLocaleDateString();
+                } else {
+                    if (detail) detail.textContent = 'Tap to manage';
+                }
+                // Update subscription tab too
+                _renderSubscriptionTab(sub);
+            }).catch(function(){});
+        }
+
+        function _renderSubscriptionTab(sub) {
+            var nameEl   = document.getElementById('subPlanName');
+            var detailEl = document.getElementById('subPlanDetail');
+            var badgeEl  = document.getElementById('subPlanBadge');
+            var actEl    = document.getElementById('subActions');
+            if (!nameEl) return;
+
+            if (currentUserStatus === 'admin') {
+                nameEl.textContent   = 'Admin Account';
+                detailEl.textContent = 'Free forever — no subscription required';
+                badgeEl.textContent  = 'Admin';
+                badgeEl.style.background = '#e0e7ff'; badgeEl.style.color = '#3730a3';
+                if (actEl) actEl.innerHTML = '';
+                return;
+            }
+
+            var statusLabels = { active: 'Active — $49/month', trialing: 'Free Trial', grace: 'Payment Issue', locked: 'Account Locked', cancelled: 'Cancelled' };
+            var badgeStyles  = {
+                active:    { bg: '#dcfce7', color: '#15803d', text: 'Active' },
+                trialing:  { bg: '#fef3c7', color: '#92400e', text: 'Trial' },
+                grace:     { bg: '#fee2e2', color: '#dc2626', text: 'Grace Period' },
+                locked:    { bg: '#fee2e2', color: '#dc2626', text: 'Locked' },
+                cancelled: { bg: '#f1f5f9', color: '#64748b', text: 'Cancelled' }
+            };
+
+            var status = sub.status || 'trialing';
+            var bs = badgeStyles[status] || { bg: '#f1f5f9', color: '#64748b', text: status };
+            nameEl.textContent = statusLabels[status] || status;
+            badgeEl.textContent = bs.text; badgeEl.style.background = bs.bg; badgeEl.style.color = bs.color;
+
+            if (status === 'trialing' && sub.trialEnd) {
+                var daysLeft = Math.ceil((new Date(sub.trialEnd) - new Date()) / 86400000);
+                detailEl.textContent = daysLeft > 0 ? 'Trial ends in ' + daysLeft + ' day' + (daysLeft===1?'':'s') : 'Trial has ended — subscribe to continue';
+            } else if (status === 'active') {
+                detailEl.textContent = sub.activatedAt ? 'Active since ' + new Date(sub.activatedAt).toLocaleDateString() : 'Your subscription is active';
+            } else if (status === 'grace') {
+                var graceEnd = new Date(new Date(sub.graceStart).getTime() + GRACE_PERIOD_DAYS * 86400000);
+                var graceDays = Math.ceil((graceEnd - new Date()) / 86400000);
+                detailEl.textContent = 'Payment failed — ' + Math.max(0,graceDays) + ' day(s) until lockout. Update billing now.';
+            } else if (status === 'locked') {
+                detailEl.textContent = 'Your account has been locked. Subscribe to regain access.';
+            }
+
+            if (actEl) {
+                if (status === 'active') {
+                    actEl.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><span style="width:10px;height:10px;background:#22c55e;border-radius:50%;display:inline-block;"></span><span style="font-size:13px;font-weight:600;color:#15803d;">Your subscription is active and in good standing.</span></div>';
+                } else {
+                    actEl.innerHTML = '<button onclick="goToCheckout()" style="padding:12px 24px;background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(255,107,53,0.3);">Subscribe Now — $49/mo</button>';
+                }
+            }
+        }
+
+        function manageBilling() {
+            goToCheckout();
+        }
+
+        function cancelSubscription() {
+            kdrConfirm(
+                'Cancel your subscription?',
+                'Your account will remain active until your current billing period ends. To cancel, please email kdrsystemsnet@gmail.com with your account email.',
+                'Send Cancellation Email',
+                function() {
+                    window.open('mailto:kdrsystemsnet@gmail.com?subject=Cancel Subscription&body=Please cancel my KDRSYSTEMS subscription.%0A%0AAccount email: ' + currentUserEmail);
+                }
+            );
+        }
+
+        // ── END SUBSCRIPTION FUNCTIONS ─────────────────────────────────────────
 
         var _toastTimer = null;
         function toast(msg, duration) {
