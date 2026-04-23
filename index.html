@@ -604,8 +604,18 @@
                 width: auto;
             }
 
-            .stat-card { padding: 14px; }
-            .stat-card .text-4xl { font-size: 1.5rem; }
+            .stat-card { padding: 12px 14px; }
+            .stat-card .text-4xl { font-size: 1.6rem; }
+            .stat-card .text-3xl { font-size: 1.4rem; }
+
+            /* Tablet grid adjustments */
+            .grid.lg\:grid-cols-6 { grid-template-columns: repeat(3, 1fr) !important; }
+            .grid.lg\:grid-cols-4 { grid-template-columns: repeat(2, 1fr) !important; }
+            .grid.md\:grid-cols-5 { grid-template-columns: repeat(3, 1fr) !important; }
+
+            /* Tables scroll on tablet too */
+            table { min-width: 560px; }
+            .overflow-x-auto { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         }
 
         /* ---- PHONE (<= 640px) ---- */
@@ -619,25 +629,67 @@
             .btn-primary, .btn-secondary { padding: 10px 14px; font-size: 13px; }
 
             main.main-content {
-                padding: 12px !important;
+                padding: 10px !important;
             }
 
-            h2.text-3xl { font-size: 1.25rem; }
+            h2.text-3xl { font-size: 1.1rem !important; }
+            h2.text-2xl { font-size: 1rem !important; }
 
-            .card { padding: 14px; border-radius: 10px; }
+            /* Dashboard stat cards — stack to 2 columns on phone */
+            .grid.grid-cols-2.md\:grid-cols-3.lg\:grid-cols-6 {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px !important;
+            }
+
+            /* Stat numbers don't overflow */
+            .stat-card .text-4xl, .stat-card .text-3xl { font-size: 1.3rem !important; }
+            .stat-card .text-2xl { font-size: 1.1rem !important; }
+            .stat-card { padding: 10px 12px !important; }
+
+            /* Tables scroll horizontally */
+            .overflow-x-auto { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+            table { min-width: 500px; }
+            table th, table td { padding: 8px 10px !important; font-size: 12px !important; }
+
+            .card { padding: 12px; border-radius: 10px; }
+
+            /* Grid adjustments for phone */
+            .grid.grid-cols-1.md\:grid-cols-2,
+            .grid.grid-cols-1.lg\:grid-cols-2 { grid-template-columns: 1fr !important; }
+            .grid.grid-cols-2 { grid-template-columns: 1fr 1fr !important; }
+            .grid.md\:grid-cols-5 { grid-template-columns: repeat(2,1fr) !important; }
 
             .grid.lg\\:grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
 
-            .modal { padding: 6px; }
+            /* Modals full width on phone */
+            .modal { padding: 4px; }
             .modal-content {
-                border-radius: 12px;
-                max-height: 94vh;
+                border-radius: 14px;
+                max-height: 96vh;
+                width: 100% !important;
+                max-width: 100vw !important;
+                margin: 0 !important;
             }
 
+            /* Form inputs */
             input, select, textarea {
                 padding: 12px 10px;
-                font-size: 16px;
+                font-size: 16px; /* prevents iOS zoom */
             }
+
+            /* Sidebar bottom buttons legible */
+            nav#sidebarNav .p-4 button { font-size: 14px !important; padding: 12px 14px !important; }
+
+            /* Kanban board scrolls on mobile */
+            #kanbanBoard { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+            .kanban-col { min-width: 240px !important; }
+
+            /* Estimates/invoices action buttons stack */
+            .flex.gap-3.flex-wrap { gap: 6px !important; }
+            .flex.gap-3.flex-wrap button { font-size: 12px !important; padding: 8px 10px !important; }
+
+            /* Subscription tab */
+            #subscription .grid { grid-template-columns: 1fr !important; }
 
             .nav-btn-side {
                 padding: 14px;
@@ -1192,7 +1244,7 @@
                 <h2 class="text-3xl font-bold mb-8">Dashboard Overview</h2>
                 
                 <!-- Top stat cards -->
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8" style="margin-bottom:24px;">
                     <div class="stat-card">
                         <p class="text-sm text-gray-700 mb-2">New Leads</p>
                         <p class="text-4xl font-bold text-orange" id="dashLeads">0</p>
@@ -2249,14 +2301,17 @@
                     <div class="border rounded-lg p-4" style="background:#f8f9fb;">
                         <div class="flex justify-between items-center mb-3">
                             <h4 class="font-semibold">Services</h4>
-                            <div class="flex gap-2">
+                            <div class="flex gap-2 flex-wrap">
                                 <select id="estTemplate" class="text-sm" style="width:auto;">
                                     <option value="">Add from Template...</option>
                                 </select>
                                 <button type="button" class="btn-secondary text-sm" onclick="addEstimateLine()">+ Custom Line</button>
+                                <button type="button" class="btn-secondary text-sm" onclick="addEstimateSection()" title="Add a togglable section (e.g. Front Yard, Back Yard)" style="background:#eff6ff;color:#3b82f6;border-color:#bfdbfe;">+ Section</button>
                             </div>
                         </div>
-                        
+                        <p class="text-xs text-gray-500 mb-3" id="sectionsHint" style="display:none;background:#eff6ff;color:#3b82f6;padding:6px 10px;border-radius:6px;">
+                            Sections let customers toggle areas on/off to customize their estimate price.
+                        </p>
                         <div id="estimateServices" class="space-y-3"></div>
                         <p id="estEmptyMsg" class="text-xs text-gray-700 text-center py-4">Select a template or add a custom line to start</p>
                     </div>
@@ -3648,15 +3703,25 @@
         }
 
         function renderPublicSignaturePage(est, token) {
-            var itemsHtml = est.lineItems.map(function(item, idx) {
-                var bg = idx % 2 === 0 ? '#fff' : '#fafafa';
-                var descHtml = '<span style="font-weight:600;text-transform:uppercase;">' + item.description + '</span>';
-                if (item.detail) descHtml += '<br><span style="font-weight:400;font-size:12px;color:#666;text-transform:none;">' + item.detail + '</span>';
-                return '<tr style="background:' + bg + ';">' +
-                    '<td style="padding:14px 20px;border-bottom:1px solid #eee;color:#000;font-size:14px;">' + descHtml + '</td>' +
-                    '<td style="padding:14px 20px;text-align:right;border-bottom:1px solid #eee;font-weight:700;color:#000;font-size:14px;">$' + item.amount + '</td>' +
-                '</tr>';
-            }).join('');
+            var brandCol = est.businessColor || '#ff6b35';
+            // Build items — supports both regular line items and customer-togglable sections
+            var hasSections = est.sections && est.sections.length > 0 && est.services && est.services.length > 0;
+
+            var itemsHtml;
+            if (hasSections) {
+                // Build section-based interactive view
+                itemsHtml = ''; // will be replaced by JS in the page
+            } else {
+                itemsHtml = est.lineItems.map(function(item, idx) {
+                    var bg = idx % 2 === 0 ? '#fff' : '#fafafa';
+                    var descHtml = '<span style="font-weight:600;text-transform:uppercase;">' + item.description + '</span>';
+                    if (item.detail) descHtml += '<br><span style="font-weight:400;font-size:12px;color:#666;text-transform:none;">' + item.detail + '</span>';
+                    return '<tr style="background:' + bg + ';">' +
+                        '<td style="padding:14px 20px;border-bottom:1px solid #eee;color:#000;font-size:14px;">' + descHtml + '</td>' +
+                        '<td style="padding:14px 20px;text-align:right;border-bottom:1px solid #eee;font-weight:700;color:#000;font-size:14px;">$' + item.amount + '</td>' +
+                    '</tr>';
+                }).join('');
+            }
 
             var alreadySigned = est.signature ? true : false;
 
@@ -3667,7 +3732,7 @@
                     '<p style="color:#333;font-size:14px;margin:0;">Signed by ' + (est.signedBy || 'Customer') + ' on ' + (est.signedDate || 'N/A') + '</p>' +
                 '</div>';
             } else {
-                signSection = '<div style="margin-top:30px;padding:30px;background:#fff;border:2px solid #ff6b35;border-radius:12px;">' +
+                signSection = '<div style="margin-top:30px;padding:30px;background:#fff;border:2px solid "+brandCol+";border-radius:12px;">' +
                     '<h3 style="font-size:20px;font-weight:700;color:#222;margin:0 0 20px;text-align:center;">Approve This Estimate</h3>' +
                     '<div style="margin-bottom:16px;">' +
                         '<label style="display:block;margin-bottom:6px;font-size:14px;color:#222;font-weight:600;">Your Full Name</label>' +
@@ -3680,14 +3745,14 @@
                     '<div style="display:flex;gap:12px;margin-bottom:16px;">' +
                         '<button style="flex:1;padding:12px;background:#f5f5f5;border:1px solid #ddd;border-radius:10px;cursor:pointer;font-size:14px;color:#333;" onclick="clearPublicSigCanvas()">Clear Signature</button>' +
                     '</div>' +
-                    '<button style="width:100%;padding:16px;background:#ff6b35;color:white;border:none;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;" onclick="submitPublicSignature(\'' + token + '\')">Approve & Sign</button>' +
+                    '<button style="width:100%;padding:16px;background:"+brandCol+";color:white;border:none;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;" onclick="submitPublicSignature(\'' + token + '\')">Approve & Sign</button>' +
                 '</div>';
             }
 
             // Build the professional estimate page
             var html = '' +
                 // Orange Header Bar with centered logo and BLACK text
-                '<div style="background:#ff6b35;border-radius:16px 16px 0 0;padding:30px;text-align:center;">' +
+                '<div style="background:"+brandCol+";border-radius:16px 16px 0 0;padding:30px;text-align:center;">' +
                     (est.businessLogo ? '<img src="' + est.businessLogo + '" alt="Logo" style="max-height:80px;margin:0 auto 10px;display:block;border-radius:8px;">' : '') +
                     '<h1 style="color:#000000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + (est.businessName || 'KDRSYSTEMS') + '</h1>' +
                     '<p style="color:#000000;margin:6px 0 0;font-size:12px;font-weight:600;letter-spacing:1px;">"YOUR PROPERTY, OUR EXPERIENCE"</p>' +
@@ -3711,42 +3776,59 @@
                         '</div>' +
                     '</div>' +
                     // TO section
-                    '<div style="margin-bottom:24px;padding:20px;background:#f9f9f9;border-radius:10px;border-left:4px solid #ff6b35;">' +
+                    '<div style="margin-bottom:24px;padding:20px;background:#f9f9f9;border-radius:10px;border-left:4px solid "+brandCol+";">' +
                         '<p style="color:#333;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:700;">TO:</p>' +
                         '<p style="font-weight:700;color:#222;font-size:18px;margin:0;">' + est.customerName + '</p>' +
                         (est.customerEmail ? '<p style="color:#333;font-size:14px;margin:4px 0 0;">' + est.customerEmail + '</p>' : '') +
                         (est.customerPhone ? '<p style="color:#333;font-size:14px;margin:2px 0 0;">' + est.customerPhone + '</p>' : '') +
                         (est.customerAddress ? '<p style="color:#333;font-size:14px;margin:2px 0 0;">' + est.customerAddress + '</p>' : '') +
                     '</div>' +
-                    // Items Table
+                    // Items Table — sections-aware
+                    (hasSections ? '' :
                     '<table style="width:100%;border-collapse:collapse;margin:20px 0;">' +
-                        '<tr style="background:#ff6b35;">' +
+                        '<tr style="background:"+brandCol+";">' +
                             '<th style="padding:14px 20px;text-align:left;font-size:13px;color:#000;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">SERVICE</th>' +
                             '<th style="padding:14px 20px;text-align:right;font-size:13px;color:#000;font-weight:700;text-transform:uppercase;">AMOUNT</th>' +
                         '</tr>' +
                         itemsHtml +
-                    '</table>' +
+                    '</table>') +
+                    // Sections interactive UI (injected by JS below if hasSections)
+                    (hasSections ? '<div id="pubSectionsContainer"></div>' : '') +
                     // Subtotal / Total
                     '<div style="display:flex;justify-content:flex-end;margin-top:10px;">' +
                         '<div style="width:280px;">' +
-                            '<div style="display:flex;justify-content:space-between;padding:10px 16px;"><span style="color:#333;font-weight:600;">SUBTOTAL</span><span style="color:#222;">$' + est.total + '</span></div>' +
+                            '<div style="display:flex;justify-content:space-between;padding:10px 16px;"><span style="color:#333;font-weight:600;">SUBTOTAL</span><span style="color:#222;" id="pubSubtotal">$' + est.total + '</span></div>' +
                             '<div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #eee;"><span style="color:#333;font-weight:600;">DISCOUNT</span><span style="color:#222;">$0</span></div>' +
-                            '<div style="display:flex;justify-content:space-between;padding:16px;background:#ff6b35;border-radius:8px;margin-top:8px;"><span style="color:#000;font-weight:800;font-size:18px;">TOTAL</span><span style="color:#000;font-weight:800;font-size:24px;">$' + est.total + '</span></div>' +
+                            '<div style="display:flex;justify-content:space-between;padding:16px;background:"+brandCol+";border-radius:8px;margin-top:8px;"><span style="color:#000;font-weight:800;font-size:18px;">TOTAL</span><span style="color:#000;font-weight:800;font-size:24px;" id="pubTotal">$' + est.total + '</span></div>' +
                         '</div>' +
                     '</div>' +
-                    (est.notes ? '<div style="margin-top:24px;padding:16px;background:#f9f9f9;border-left:4px solid #ff6b35;border-radius:4px;"><p style="margin:0;font-size:14px;color:#333;"><strong>Notes:</strong> ' + est.notes + '</p></div>' : '') +
+                    (hasSections ? '<p style="color:#94a3b8;font-size:12px;text-align:right;margin:6px 0 0;">* Total updates as you toggle sections above</p>' : '') +
+                    (est.notes ? '<div style="margin-top:24px;padding:16px;background:#f9f9f9;border-left:4px solid "+brandCol+";border-radius:4px;"><p style="margin:0;font-size:14px;color:#333;"><strong>Notes:</strong> ' + est.notes + '</p></div>' : '') +
                     (est.terms ? '<div style="margin-top:16px;padding:16px;border:1px solid #eee;border-radius:8px;"><p style="font-size:13px;font-weight:700;color:#222;margin:0 0 6px;text-transform:uppercase;">Terms & Conditions</p><p style="font-size:12px;color:#333;margin:0;white-space:pre-wrap;">' + est.terms + '</p></div>' : '') +
-                    (est.layoutImages && est.layoutImages.length ? '<div style="margin-top:24px;padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:#ff6b35;margin:0 0 12px;">📐 Job Layout / Sketch</p>' + est.layoutImages.map(function(l){return '<div style="margin-bottom:10px;"><img src="'+l.dataUrl+'" alt="Layout" style="max-width:100%;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#999;margin:4px 0 0;">'+l.name+'</p></div>';}).join('') + '</div>' : '') +
+                    (est.layoutImages && est.layoutImages.length ? '<div style="margin-top:24px;padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:"+brandCol+";margin:0 0 12px;">Job Layout / Sketch</p>' + est.layoutImages.map(function(l){return '<div style="margin-bottom:10px;"><img src="'+l.dataUrl+'" alt="Layout" style="max-width:100%;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#999;margin:4px 0 0;">'+l.name+'</p></div>';}).join('') + '</div>' : '') +
                     signSection +
                     // Footer
                     '<div style="margin-top:30px;padding-top:20px;border-top:1px solid #eee;text-align:center;">' +
-                        '<p style="font-size:14px;font-weight:700;color:#ff6b35;margin:0;">' + (est.businessName || '') + '</p>' +
+                        '<p style="font-size:14px;font-weight:700;color:"+brandCol+";margin:0;">' + (est.businessName || '') + '</p>' +
                         (est.businessPhone ? '<p style="color:#333;font-size:13px;margin:4px 0 0;">' + est.businessPhone + '</p>' : '') +
                         (est.businessEmail ? '<p style="color:#333;font-size:13px;margin:2px 0 0;">' + est.businessEmail + '</p>' : '') +
+                        (function() {
+                            var links = [];
+                            if (est.instagram) links.push('<a href="https://instagram.com/' + est.instagram.replace('@','') + '" style="display:inline-block;margin:4px 4px;padding:6px 14px;background:#E1306C;color:#fff;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;" target="_blank">&#x1F4F7; Instagram</a>');
+                            if (est.facebook)  links.push('<a href="https://facebook.com/' + est.facebook + '" style="display:inline-block;margin:4px 4px;padding:6px 14px;background:#1877F2;color:#fff;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;" target="_blank">&#x1F44D; Facebook</a>');
+                            if (est.tiktok)    links.push('<a href="https://tiktok.com/@' + est.tiktok.replace('@','') + '" style="display:inline-block;margin:4px 4px;padding:6px 14px;background:#000;color:#fff;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;" target="_blank">&#x1F3B5; TikTok</a>');
+                            if (est.google)    links.push('<a href="' + (est.google.startsWith('http') ? est.google : 'https://g.page/' + est.google) + '" style="display:inline-block;margin:4px 4px;padding:6px 14px;background:#4285F4;color:#fff;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;" target="_blank">&#x2B50; Google Review</a>');
+                            return links.length ? '<div style="margin-top:12px;">' + links.join('') + '</div>' : '';
+                        })() +
                     '</div>' +
                 '</div>';
 
             document.getElementById('signPageContent').innerHTML = html;
+
+            // Init interactive sections if present
+            if (hasSections) {
+                setTimeout(function() { initPubSections(est, brandCol); }, 50);
+            }
 
             // Init canvas if not signed
             if (!alreadySigned) {
@@ -3776,6 +3858,133 @@
                     c.ontouchend = function() { drawing = false; };
                 }, 200);
             }
+        }
+
+        // ── PUBLIC ESTIMATE SECTIONS (customer toggle) ────────────────────────
+        var _pubSectionState = {}; // sectionId -> true/false (included)
+        var _pubEst = null;        // reference to full est object
+        var _pubBrandCol = '#ff6b35';
+
+        function initPubSections(est, brandCol) {
+            _pubEst = est;
+            _pubBrandCol = brandCol || '#ff6b35';
+            // Default all sections ON
+            (est.sections || []).forEach(function(sec) {
+                _pubSectionState[sec.id] = true;
+            });
+            renderPubSections();
+        }
+
+        function togglePubSection(sectionId) {
+            _pubSectionState[sectionId] = !_pubSectionState[sectionId];
+            renderPubSections();
+        }
+
+        function renderPubSections() {
+            var container = document.getElementById('pubSectionsContainer');
+            if (!container || !_pubEst) return;
+
+            var est      = _pubEst;
+            var sections = est.sections || [];
+            var services = est.services || [];
+            var brandCol = _pubBrandCol;
+
+            // Build base items (no section)
+            var baseItems = services.filter(function(s){ return !s.sectionId && s.type !== 'section'; });
+            var baseTotal = 0;
+            var baseHtml  = '';
+            baseItems.forEach(function(svc, idx) {
+                var amt = 0;
+                if (svc.type === 'template') {
+                    svc.items.forEach(function(item){ amt += item.qty * item.rate * (1 + item.markup/100); });
+                } else {
+                    amt = (svc.qty||1) * (svc.rate||0) * (1 + (svc.markup||0)/100);
+                }
+                baseTotal += amt;
+                var bg = idx % 2 === 0 ? '#fff' : '#fafafa';
+                baseHtml += '<tr style="background:' + bg + ';">' +
+                    '<td style="padding:12px 16px;border-bottom:1px solid #eee;color:#000;font-size:14px;font-weight:600;">' + (svc.description || svc.templateName || 'Service') + '</td>' +
+                    '<td style="padding:12px 16px;text-align:right;border-bottom:1px solid #eee;font-weight:700;color:#000;font-size:14px;">$' + amt.toFixed(2) + '</td>' +
+                '</tr>';
+            });
+
+            // Build section totals
+            var sectionsTotal = 0;
+            var sectionsHtml  = '';
+            sections.forEach(function(sec) {
+                var isOn    = _pubSectionState[sec.id] !== false;
+                var secItems= services.filter(function(s){ return s.sectionId === sec.id && s.type !== 'section'; });
+                var secTotal= 0;
+                secItems.forEach(function(svc) {
+                    var amt = 0;
+                    if (svc.type === 'template') {
+                        svc.items.forEach(function(item){ amt += item.qty * item.rate * (1 + item.markup/100); });
+                    } else {
+                        amt = (svc.qty||1) * (svc.rate||0) * (1 + (svc.markup||0)/100);
+                    }
+                    secTotal += amt;
+                });
+                if (isOn) sectionsTotal += secTotal;
+
+                sectionsHtml += '<div style="margin-bottom:16px;border:2px solid ' + (isOn ? brandCol : '#e2e8f0') + ';border-radius:12px;overflow:hidden;transition:all 0.2s;">' +
+                    // Section header toggle
+                    '<div onclick="togglePubSection(\'' + sec.id + '\')" style="display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:' + (isOn ? brandCol + '15' : '#f8f9fb') + ';cursor:pointer;user-select:none;">' +
+                        '<div style="display:flex;align-items:center;gap:10px;">' +
+                            '<div style="width:22px;height:22px;border-radius:6px;border:2px solid ' + (isOn ? brandCol : '#cbd5e1') + ';background:' + (isOn ? brandCol : '#fff') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+                                (isOn ? '<span style="color:#fff;font-size:13px;font-weight:900;">&#10003;</span>' : '') +
+                            '</div>' +
+                            '<span style="font-weight:700;font-size:15px;color:' + (isOn ? '#0f172a' : '#94a3b8') + ';">' + sec.name + '</span>' +
+                        '</div>' +
+                        '<span style="font-weight:800;font-size:15px;color:' + (isOn ? brandCol : '#94a3b8') + ';">$' + secTotal.toFixed(2) + '</span>' +
+                    '</div>' +
+                    // Section line items (collapsed when off)
+                    (isOn ? '<div style="padding:0;"><table style="width:100%;border-collapse:collapse;">' +
+                        secItems.map(function(svc, idx) {
+                            var amt = 0;
+                            if (svc.type === 'template') {
+                                svc.items.forEach(function(item){ amt += item.qty * item.rate * (1 + item.markup/100); });
+                            } else {
+                                amt = (svc.qty||1) * (svc.rate||0) * (1 + (svc.markup||0)/100);
+                            }
+                            return '<tr style="background:' + (idx%2===0?'#fff':'#fafafa') + ';">' +
+                                '<td style="padding:10px 18px;border-bottom:1px solid #f1f5f9;color:#374151;font-size:13px;">' + (svc.description || svc.templateName || 'Service') + '</td>' +
+                                '<td style="padding:10px 18px;text-align:right;border-bottom:1px solid #f1f5f9;font-weight:700;color:#374151;font-size:13px;">$' + amt.toFixed(2) + '</td>' +
+                            '</tr>';
+                        }).join('') +
+                    '</table></div>' : '<div style="padding:10px 18px;color:#94a3b8;font-size:13px;">Section not included</div>') +
+                '</div>';
+            });
+
+            // Calculate total with labor proportional to active sections
+            var baseTotal2    = parseFloat(est.total || 0);
+            var newTotal      = baseTotal + sectionsTotal;
+            // Labor: find labor line and add it
+            var laborLine = (est.lineItems || []).find(function(li){ return li._laborHrs || li.description === 'Labor'; });
+            if (laborLine) {
+                newTotal += parseFloat(laborLine.amount || 0);
+            }
+
+            container.innerHTML =
+                // Intro tip
+                '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e;">' +
+                    '<strong>Customize your estimate</strong> — check or uncheck sections below to see how the price changes.' +
+                '</div>' +
+                // Base items table (if any)
+                (baseHtml ? '<table style="width:100%;border-collapse:collapse;margin-bottom:16px;border-radius:10px;overflow:hidden;">' +
+                    '<tr style="background:' + brandCol + ';">' +
+                        '<th style="padding:12px 16px;text-align:left;font-size:12px;color:#000;font-weight:700;text-transform:uppercase;">Included in all options</th>' +
+                        '<th style="padding:12px 16px;text-align:right;font-size:12px;color:#000;font-weight:700;text-transform:uppercase;">Amount</th>' +
+                    '</tr>' +
+                    baseHtml +
+                '</table>' : '') +
+                // Sections
+                sectionsHtml;
+
+            // Update total display
+            var totalEl = document.getElementById('pubTotal');
+            var subtotalEl = document.getElementById('pubSubtotal');
+            if (totalEl) totalEl.textContent = '$' + newTotal.toFixed(2);
+            if (subtotalEl) subtotalEl.textContent = '$' + newTotal.toFixed(2);
         }
 
         function clearPublicSigCanvas() {
@@ -5371,7 +5580,8 @@
         }
 
         // Estimates
-        var estServices = []; // Array of service objects for current estimate
+        var estServices  = []; // Array of service objects for current estimate
+        var estSections  = []; // Array of {id, name, items:[]} for customer-togglable sections
 
         // Open layout modal for an estimate — if editing, use existing ID; if new, auto-save a temp estimate first
         function openLayoutForEstimate() {
@@ -5412,6 +5622,7 @@
             // Reset and open modal first
             document.getElementById('estimateForm').reset();
             estServices = [];
+            estSections = [];
             currentEstPhotos = doc.photos ? doc.photos.slice() : [];
 
             // Pre-fill fields
@@ -5423,6 +5634,8 @@
             // Restore services from saved data
             if (doc.services && doc.services.length) {
                 estServices = JSON.parse(JSON.stringify(doc.services));
+                estSections = (doc.sections || []).map(function(s){ return { id:s.id, name:s.name, laborHrs:s.laborHrs||0, laborRate:s.laborRate||0 }; });
+                if (estSections.length) { var hint=document.getElementById('sectionsHint'); if(hint) hint.style.display=''; }
             } else if (doc.ownerLineItems && doc.ownerLineItems.length) {
                 // Fall back to owner line items as custom services
                 estServices = doc.ownerLineItems.map(function(li){
@@ -5463,6 +5676,7 @@
             if (lt) lt.innerHTML = '';
             document.getElementById('estimateForm').reset();
             estServices = [];
+            estSections = [];
             var container = document.getElementById('estimateServices');
             if (container) container.innerHTML = '';
             var emptyMsg = document.getElementById('estEmptyMsg');
@@ -5486,9 +5700,76 @@
                 description: '',
                 qty: 1,
                 rate: 0,
-                markup: 0
+                markup: 0,
+                sectionId: null // null = no section (base price)
             });
             renderEstimateServices();
+        }
+
+        function addEstimateSection() {
+            var sectionName = prompt('Section name (e.g. "Front Yard", "Back Yard", "Full Property"):');
+            if (!sectionName || !sectionName.trim()) return;
+            var sectionId = 'sec_' + Date.now();
+            estSections.push({ id: sectionId, name: sectionName.trim(), laborHrs: 0, laborRate: 0 });
+            estServices.push({ type: 'section', sectionId: sectionId, name: sectionName.trim() });
+            var hint = document.getElementById('sectionsHint');
+            if (hint) hint.style.display = '';
+            renderEstimateServices();
+        }
+
+        function updateSectionLabor(sectionId, field, value) {
+            var sec = estSections.find(function(s){ return s.id === sectionId; });
+            if (sec) sec[field] = parseFloat(value) || 0;
+            renderEstimateServices(); // re-render shows updated section totals + recalcs
+        }
+
+        function addTemplateToSection(sectionId) {
+            var templateId = prompt('Which template? Open the dropdown and copy the name:');
+            // Better: use a select — trigger the main template select but redirect to section
+            window._pendingSectionId = sectionId;
+            var sel = document.getElementById('estTemplate');
+            if (sel) sel.focus();
+            toast('Select a template from the dropdown above — it will be added to this section');
+        }
+
+        function applyTemplateToSection(templateId, sectionId) {
+            var template = appData.templates.find(function(t){ return t.id === templateId; });
+            if (!template) return;
+            var items = [];
+            template.materials.forEach(function(tm) {
+                var mat = appData.materials.find(function(m){ return m.id === tm.materialId; });
+                if (mat) items.push({ materialId: mat.id, name: mat.name, qty: tm.quantity, rate: mat.cost, markup: mat.markup, unit: mat.unit });
+            });
+            estServices.push({ type: 'template', templateId: template.id, templateName: template.name, templateDescription: template.description || '', items: items, sectionId: sectionId });
+            renderEstimateServices();
+        }
+
+        function removeEstSection(sectionId) {
+            // Remove section header and all items in that section
+            estSections = estSections.filter(function(s){ return s.id !== sectionId; });
+            estServices = estServices.filter(function(s){ return s.sectionId !== sectionId && !(s.type === 'section' && s.sectionId === sectionId); });
+            if (!estSections.length) {
+                var hint = document.getElementById('sectionsHint');
+                if (hint) hint.style.display = 'none';
+            }
+            renderEstimateServices();
+        }
+
+        function addLineToSection(sectionId) {
+            estServices.push({ type: 'custom', description: '', qty: 1, rate: 0, markup: 0, sectionId: sectionId });
+            renderEstimateServices();
+        }
+
+        function addTemplateToSec(sectionId) {
+            window._pendingSectionId = sectionId;
+            var sel = document.getElementById('estTemplate');
+            if (sel) {
+                sel.focus();
+                // Scroll to top of modal so user can see the dropdown
+                var modal = document.querySelector('.modal-content');
+                if (modal) modal.scrollTop = 0;
+            }
+            toast('Select a template from the dropdown at the top to add it to this section');
         }
 
         function populateTemplateSelect() {
@@ -5527,6 +5808,11 @@
                 items: items
             });
             document.getElementById('estTemplate').value = '';
+            // If a section is waiting for a template, assign it there
+            if (window._pendingSectionId) {
+                estServices[estServices.length - 1].sectionId = window._pendingSectionId;
+                window._pendingSectionId = null;
+            }
             renderEstimateServices();
         }
         
@@ -5537,8 +5823,8 @@
         
         function renderEstimateServices() {
             var container = document.getElementById('estimateServices');
-            var emptyMsg = document.getElementById('estEmptyMsg');
-            
+            var emptyMsg  = document.getElementById('estEmptyMsg');
+
             if (estServices.length === 0) {
                 container.innerHTML = '';
                 if (emptyMsg) emptyMsg.style.display = '';
@@ -5546,8 +5832,74 @@
                 return;
             }
             if (emptyMsg) emptyMsg.style.display = 'none';
-            
+
             container.innerHTML = estServices.map(function(svc, sIdx) {
+
+                // ── SECTION HEADER ──────────────────────────────────────────
+                if (svc.type === 'section') {
+                    // Section materials
+                    var secMatTotal = 0, secMatCost = 0;
+                    estServices.forEach(function(sv) {
+                        if (sv.sectionId !== svc.sectionId || sv.type === 'section') return;
+                        if (sv.type === 'template') { sv.items.forEach(function(it){ secMatTotal += it.qty*it.rate*(1+it.markup/100); secMatCost += it.qty*it.rate; }); }
+                        else { secMatTotal += (sv.qty||1)*(sv.rate||0)*(1+(sv.markup||0)/100); secMatCost += (sv.qty||1)*(sv.rate||0); }
+                    });
+                    // All materials (for proportional labor split)
+                    var allMatTotal = 0;
+                    estServices.forEach(function(sv) {
+                        if (sv.type === 'section') return;
+                        if (sv.type === 'template') { sv.items.forEach(function(it){ allMatTotal += it.qty*it.rate*(1+it.markup/100); }); }
+                        else { allMatTotal += (sv.qty||1)*(sv.rate||0)*(1+(sv.markup||0)/100); }
+                    });
+                    var laborHrs  = parseFloat((document.getElementById('estLaborHours')||{}).value) || 0;
+                    var laborRate = parseFloat((document.getElementById('estLaborRate')||{}).value) || appData.calculator.hourlyRate || 0;
+                    var totalLabor   = laborHrs * laborRate;
+                    var secLaborAmt  = allMatTotal > 0 ? (secMatTotal / allMatTotal) * totalLabor : 0;
+                    var secTotal     = secMatTotal + secLaborAmt;
+                    var secProfit    = (secMatTotal - secMatCost) + secLaborAmt;
+                    var secMargin    = secTotal > 0 ? Math.round(secProfit / secTotal * 100) : 0;
+
+                    var sec = estSections.find(function(s){ return s.id === svc.sectionId; }) || {};
+                    var defaultRate = parseFloat((document.getElementById('estLaborRate')||{}).value) || appData.calculator.hourlyRate || 0;
+                    var secLaborHrs  = sec.laborHrs  || 0;
+                    var secLaborRate = sec.laborRate  || defaultRate;
+                    var secLaborAmt2 = secLaborHrs * secLaborRate;
+                    var secTotal2    = secMatTotal + secLaborAmt2;
+                    var secProfit2   = (secMatTotal - secMatCost) + secLaborAmt2;
+                    var secMargin2   = secTotal2 > 0 ? Math.round(secProfit2 / secTotal2 * 100) : 0;
+
+                    return '<div style="margin-top:16px;background:#eff6ff;border:2px solid #3b82f6;border-radius:12px;overflow:hidden;">' +
+                        '<div style="background:#3b82f6;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">' +
+                            '<div style="display:flex;align-items:center;gap:8px;">' +
+                                '<span style="font-weight:800;font-size:14px;color:#fff;">' + svc.name + '</span>' +
+                                '<span style="font-size:10px;color:rgba(255,255,255,0.75);background:rgba(0,0,0,0.15);padding:2px 8px;border-radius:20px;">Customer toggles on/off</span>' +
+                            '</div>' +
+                            '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+                                '<button type="button" onclick="addLineToSection(\'' + svc.sectionId + '\')" style="padding:4px 10px;background:rgba(255,255,255,0.2);color:#fff;border:1px solid rgba(255,255,255,0.4);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">+ Line</button>' +
+                                '<button type="button" onclick="addTemplateToSec(\'' + svc.sectionId + '\')" style="padding:4px 10px;background:rgba(255,255,255,0.95);color:#3b82f6;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;">+ Template</button>' +
+                                '<button type="button" onclick="removeEstSection(\'' + svc.sectionId + '\')" style="padding:4px 10px;background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.25);border-radius:6px;font-size:11px;cursor:pointer;">Remove</button>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div style="padding:10px 14px;background:#dbeafe;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+                            '<span style="font-size:12px;font-weight:700;color:#1e40af;">' + svc.name + ' Labor:</span>' +
+                            '<input type="number" value="' + secLaborHrs + '" step="0.5" placeholder="hrs" ' +
+                                'onchange="updateSectionLabor(\'' + svc.sectionId + '\',\'laborHrs\',this.value)" ' +
+                                'style="width:60px;padding:5px 8px;border:1px solid #93c5fd;border-radius:6px;font-size:13px;background:#fff;">' +
+                            '<span style="font-size:12px;color:#3b82f6;">hrs @</span>' +
+                            '<input type="number" value="' + (sec.laborRate || '') + '" step="0.01" placeholder="' + defaultRate.toFixed(0) + '" ' +
+                                'onchange="updateSectionLabor(\'' + svc.sectionId + '\',\'laborRate\',this.value)" ' +
+                                'style="width:70px;padding:5px 8px;border:1px solid #93c5fd;border-radius:6px;font-size:13px;background:#fff;">' +
+                            '<span style="font-size:12px;color:#1e40af;">/hr = <strong>$' + secLaborAmt2.toFixed(2) + '</strong></span>' +
+                            '<span style="font-size:12px;color:#0369a1;margin-left:8px;">Mats: <strong>$' + secMatTotal.toFixed(2) + '</strong></span>' +
+                            '<span style="font-size:12px;font-weight:700;color:#15803d;margin-left:auto;">Total: $' + secTotal2.toFixed(2) + ' &nbsp;|&nbsp; Profit: $' + secProfit2.toFixed(2) + ' (' + secMargin2 + '%)</span>' +
+                        '</div>' +
+                    '</div>';
+                }
+
+                var isInSection = !!svc.sectionId;
+                var indent = isInSection ? 'margin-left:16px;border-left:3px solid #bfdbfe;padding-left:10px;' : '';
+
+                // ── TEMPLATE ROW ────────────────────────────────────────────
                 if (svc.type === 'template') {
                     var total = 0;
                     var itemsHtml = svc.items.map(function(item, iIdx) {
@@ -5561,38 +5913,39 @@
                             '<span class="col-span-2 text-right font-medium">$' + lineTotal.toFixed(2) + '</span>' +
                         '</div>';
                     }).join('');
-                    
-                    return '<div class="border rounded-lg overflow-hidden">' +
+                    return '<div class="border rounded-lg overflow-hidden" style="' + indent + '">' +
                         '<div class="flex justify-between items-center p-3" style="background:#fef7f4;">' +
-                            '<div><span class="font-semibold text-sm">' + svc.templateName + '</span><span class="text-xs text-gray-700 ml-2">(' + svc.items.length + ' materials)</span></div>' +
+                            '<div><span class="font-semibold text-sm">' + svc.templateName + '</span>' +
+                            (isInSection ? '<span style="font-size:10px;color:#3b82f6;margin-left:6px;font-weight:600;">In section</span>' : '') +
+                            '</div>' +
                             '<div class="flex items-center gap-3"><span class="font-bold text-orange">$' + total.toFixed(2) + '</span><button type="button" class="text-red-500 font-bold" onclick="removeEstService(' + sIdx + ')">x</button></div>' +
                         '</div>' +
                         '<div class="p-3 bg-white">' +
                             '<div class="grid grid-cols-12 gap-1 text-xs text-gray-700 mb-1 font-medium"><span class="col-span-4">Material</span><span class="col-span-2">Qty</span><span class="col-span-2">Cost</span><span class="col-span-2">Markup%</span><span class="col-span-2 text-right">Total</span></div>' +
                             itemsHtml +
                         '</div>' +
-                        (svc.templateDescription ? '<div class="px-3 pb-2 text-xs text-gray-700">Customer sees: "' + svc.templateName + '"</div>' : '') +
-                    '</div>';
-                } else {
-                    var lineTotal = ((svc.qty||1) * (svc.rate||0) * (1 + (svc.markup||0)/100)).toFixed(2);
-                    return '<div class="grid grid-cols-12 gap-2 items-center" style="position:relative;">' +
-                        '<div class="col-span-5" style="position:relative;">' +
-                            '<input type="text" value="' + (svc.description || '').replace(/"/g, "\x26quot;") + '" placeholder="Type to search materials or describe..." class="p-2 border rounded text-sm w-full" data-s="' + sIdx + '" data-f="description" oninput="onEstLineDescInput(this,' + sIdx + ')" onchange="updEstCustom(this)" autocomplete="off">' +
-                            '<div id="matSuggest_' + sIdx + '" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:999;max-height:180px;overflow-y:auto;margin-top:2px;"></div>' +
-                        '</div>' +
-                        '<input type="number" value="' + (svc.qty || 1) + '" step="0.01" placeholder="Qty" class="col-span-2 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="qty" onchange="updEstCustom(this)">' +
-                        '<input type="number" value="' + (svc.rate || '') + '" step="0.01" placeholder="Rate $" class="col-span-2 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="rate" onchange="updEstCustom(this)">' +
-                        '<input type="number" value="' + (svc.markup || 0) + '" step="0.01" placeholder="Markup%" class="col-span-1 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="markup" onchange="updEstCustom(this)">' +
-                        '<div class="col-span-2 flex flex-col items-end gap-1">' +
-                            '<button type="button" class="btn-danger text-sm w-full p-2" onclick="removeEstService(' + sIdx + ')">✕</button>' +
-                            '<span style="font-size:10px;color:#94a3b8;white-space:nowrap;">$' + lineTotal + '</span>' +
-                        '</div>' +
                     '</div>';
                 }
+
+                // ── CUSTOM LINE ─────────────────────────────────────────────
+                var lineTotal = ((svc.qty||1) * (svc.rate||0) * (1 + (svc.markup||0)/100)).toFixed(2);
+                return '<div class="grid grid-cols-12 gap-2 items-center" style="position:relative;' + indent + '">' +
+                    '<div class="col-span-5" style="position:relative;">' +
+                        '<input type="text" value="' + (svc.description || '').replace(/"/g, "\x26quot;") + '" placeholder="Describe service..." class="p-2 border rounded text-sm w-full" data-s="' + sIdx + '" data-f="description" oninput="onEstLineDescInput(this,' + sIdx + ')" onchange="updEstCustom(this)" autocomplete="off">' +
+                        '<div id="matSuggest_' + sIdx + '" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.1);z-index:999;max-height:180px;overflow-y:auto;margin-top:2px;"></div>' +
+                    '</div>' +
+                    '<input type="number" value="' + (svc.qty || 1) + '" step="0.01" placeholder="Qty" class="col-span-2 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="qty" onchange="updEstCustom(this)">' +
+                    '<input type="number" value="' + (svc.rate || '') + '" step="0.01" placeholder="Rate $" class="col-span-2 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="rate" onchange="updEstCustom(this)">' +
+                    '<input type="number" value="' + (svc.markup || 0) + '" step="0.01" placeholder="Markup%" class="col-span-1 p-2 border rounded text-sm" data-s="' + sIdx + '" data-f="markup" onchange="updEstCustom(this)">' +
+                    '<div class="col-span-2 flex flex-col items-end gap-1">' +
+                        '<button type="button" class="btn-danger text-sm w-full p-2" onclick="removeEstService(' + sIdx + ')">x</button>' +
+                        '<span style="font-size:10px;color:#94a3b8;white-space:nowrap;">$' + lineTotal + '</span>' +
+                    '</div>' +
+                '</div>';
+
             }).join('');
             calculateEstimate();
         }
-        
         function updEstItem(el) {
             var s = parseInt(el.dataset.s), i = parseInt(el.dataset.i), f = el.dataset.f;
             estServices[s].items[i][f] = parseFloat(el.value) || 0;
@@ -5654,18 +6007,21 @@
         function calculateEstimate() {
             var materialsTotal = 0, materialsCostRaw = 0;
             estServices.forEach(function(svc) {
+                if (svc.type === 'section') return; // skip headers
                 if (svc.type === 'template') {
                     svc.items.forEach(function(item) {
-                        materialsTotal += item.qty * item.rate * (1 + item.markup/100);
+                        materialsTotal  += item.qty * item.rate * (1 + item.markup/100);
                         materialsCostRaw += item.qty * item.rate;
                     });
                 } else {
                     var q = svc.qty||0, r = svc.rate||0, m = svc.markup||0;
-                    materialsTotal += q * r * (1 + m/100);
+                    materialsTotal  += q * r * (1 + m/100);
                     materialsCostRaw += q * r;
                 }
             });
-            var laborHrs = parseFloat(document.getElementById('estLaborHours').value) || 0;
+
+            // Global labor (base, no section)
+            var laborHrs  = parseFloat(document.getElementById('estLaborHours').value) || 0;
             var laborRate = parseFloat(document.getElementById('estLaborRate').value) || 0;
             if (!document.getElementById('estLaborRate').value && appData.calculator.hourlyRate > 0) {
                 laborRate = appData.calculator.hourlyRate;
@@ -5674,33 +6030,45 @@
             if (appData.calculator.hourlyRate > 0) {
                 document.getElementById('estLaborRateHint').textContent = 'Overhead: $' + appData.calculator.hourlyRate.toFixed(2) + '/hr';
             }
-            var laborTotal = laborHrs * laborRate;
-            document.getElementById('estLaborTotal').textContent = '$' + laborTotal.toFixed(2);
-            var grandTotal = materialsTotal + laborTotal;
-            var profit = materialsTotal - materialsCostRaw;
-            var margin = grandTotal > 0 ? (profit / grandTotal * 100) : 0;
-            document.getElementById('estSubtotal').textContent = '$' + materialsTotal.toFixed(2);
-            document.getElementById('estLaborCost').textContent = '$' + laborTotal.toFixed(2);
-            document.getElementById('estTotal').textContent = '$' + grandTotal.toFixed(2);
-            document.getElementById('estProfit').textContent = '$' + profit.toFixed(2) + ' profit';
-            document.getElementById('estMargin').textContent = margin.toFixed(1) + '% margin';
+            var globalLaborTotal = laborHrs * laborRate;
 
-            // Real profit breakdown using calculator data
-            var matMarkupProfit = materialsTotal - materialsCostRaw;
-            // Labor profit = billed labor minus what team costs (teamCostPerHour * hours)
-            var laborBilled = laborTotal;
-            var teamCostPH = appData.calculator.teamCostPerHour || 0;
-            var laborTeamCost = laborHrs * teamCostPH;
-            var laborPureProfit = laborBilled - laborTeamCost;
-            var totalPureProfit = matMarkupProfit + laborPureProfit;
-            var pureMargin = grandTotal > 0 ? (totalPureProfit / grandTotal * 100) : 0;
+            var laborTotal = globalLaborTotal; // Single global labor, split proportionally in section display
+
+            // Add section-specific labor to grand total
+            var sectionLaborSum = 0;
+            estSections.forEach(function(sec) {
+                var rate = sec.laborRate || laborRate || appData.calculator.hourlyRate || 0;
+                sectionLaborSum += (sec.laborHrs || 0) * rate;
+            });
+            laborTotal += sectionLaborSum;
+            document.getElementById('estLaborTotal').textContent = '$' + laborTotal.toFixed(2);
+
+            var grandTotal = materialsTotal + laborTotal;
+            var profit     = materialsTotal - materialsCostRaw;
+            var margin     = grandTotal > 0 ? (profit / grandTotal * 100) : 0;
+
+            document.getElementById('estSubtotal').textContent   = '$' + materialsTotal.toFixed(2);
+            document.getElementById('estLaborCost').textContent  = '$' + laborTotal.toFixed(2);
+            document.getElementById('estTotal').textContent      = '$' + grandTotal.toFixed(2);
+            document.getElementById('estProfit').textContent     = '$' + profit.toFixed(2) + ' profit';
+            document.getElementById('estMargin').textContent     = margin.toFixed(1) + '% margin';
+
+            // Real profit breakdown
+            var matMarkupProfit  = materialsTotal - materialsCostRaw;
+            var laborBilled      = laborTotal;
+            var teamCostPH       = appData.calculator.teamCostPerHour || 0;
+            var laborTeamCost    = laborHrs * teamCostPH;
+            var laborPureProfit  = laborBilled - laborTeamCost;
+            var totalPureProfit  = matMarkupProfit + laborPureProfit;
+            var pureMargin       = grandTotal > 0 ? (totalPureProfit / grandTotal * 100) : 0;
 
             if (document.getElementById('estMatMarkupProfit')) document.getElementById('estMatMarkupProfit').textContent = '$' + matMarkupProfit.toFixed(2);
-            if (document.getElementById('estLaborBilled'))     document.getElementById('estLaborBilled').textContent = '$' + laborBilled.toFixed(2);
-            if (document.getElementById('estLaborCostOwner'))  document.getElementById('estLaborCostOwner').textContent = '-$' + laborTeamCost.toFixed(2);
-            if (document.getElementById('estLaborProfit'))     document.getElementById('estLaborProfit').textContent = '$' + laborPureProfit.toFixed(2);
-            if (document.getElementById('estTotalProfit'))     document.getElementById('estTotalProfit').textContent = '$' + totalPureProfit.toFixed(2);
+            if (document.getElementById('estLaborBilled'))     document.getElementById('estLaborBilled').textContent     = '$' + laborBilled.toFixed(2);
+            if (document.getElementById('estLaborCostOwner'))  document.getElementById('estLaborCostOwner').textContent  = '-$' + laborTeamCost.toFixed(2);
+            if (document.getElementById('estLaborProfit'))     document.getElementById('estLaborProfit').textContent     = '$' + laborPureProfit.toFixed(2);
+            if (document.getElementById('estTotalProfit'))     document.getElementById('estTotalProfit').textContent     = '$' + totalPureProfit.toFixed(2);
             if (document.getElementById('estProfitMarginPct')) document.getElementById('estProfitMarginPct').textContent = pureMargin.toFixed(1) + '%';
+
         }
 
         document.getElementById('estimateForm').addEventListener('submit', function(e) {
@@ -5761,6 +6129,7 @@
                 lineItems: customerLines,
                 ownerLineItems: ownerLines,
                 services: JSON.parse(JSON.stringify(estServices)),
+                sections: JSON.parse(JSON.stringify(estSections.map(function(s){ return { id:s.id, name:s.name, laborHrs:s.laborHrs||0, laborRate:s.laborRate||0 }; }))),
                 notes: document.getElementById('estNotes').value,
                 terms: termsTemplate ? termsTemplate.content : '',
                 termsName: termsTemplate ? termsTemplate.name : '',
@@ -5917,27 +6286,52 @@
                 });
             }
 
+            // Helper: replace undefined with default
+            function _safe(v, def) { return (v === undefined || v === null) ? (def !== undefined ? def : '') : v; }
+            // Deep clean: recursively remove undefined from nested objects/arrays
+            function _deepClean(obj) {
+                if (obj === null || obj === undefined) return null;
+                if (Array.isArray(obj)) return obj.map(_deepClean).filter(function(v){ return v !== undefined; });
+                if (typeof obj === 'object') {
+                    var out = {};
+                    for (var k in obj) {
+                        if (obj.hasOwnProperty(k)) {
+                            var v = _deepClean(obj[k]);
+                            if (v !== undefined) out[k] = v;
+                        }
+                    }
+                    return out;
+                }
+                return obj;
+            }
+
             var pubDoc = {
                 id: doc.id,
                 ownerId: currentUserId,
-                businessName: bizName,
-                businessEmail: s.email || '',
-                businessPhone: s.phone || '',
-                businessAddress: s.address || '',
-                businessLogo: s.logo || '',
-                businessColor: bizColor,
-                stripeLink: s.stripeLink || '',
-                paymentInstructions: s.paymentInstructions || '',
-                customerName: doc.customerName,
-                customerEmail: doc.customerEmail || '',
-                customerPhone: doc.customerPhone || '',
-                customerAddress: doc.customerAddress || '',
-                date: doc.date,
-                lineItems: doc.lineItems,
-                total: doc.total,
-                notes: doc.notes || '',
-                terms: doc.terms || '',
-                layoutImages: layoutImages,
+                businessName: _safe(bizName, ''),
+                businessEmail: _safe(s.email, ''),
+                businessPhone: _safe(s.phone, ''),
+                businessAddress: _safe(s.address, ''),
+                businessLogo: _safe(s.logo, ''),
+                businessColor: _safe(bizColor, '#ff6b35'),
+                stripeLink: _safe(s.stripeLink, ''),
+                paymentInstructions: _safe(s.paymentInstructions, ''),
+                instagram: _safe(s.instagram, ''),
+                facebook: _safe(s.facebook, ''),
+                tiktok: _safe(s.tiktok, ''),
+                google: _safe(s.google, ''),
+                customerName: _safe(doc.customerName, ''),
+                customerEmail: _safe(doc.customerEmail, ''),
+                customerPhone: _safe(doc.customerPhone, ''),
+                customerAddress: _safe(doc.customerAddress, ''),
+                date: _safe(doc.date, ''),
+                lineItems: _safe(doc.lineItems, []),
+                total: _safe(doc.total, '0'),
+                notes: _safe(doc.notes, ''),
+                terms: _safe(doc.terms, ''),
+                sections: _safe(doc.sections, []),
+                services: _safe(doc.services, []),
+                layoutImages: layoutImages || [],
                 status: 'sent',
                 signature: null,
                 signedBy: null,
@@ -5948,65 +6342,141 @@
             var shareUrl = siteBase + '?sign=' + signToken;
 
             function finishSend() {
-                // Copy link to clipboard
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(shareUrl).then(function() {
-                        _showShareModal(shareUrl, doc, docType, docNum, bizName);
-                    }).catch(function() {
-                        _showShareModal(shareUrl, doc, docType, docNum, bizName);
-                    });
-                } else {
-                    _showShareModal(shareUrl, doc, docType, docNum, bizName);
+                var customerEmail = doc.customerEmail || '';
+                var s = appData.settings;
+                var subject = docType + ' ' + docNum + ' from ' + bizName;
+
+                // Build line items text
+                var itemsText = (doc.lineItems || []).map(function(item) {
+                    return '  ' + (item.description||'') + ' ..... $' + (item.amount||'0');
+                }).join('\n');
+
+                // Social links text
+                var socialParts = [];
+                if (s.instagram) socialParts.push('Instagram: instagram.com/' + s.instagram.replace('@',''));
+                if (s.facebook)  socialParts.push('Facebook: facebook.com/' + s.facebook);
+                if (s.tiktok)    socialParts.push('TikTok: tiktok.com/@' + s.tiktok.replace('@',''));
+                if (s.google)    socialParts.push('Google: ' + s.google);
+
+                // Sign or pay link
+                var actionText = '';
+                if (doc.type === 'estimate') {
+                    actionText = '\nTo approve and sign this estimate:\n' + shareUrl;
+                } else if (s.stripeLink) {
+                    actionText = '\nTo pay this invoice online:\n' + s.stripeLink;
                 }
 
-                // Update doc status
-                doc.sentDate   = new Date().toISOString();
-                doc.signToken  = signToken;
+                var div = '----------------------------------------';
+                var body = 'Hi ' + (doc.customerName||'') + ',\n\n'
+                    + 'Please see your ' + docType + ' from ' + bizName + '.\n\n'
+                    + div + '\n'
+                    + docType.toUpperCase() + ' ' + docNum + '  |  Date: ' + (doc.date||'') + '\n'
+                    + div + '\n\n'
+                    + 'SERVICES:\n' + itemsText + '\n\n'
+                    + div + '\n'
+                    + 'TOTAL: $' + (doc.total||'0') + '\n'
+                    + div + '\n'
+                    + (doc.notes ? '\nNotes: ' + doc.notes + '\n' : '')
+                    + actionText + '\n\n'
+                    + div + '\n'
+                    + bizName + '\n'
+                    + (s.phone   ? s.phone   + '\n' : '')
+                    + (s.email   ? s.email   + '\n' : '')
+                    + (s.address ? s.address + '\n' : '')
+                    + (socialParts.length ? socialParts.join('  |  ') + '\n' : '');
+
+                if (customerEmail) {
+                    var mailtoUrl = 'mailto:' + customerEmail
+                        + '?subject=' + encodeURIComponent(subject)
+                        + '&body='    + encodeURIComponent(body);
+                    // Use location.href — most reliable way to trigger mailto in all browsers
+                    try {
+                        var a = document.createElement('a');
+                        a.href   = mailtoUrl;
+                        a.target = '_self';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        toast(docType + ' opened in your email app ✓');
+                    } catch (err) {
+                        // Fallback
+                        window.location.href = mailtoUrl;
+                    }
+                } else {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(shareUrl).catch(function(){});
+                    }
+                    toast('No email on file — link copied to clipboard');
+                }
+
+                doc.sentDate  = new Date().toISOString();
+                doc.signToken = signToken;
                 if (doc.type === 'estimate') doc.status = 'sent';
                 if (!doc.activity) doc.activity = [];
-                doc.activity.push({ action: docType + ' link generated', date: new Date().toISOString() });
+                doc.activity.push({ action: docType + ' sent to ' + (customerEmail||'no email'), date: new Date().toISOString() });
                 saveData();
                 renderDocuments();
                 checkNotifications();
             }
-
             // Save to Firestore then show share modal
             if (doc.type === 'estimate') {
-                db.collection('public_estimates').doc(signToken).set(pubDoc)
+                db.collection('public_estimates').doc(signToken).set(_deepClean(pubDoc))
                     .then(finishSend).catch(function(err) { console.error(err); finishSend(); });
             } else {
                 // For invoices save to public_estimates too so customer can view it
-                db.collection('public_estimates').doc(signToken).set(pubDoc)
+                db.collection('public_estimates').doc(signToken).set(_deepClean(pubDoc))
                     .then(finishSend).catch(function(err) { console.error(err); finishSend(); });
             }
         }
 
         function _showShareModal(url, doc, docType, docNum, bizName) {
-            // Build share modal HTML
-            var modalHtml = '<div style="text-align:center;padding:8px 0;">' +
-                '<div style="width:56px;height:56px;background:#f0fdf4;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;">🔗</div>' +
-                '<h3 style="font-size:18px;font-weight:800;margin:0 0 6px;">' + docType + ' Link Ready</h3>' +
-                '<p style="color:#64748b;font-size:13px;margin:0 0 20px;">Share this link with <strong>' + (doc.customerName||'your customer') + '</strong></p>' +
-                '<div style="background:#f8f9fb;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:20px;word-break:break-all;font-size:12px;color:#374151;text-align:left;">' + url + '</div>' +
-                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">' +
-                    '<button onclick="_copyDocLink('' + url.replace(/'/g,'&#39;') + '')" style="padding:12px;background:#0f172a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">Copy Link</button>' +
-                    '<button onclick="_smsDocLink('' + url.replace(/'/g,'&#39;') + '','' + (doc.customerName||'').replace(/'/g,'&#39;') + '','' + docType + '','' + docNum + '','' + bizName.replace(/'/g,'&#39;') + '')" style="padding:12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">Send via Text</button>' +
-                '</div>' +
-                '<button onclick="_emailDocLink('' + url.replace(/'/g,'&#39;') + '','' + (doc.customerEmail||'').replace(/'/g,'&#39;') + '','' + (doc.customerName||'').replace(/'/g,'&#39;') + '','' + docType + '','' + docNum + '','' + bizName.replace(/'/g,'&#39;') + '')" style="width:100%;padding:12px;background:#ff6b35;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">Open in Email App</button>' +
-                '<button onclick="closeModal('shareDocModal')" style="width:100%;padding:10px;background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;cursor:pointer;">Close</button>' +
-            '</div>';
+            window._shareData = { url: url, doc: doc, docType: docType, docNum: docNum, bizName: bizName };
 
+            // Use DOM — no HTML strings, no quote escaping issues ever
             var modal = document.getElementById('shareDocModal');
             if (!modal) {
                 modal = document.createElement('div');
                 modal.id = 'shareDocModal';
                 modal.className = 'modal-backdrop';
-                modal.innerHTML = '<div class="modal-content" style="max-width:400px;"><div id="shareDocModalBody"></div></div>';
+                modal.innerHTML = [
+                    '<div class="modal-content" style="max-width:400px;">',
+                        '<div style="text-align:center;padding:8px 0;">',
+                            '<div style="font-size:32px;margin-bottom:12px;">&#128279;</div>',
+                            '<h3 id="sdm-title" style="font-size:18px;font-weight:800;margin:0 0 6px;"></h3>',
+                            '<p id="sdm-customer" style="color:#64748b;font-size:13px;margin:0 0 16px;"></p>',
+                            '<div id="sdm-url" style="background:#f8f9fb;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin-bottom:16px;word-break:break-all;font-size:12px;color:#374151;text-align:left;"></div>',
+                            '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">',
+                                '<button id="sdm-copy" style="padding:12px;background:#0f172a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">Copy Link</button>',
+                                '<button id="sdm-sms" style="padding:12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">Send via Text</button>',
+                            '</div>',
+                            '<button id="sdm-email" style="width:100%;padding:12px;background:#ff6b35;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px;">Open in Email App</button>',
+                            '<button id="sdm-close" style="width:100%;padding:10px;background:transparent;color:#64748b;border:1px solid #e2e8f0;border-radius:10px;font-size:13px;cursor:pointer;">Close</button>',
+                        '</div>',
+                    '</div>'
+                ].join('');
                 document.body.appendChild(modal);
-                modal.addEventListener('click', function(e){ if(e.target===modal) closeModal('shareDocModal'); });
             }
-            document.getElementById('shareDocModalBody').innerHTML = modalHtml;
+
+            // Populate via DOM — safe, no escaping
+            document.getElementById('sdm-title').textContent    = docType + ' Link Ready';
+            document.getElementById('sdm-customer').textContent = 'Share this link with ' + ((doc && doc.customerName) || 'your customer');
+            document.getElementById('sdm-url').textContent      = url;
+
+            // Wire buttons fresh each time
+            document.getElementById('sdm-copy').onclick  = function() { _copyDocLink(url); };
+            document.getElementById('sdm-sms').onclick   = function() { _smsDocLink(url, (doc&&doc.customerName)||'', docType, docNum, bizName); };
+            document.getElementById('sdm-email').onclick = function() { _emailDocLink(url, (doc&&doc.customerEmail)||'', (doc&&doc.customerName)||'', docType, docNum, bizName); };
+            document.getElementById('sdm-close').onclick = function() { closeModal('shareDocModal'); };
+
             openModal('shareDocModal');
+        }
+
+                function _shareAction(action) {
+            if (!window._shareData) return;
+            var d = window._shareData;
+            if (action === 'copy') { _copyDocLink(d.url); }
+            if (action === 'sms')  { _smsDocLink(d.url, (d.doc&&d.doc.customerName)||'', d.docType, d.docNum, d.bizName); }
+            if (action === 'email'){ _emailDocLink(d.url, (d.doc&&d.doc.customerEmail)||'', (d.doc&&d.doc.customerName)||'', d.docType, d.docNum, d.bizName); }
         }
 
         function _copyDocLink(url) {
@@ -6103,7 +6573,7 @@
                         (appData.settings.paymentInstructions ? '<p style="font-size:12px;color:#64748b;margin:8px 0 0;">' + appData.settings.paymentInstructions + '</p>' : '') +
                     '</div>' : '') +
                     '<div class="flex gap-3 mt-6 pt-4 border-t border-gray-200">' +
-                        '<button class="btn-primary" onclick="sendDocument(\'' + doc.id + '\')">Email to Customer</button>' +
+                        '<button class="btn-primary" onclick="sendDocument(\'' + doc.id + '\')">Send to Customer</button>' +
                         (doc.status === 'unpaid' ? '<button class="btn-secondary" onclick="markInvoicePaid(\'' + doc.id + '\')">Mark as Paid</button>' : '') +
                         '<button class="btn-secondary" onclick="generateReceipt(\'' + doc.id + '\')" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0;">Print Receipt</button>' +
                         '<button class="btn-secondary" onclick="closeModal(\'invoiceViewModal\')">Close</button>' +
