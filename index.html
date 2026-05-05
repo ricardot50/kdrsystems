@@ -618,6 +618,39 @@
             .overflow-x-auto { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         }
 
+        
+        /* ---- DESKTOP DASHBOARD POLISH ---- */
+        .stat-card { 
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 18px 20px;
+        }
+        .stat-card .text-4xl, .stat-card .text-3xl, .stat-card .text-2xl {
+            font-size: clamp(1.4rem, 2vw, 2rem) !important;
+            line-height: 1.1 !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .stat-card .text-sm, .stat-card .text-xs {
+            font-size: clamp(0.7rem, 0.9vw, 0.85rem) !important;
+            line-height: 1.3 !important;
+        }
+        @media (min-width: 1024px) {
+            .grid.grid-cols-2.md\:grid-cols-3.lg\:grid-cols-6 {
+                grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+            }
+        }
+        /* Number formatting — prevent overflow */
+        .number-display { 
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: 'tnum';
+        }
+        /* Universal text protection */
+        h1, h2, h3, h4 { word-wrap: break-word; overflow-wrap: break-word; }
+
         /* ---- PHONE (<= 640px) ---- */
         @media (max-width: 640px) {
             header .max-w-7xl { padding-left: 12px; padding-right: 12px; }
@@ -966,9 +999,14 @@
                         </div>
                         <div>
                             <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">Password</label>
-                            <input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;" onkeydown="if(event.key==='Enter') doLogin()">
+                            <div style="position:relative;">
+                                <input type="password" id="loginPassword" placeholder="Your password" autocomplete="current-password" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;padding-right:48px;" onkeydown="if(event.key==='Enter') doLogin()">
+                                <button type="button" onclick="togglePw('loginPassword',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#94a3b8;cursor:pointer;padding:8px;font-size:13px;font-weight:600;">Show</button>
+                            </div>
+                            <a href="#" onclick="event.preventDefault();forgotPassword()" style="display:block;text-align:right;color:#ff6b35;font-size:12px;margin-top:6px;text-decoration:none;font-weight:600;">Forgot password?</a>
                         </div>
                         <p id="loginError" style="color:#f87171;font-size:13px;" class="hidden"></p>
+                        <p id="loginSuccess" style="color:#4ade80;font-size:13px;" class="hidden"></p>
                         <button onclick="doLogin()" style="width:100%;background:linear-gradient(135deg,#ff6b35,#e85d2c);color:#fff;border:none;padding:14px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;margin-top:4px;box-shadow:0 4px 20px rgba(255,107,53,0.3);">
                             Log In to My Account
                         </button>
@@ -986,11 +1024,17 @@
                         </div>
                         <div>
                             <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">Password</label>
-                            <input type="password" id="signupPassword" placeholder="Create a strong password" autocomplete="new-password" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;">
+                            <div style="position:relative;">
+                                <input type="password" id="signupPassword" placeholder="Create a strong password" autocomplete="new-password" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;padding-right:48px;">
+                                <button type="button" onclick="togglePw('signupPassword',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#94a3b8;cursor:pointer;padding:8px;font-size:13px;font-weight:600;">Show</button>
+                            </div>
                         </div>
                         <div>
                             <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">Confirm Password</label>
-                            <input type="password" id="signupConfirm" placeholder="Confirm your password" autocomplete="new-password" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;" onkeydown="if(event.key==='Enter') doSignup()">
+                            <div style="position:relative;">
+                                <input type="password" id="signupConfirm" placeholder="Confirm your password" autocomplete="new-password" style="background:#080c14;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;font-size:15px;border-radius:10px;padding-right:48px;" onkeydown="if(event.key==='Enter') doSignup()">
+                                <button type="button" onclick="togglePw('signupConfirm',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#94a3b8;cursor:pointer;padding:8px;font-size:13px;font-weight:600;">Show</button>
+                            </div>
                         </div>
                         <p id="signupError" style="color:#f87171;font-size:13px;" class="hidden"></p>
                         <p id="signupSuccess" style="color:#4ade80;font-size:13px;" class="hidden"></p>
@@ -2075,10 +2119,21 @@
                             <label class="block mb-2">Address</label>
                             <textarea id="settingsAddress" rows="2" placeholder="123 Main St..."></textarea>
                         </div>
+
+                        <div>
+                            <label class="block mb-2">License Number</label>
+                            <input type="text" id="settingsLicense" placeholder="HIC #13VH00000000">
+                            <p class="text-xs text-gray-500 mt-1">Shown on estimates, invoices, and contracts</p>
+                        </div>
                         
                         <div class="pt-4 border-t border-gray-200">
                             <h4 class="text-lg font-semibold mb-4 text-orange">Social Media Links</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block mb-2">Business Slogan</label>
+                                    <input type="text" id="settingsSlogan" placeholder="Your Property, Our Experience">
+                                    <p class="text-xs text-gray-500 mt-1">Shown on estimates under your business name</p>
+                                </div>
                                 <div>
                                     <label class="block mb-2">Your Website URL</label>
                                     <input type="text" id="settingsWebsiteUrl" placeholder="https://yourwebsite.com">
@@ -2284,9 +2339,12 @@
                 <form id="estimateForm" class="space-y-4">
                     <input type="hidden" id="estEditId" value="">
                     <div class="grid grid-cols-2 gap-4">
-                        <select id="estCustomer" required>
-                            <option value="">Select Customer</option>
-                        </select>
+                        <div style="position:relative;">
+                            <input type="text" id="estCustomerSearch" placeholder="Type to search customers..." autocomplete="off"
+                                oninput="_searchCustomers(this.value)" onfocus="_searchCustomers(this.value)" onblur="setTimeout(function(){var d=document.getElementById('custSuggest');if(d)d.style.display='none';},200);" required>
+                            <input type="hidden" id="estCustomer" required>
+                            <div id="custSuggest" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);max-height:240px;overflow-y:auto;z-index:1000;margin-top:2px;"></div>
+                        </div>
                         <input type="date" id="estDate" required>
                     </div>
                     
@@ -3097,6 +3155,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 
     <script>
         // =============================================
@@ -3199,8 +3258,23 @@
         // YOUR email — you never see a paywall and you can access /admin
         var ADMIN_EMAIL = 'kdrfencing@gmail.com'; // ← change this to your email
 
-        var SUBSCRIPTION_PRICE = 49; // dollars per month
+        var SUBSCRIPTION_PRICE = 49; // dollars per month (default — overridden by admin app_settings)
         var GRACE_PERIOD_DAYS  = 3;  // days after payment fails before lockout
+        var TRIAL_DAYS         = 7;  // free trial length
+
+        // Load admin-configured settings on app start
+        function _loadGlobalSettings(callback) {
+            db.collection('app_settings').doc('global').get().then(function(doc) {
+                if (doc.exists) {
+                    var d = doc.data();
+                    if (d.subscriptionPrice) SUBSCRIPTION_PRICE = d.subscriptionPrice;
+                    if (d.graceDays != null) GRACE_PERIOD_DAYS  = d.graceDays;
+                    if (d.trialDays != null) TRIAL_DAYS         = d.trialDays;
+                    if (d.stripeLink)        STRIPE_PAYMENT_LINK = d.stripeLink;
+                }
+                if (callback) callback();
+            }).catch(function(){ if (callback) callback(); });
+        }
 
         // Stripe publishable key — replace with yours from stripe.com/dashboard
         // This is the PUBLIC key (safe to put in frontend)
@@ -3208,7 +3282,7 @@
 
         // Stripe Payment Link — create one at dashboard.stripe.com → Payment Links
         // Set price to $49/month recurring, copy the link here
-        var STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/test_9B6eVebcr0P29uhaKp9fW00';
+        var STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/28E14p3xo8I87C11gD43S01';
 
         var currentUserEmail = '';
         var currentUserStatus = ''; // 'admin' | 'active' | 'trialing' | 'locked'
@@ -3297,7 +3371,7 @@
                     initialData.settings.businessName = business;
                     initialData.settings.email = email;
                     var trialEnd = new Date();
-                    trialEnd.setDate(trialEnd.getDate() + 7);
+                    trialEnd.setDate(trialEnd.getDate() + (TRIAL_DAYS || 7));
                     var batch2 = db.batch();
                     batch2.set(db.collection('users').doc(uid).collection('config').doc('main'), {
                         settings: initialData.settings,
@@ -3331,6 +3405,41 @@
                 .finally(function() {
                     if (btn) { btn.textContent = 'Create Account'; btn.disabled = false; }
                 });
+        }
+
+        function togglePw(inputId, btn) {
+            var inp = document.getElementById(inputId);
+            if (!inp) return;
+            if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'Hide'; }
+            else { inp.type = 'password'; btn.textContent = 'Show'; }
+        }
+
+        function forgotPassword() {
+            var emailInput = document.getElementById('loginEmail');
+            var email = (emailInput && emailInput.value || '').trim();
+            if (!email) {
+                email = prompt('Enter your email and we will send you a reset link:');
+                if (!email) return;
+            }
+            email = email.trim();
+            auth.sendPasswordResetEmail(email).then(function() {
+                var success = document.getElementById('loginSuccess');
+                var err = document.getElementById('loginError');
+                if (err) err.classList.add('hidden');
+                if (success) {
+                    success.textContent = 'Reset link sent to ' + email + '. Check your email.';
+                    success.classList.remove('hidden');
+                }
+                toast('Password reset link sent ✓');
+            }).catch(function(err) {
+                var errEl = document.getElementById('loginError');
+                if (errEl) {
+                    errEl.textContent = err.code === 'auth/user-not-found'
+                        ? 'No account found with that email'
+                        : (err.message || 'Could not send reset link');
+                    errEl.classList.remove('hidden');
+                }
+            });
         }
 
         function doLogin() {
@@ -3401,10 +3510,10 @@
                     if (!doc.exists) {
                         // New user — create free trial record (7 days)
                         var trialEnd = new Date();
-                        trialEnd.setDate(trialEnd.getDate() + 7);
+                        trialEnd.setDate(trialEnd.getDate() + (TRIAL_DAYS || 7));
                         var subData = {
                             uid:          user.uid,
-                            email:        user.email,
+                            email:        (user.email||'').toLowerCase(),
                             status:       'trialing',
                             trialEnd:     trialEnd.toISOString(),
                             createdAt:    new Date().toISOString(),
@@ -3489,7 +3598,13 @@
         function goToCheckout() {
             // Open Stripe payment link in same tab
             // After payment, Stripe webhook updates Firestore (or you do it manually in admin)
-            window.open(STRIPE_PAYMENT_LINK + '?prefilled_email=' + encodeURIComponent(currentUserEmail), '_blank');
+            // Build URL with prefilled email AND redirect back after payment
+            var returnUrl = window.location.origin + window.location.pathname + '?paid=1';
+            var stripeUrl = STRIPE_PAYMENT_LINK 
+                + '?prefilled_email=' + encodeURIComponent(currentUserEmail);
+            // Stripe uses success_url for one-time checkout but for payment links
+            // we redirect contractor back manually after a delay
+            window.location.href = stripeUrl;
         }
 
         function logoutFromPaywall() {
@@ -3504,7 +3619,7 @@
             updateDashboard();
             renderCalendar();
             checkNotifications();
-            setInterval(checkNotifications, 15 * 60 * 1000); // 15 min
+            setInterval(checkNotifications, 60 * 60 * 1000); // every hour for time-based reminders
             startLeadsListener();
             initKanbanDrag();
             updateCalculatorViewButtons();
@@ -3597,6 +3712,8 @@
                 tiktok: '',
                 google: '',
                 websiteUrl: '',
+                slogan: '',
+                license: '',
                 invoiceReminderEnabled: true,
                 reminder1Days: 7,
                 reminder2Days: 7,
@@ -3611,6 +3728,20 @@
         // CHECK FOR PUBLIC SIGNATURE PAGE FIRST
         // =============================================
         var urlParams = new URLSearchParams(window.location.search);
+        // Handle return from Stripe checkout
+        if (urlParams.get('paid') === '1') {
+            setTimeout(function() {
+                kdrConfirm(
+                    'Payment Received!',
+                    'Thank you for subscribing to KDRSYSTEMS! Your account is being activated. You will get full access within minutes. If you do not see access right away, log out and log back in, or contact support.',
+                    'OK',
+                    function() {
+                        // Clean URL
+                        window.history.replaceState({}, '', window.location.pathname);
+                    }
+                );
+            }, 800);
+        }
         var signToken = urlParams.get('sign');
         var contractToken = urlParams.get('contract');
 
@@ -3645,6 +3776,7 @@
         } else {
             if (typeof auth !== 'undefined' && auth) {
                 auth.onAuthStateChanged(function(user) {
+            _loadGlobalSettings();
                     if (user) {
                         currentUserId    = user.uid;
                         currentUserEmail = (user.email || '').toLowerCase();
@@ -3685,13 +3817,16 @@
                     }
                     var est = doc.data();
                     
-                    // Track that customer viewed the estimate (only write to public_estimates)
+                    // Track that customer viewed the estimate (writes trigger contractor notification)
                     var viewLog = est.viewLog || [];
+                    var viewCount = (est.viewCount || 0) + 1;
                     viewLog.push({ action: 'viewed', date: new Date().toISOString() });
-                    db.collection('public_estimates').doc(token).set({ 
-                        viewLog: viewLog, 
+                    db.collection('public_estimates').doc(token).set({
+                        viewLog:    viewLog,
+                        viewCount:  viewCount,
+                        viewedDate: new Date().toISOString(),
                         lastViewed: new Date().toISOString(),
-                        status: est.signature ? 'approved' : 'viewed'
+                        status:     est.signature ? 'approved' : 'viewed'
                     }, { merge: true }).catch(function(){});
                     
                     renderPublicSignaturePage(est, token);
@@ -3732,7 +3867,7 @@
                     '<p style="color:#333;font-size:14px;margin:0;">Signed by ' + (est.signedBy || 'Customer') + ' on ' + (est.signedDate || 'N/A') + '</p>' +
                 '</div>';
             } else {
-                signSection = '<div style="margin-top:30px;padding:30px;background:#fff;border:2px solid "+brandCol+";border-radius:12px;">' +
+                signSection = '<div style="margin-top:30px;padding:30px;background:#fff;border:2px solid ' + brandCol + ';border-radius:12px;">' +
                     '<h3 style="font-size:20px;font-weight:700;color:#222;margin:0 0 20px;text-align:center;">Approve This Estimate</h3>' +
                     '<div style="margin-bottom:16px;">' +
                         '<label style="display:block;margin-bottom:6px;font-size:14px;color:#222;font-weight:600;">Your Full Name</label>' +
@@ -3745,23 +3880,24 @@
                     '<div style="display:flex;gap:12px;margin-bottom:16px;">' +
                         '<button style="flex:1;padding:12px;background:#f5f5f5;border:1px solid #ddd;border-radius:10px;cursor:pointer;font-size:14px;color:#333;" onclick="clearPublicSigCanvas()">Clear Signature</button>' +
                     '</div>' +
-                    '<button style="width:100%;padding:16px;background:"+brandCol+";color:white;border:none;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;" onclick="submitPublicSignature(\'' + token + '\')">Approve & Sign</button>' +
+                    '<button style="width:100%;padding:16px;background:' + brandCol + ';color:white;border:none;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;" onclick="submitPublicSignature(\'' + token + '\')">Approve & Sign</button>' +
                 '</div>';
             }
 
             // Build the professional estimate page
             var html = '' +
                 // Orange Header Bar with centered logo and BLACK text
-                '<div style="background:"+brandCol+";border-radius:16px 16px 0 0;padding:30px;text-align:center;">' +
-                    (est.businessLogo ? '<img src="' + est.businessLogo + '" alt="Logo" style="max-height:80px;margin:0 auto 10px;display:block;border-radius:8px;">' : '') +
+                '<div style="background:' + brandCol + ';border-radius:16px 16px 0 0;padding:30px;text-align:center;">' +
+                    (est.businessLogo ? '<img src="' + est.businessLogo + '" alt="" style="max-height:80px;max-width:240px;margin:0 auto 10px;display:block;border-radius:8px;">' : '') +
                     '<h1 style="color:#000000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + (est.businessName || 'KDRSYSTEMS') + '</h1>' +
-                    '<p style="color:#000000;margin:6px 0 0;font-size:12px;font-weight:600;letter-spacing:1px;">"YOUR PROPERTY, OUR EXPERIENCE"</p>' +
+                    (est.slogan ? '<p style="color:#000;margin:6px 0 0;font-size:12px;font-weight:600;letter-spacing:1px;">' + est.slogan + '</p>' : '') +
                     '<div style="margin-top:10px;">' +
                         (est.businessPhone ? '<span style="color:#000;font-size:13px;font-weight:600;">' + est.businessPhone + '</span>' : '') +
                         (est.businessPhone && est.businessEmail ? '<span style="color:#000;font-size:13px;margin:0 8px;">|</span>' : '') +
                         (est.businessEmail ? '<span style="color:#000;font-size:13px;font-weight:600;">' + est.businessEmail + '</span>' : '') +
                     '</div>' +
                     (est.businessAddress ? '<p style="color:#000;font-size:12px;margin:4px 0 0;">' + est.businessAddress + '</p>' : '') +
+                    (est.license ? '<p style="color:#000;font-size:11px;margin:2px 0 0;font-weight:600;">License: ' + est.license + '</p>' : '') +
                 '</div>' +
                 // White Body
                 '<div style="background:#fff;padding:35px;border-radius:0 0 16px 16px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">' +
@@ -3776,7 +3912,7 @@
                         '</div>' +
                     '</div>' +
                     // TO section
-                    '<div style="margin-bottom:24px;padding:20px;background:#f9f9f9;border-radius:10px;border-left:4px solid "+brandCol+";">' +
+                    '<div style="margin-bottom:24px;padding:20px;background:#f9f9f9;border-radius:10px;border-left:4px solid ' + brandCol + ';">' +
                         '<p style="color:#333;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;font-weight:700;">TO:</p>' +
                         '<p style="font-weight:700;color:#222;font-size:18px;margin:0;">' + est.customerName + '</p>' +
                         (est.customerEmail ? '<p style="color:#333;font-size:14px;margin:4px 0 0;">' + est.customerEmail + '</p>' : '') +
@@ -3786,7 +3922,7 @@
                     // Items Table — sections-aware
                     (hasSections ? '' :
                     '<table style="width:100%;border-collapse:collapse;margin:20px 0;">' +
-                        '<tr style="background:"+brandCol+";">' +
+                        '<tr style="background:' + brandCol + ';">' +
                             '<th style="padding:14px 20px;text-align:left;font-size:13px;color:#000;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">SERVICE</th>' +
                             '<th style="padding:14px 20px;text-align:right;font-size:13px;color:#000;font-weight:700;text-transform:uppercase;">AMOUNT</th>' +
                         '</tr>' +
@@ -3799,17 +3935,17 @@
                         '<div style="width:280px;">' +
                             '<div style="display:flex;justify-content:space-between;padding:10px 16px;"><span style="color:#333;font-weight:600;">SUBTOTAL</span><span style="color:#222;" id="pubSubtotal">$' + est.total + '</span></div>' +
                             '<div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #eee;"><span style="color:#333;font-weight:600;">DISCOUNT</span><span style="color:#222;">$0</span></div>' +
-                            '<div style="display:flex;justify-content:space-between;padding:16px;background:"+brandCol+";border-radius:8px;margin-top:8px;"><span style="color:#000;font-weight:800;font-size:18px;">TOTAL</span><span style="color:#000;font-weight:800;font-size:24px;" id="pubTotal">$' + est.total + '</span></div>' +
+                            '<div style="display:flex;justify-content:space-between;padding:16px;background:' + brandCol + ';border-radius:8px;margin-top:8px;"><span style="color:#000;font-weight:800;font-size:18px;">TOTAL</span><span style="color:#000;font-weight:800;font-size:24px;" id="pubTotal">$' + est.total + '</span></div>' +
                         '</div>' +
                     '</div>' +
                     (hasSections ? '<p style="color:#94a3b8;font-size:12px;text-align:right;margin:6px 0 0;">* Total updates as you toggle sections above</p>' : '') +
-                    (est.notes ? '<div style="margin-top:24px;padding:16px;background:#f9f9f9;border-left:4px solid "+brandCol+";border-radius:4px;"><p style="margin:0;font-size:14px;color:#333;"><strong>Notes:</strong> ' + est.notes + '</p></div>' : '') +
+                    (est.notes ? '<div style="margin-top:24px;padding:16px;background:#f9f9f9;border-left:4px solid ' + brandCol + ';border-radius:4px;"><p style="margin:0;font-size:14px;color:#333;"><strong>Notes:</strong> ' + est.notes + '</p></div>' : '') +
                     (est.terms ? '<div style="margin-top:16px;padding:16px;border:1px solid #eee;border-radius:8px;"><p style="font-size:13px;font-weight:700;color:#222;margin:0 0 6px;text-transform:uppercase;">Terms & Conditions</p><p style="font-size:12px;color:#333;margin:0;white-space:pre-wrap;">' + est.terms + '</p></div>' : '') +
-                    (est.layoutImages && est.layoutImages.length ? '<div style="margin-top:24px;padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:"+brandCol+";margin:0 0 12px;">Job Layout / Sketch</p>' + est.layoutImages.map(function(l){return '<div style="margin-bottom:10px;"><img src="'+l.dataUrl+'" alt="Layout" style="max-width:100%;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#999;margin:4px 0 0;">'+l.name+'</p></div>';}).join('') + '</div>' : '') +
+                    (est.layoutImages && est.layoutImages.length ? '<div style="margin-top:24px;padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:' + brandCol + ';margin:0 0 12px;">Job Layout / Sketch</p>' + est.layoutImages.map(function(l){return '<div style="margin-bottom:10px;"><img src="'+l.dataUrl+'" alt="Layout" style="max-width:100%;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#999;margin:4px 0 0;">'+l.name+'</p></div>';}).join('') + '</div>' : '') +
                     signSection +
                     // Footer
                     '<div style="margin-top:30px;padding-top:20px;border-top:1px solid #eee;text-align:center;">' +
-                        '<p style="font-size:14px;font-weight:700;color:"+brandCol+";margin:0;">' + (est.businessName || '') + '</p>' +
+                        '<p style="font-size:14px;font-weight:700;color:' + brandCol + ';margin:0;">' + (est.businessName || '') + '</p>' +
                         (est.businessPhone ? '<p style="color:#333;font-size:13px;margin:4px 0 0;">' + est.businessPhone + '</p>' : '') +
                         (est.businessEmail ? '<p style="color:#333;font-size:13px;margin:2px 0 0;">' + est.businessEmail + '</p>' : '') +
                         (function() {
@@ -4344,13 +4480,11 @@
             // Record collection listeners
             ['customers','estimates','invoices','materials','templates','terms','contracts'].forEach(function(colName) {
                 _listeners.push(base.collection(colName).onSnapshot(function(snap) {
-                    // Don't skip on hasPendingWrites — we need the listener to always fire
                     var arr = [];
                     snap.forEach(function(d){ arr.push(d.data()); });
                     arr.sort(function(a,b){ return (a.id||'') < (b.id||'') ? -1 : 1; });
                     appData[colName] = arr;
                     _colLoaded(colName);
-                    // Live update if already booted
                     if (dataLoaded) {
                         _restoreImages(appData);
                         _lsSave();
@@ -4359,6 +4493,167 @@
                     }
                 }, function(err){ console.error(colName+' listener:',err); _colLoaded(colName); }));
             });
+
+            // ── REAL-TIME PUBLIC DOC LISTENERS — instant notifications ──
+            // Listen to public_estimates and public_contracts that belong to this user
+            _listeners.push(
+                db.collection('public_estimates').where('ownerId', '==', currentUserId)
+                  .onSnapshot(function(snap) {
+                    snap.docChanges().forEach(function(change) {
+                        var pubDoc = change.doc.data();
+                        if (change.type === 'modified') {
+                            _handlePublicDocUpdate(pubDoc, 'estimate');
+                        }
+                    });
+                }, function(err){ console.error('public_estimates listener:', err); })
+            );
+
+            _listeners.push(
+                db.collection('public_contracts').where('ownerId', '==', currentUserId)
+                  .onSnapshot(function(snap) {
+                    snap.docChanges().forEach(function(change) {
+                        var pubDoc = change.doc.data();
+                        if (change.type === 'modified') {
+                            _handlePublicDocUpdate(pubDoc, 'contract');
+                        }
+                    });
+                }, function(err){ console.error('public_contracts listener:', err); })
+            );
+
+            // Listen for new website leads in real-time
+            _listeners.push(
+                base.collection('leads').orderBy('createdAt', 'desc').limit(50)
+                  .onSnapshot(function(snap) {
+                    snap.docChanges().forEach(function(change) {
+                        if (change.type === 'added') {
+                            var lead = change.doc.data();
+                            // Only notify for leads created in the last 5 minutes (avoids old lead spam on first load)
+                            var leadAge = Date.now() - new Date(lead.createdAt || 0).getTime();
+                            if (leadAge < 5 * 60 * 1000) {
+                                _notifyNewLead(lead);
+                            }
+                        }
+                    });
+                }, function(err){ console.error('leads listener:', err); })
+            );
+        }
+
+        // Track which events have been notified to prevent duplicates
+        var _notifiedEvents = {};
+
+        function _handlePublicDocUpdate(pubDoc, docType) {
+            if (!pubDoc || !pubDoc.id) return;
+
+            // Match pubDoc to local doc
+            var localList = docType === 'estimate' ? appData.estimates : appData.contracts;
+            var localDoc  = localList.find(function(d){ return d.id === pubDoc.id; });
+            if (!localDoc) return;
+
+            var customerName = pubDoc.customerName || localDoc.customerName || 'Customer';
+            var docNum       = '#' + pubDoc.id.slice(-6).toUpperCase();
+            var notifId, exists;
+
+            // ── SIGNED EVENT ──
+            if (pubDoc.signature && pubDoc.signedDate) {
+                notifId = 'signed-' + pubDoc.id;
+                if (!_notifiedEvents[notifId] && !appData.notifications.find(function(n){ return n.id === notifId; })) {
+                    _notifiedEvents[notifId] = true;
+                    appData.notifications.unshift({
+                        id: notifId,
+                        type: docType === 'estimate' ? 'signed' : 'contract-signed',
+                        title: docType === 'estimate' ? 'Estimate Signed!' : 'Contract Signed!',
+                        message: customerName + ' signed ' + docType + ' ' + docNum,
+                        date: new Date().toISOString(),
+                        read: false,
+                        estimateId: docType === 'estimate' ? pubDoc.id : null,
+                        contractId: docType === 'contract' ? pubDoc.id : null
+                    });
+                    // Update local doc status
+                    if (docType === 'estimate') localDoc.status = 'signed';
+                    if (docType === 'contract') localDoc.status = 'signed';
+                    if (!localDoc.signedDate) localDoc.signedDate = pubDoc.signedDate;
+                    if (!localDoc.signature) localDoc.signature = pubDoc.signature;
+                    saveData();
+                    _showInstantToast('🎉 ' + customerName + ' signed ' + docType + ' ' + docNum);
+                    updateNotificationBadge();
+                    renderNotifications();
+                }
+            }
+
+            // ── DECLINED EVENT ──
+            if (pubDoc.declined && pubDoc.declinedDate) {
+                notifId = 'declined-' + pubDoc.id;
+                if (!_notifiedEvents[notifId] && !appData.notifications.find(function(n){ return n.id === notifId; })) {
+                    _notifiedEvents[notifId] = true;
+                    appData.notifications.unshift({
+                        id: notifId,
+                        type: 'declined',
+                        title: docType === 'estimate' ? 'Estimate Declined' : 'Contract Declined',
+                        message: customerName + ' declined ' + docType + ' ' + docNum + (pubDoc.declineReason ? ' — ' + pubDoc.declineReason : ''),
+                        date: new Date().toISOString(),
+                        read: false,
+                        estimateId: docType === 'estimate' ? pubDoc.id : null,
+                        contractId: docType === 'contract' ? pubDoc.id : null
+                    });
+                    if (docType === 'estimate') localDoc.status = 'declined';
+                    saveData();
+                    _showInstantToast(customerName + ' declined ' + docType + ' ' + docNum);
+                    updateNotificationBadge();
+                    renderNotifications();
+                }
+            }
+
+            // ── VIEWED EVENT ──
+            if (pubDoc.viewedDate && !pubDoc.signature) {
+                notifId = 'viewed-' + pubDoc.id + '-' + (pubDoc.viewCount || 1);
+                if (!_notifiedEvents[notifId] && !appData.notifications.find(function(n){ return n.id === notifId; })) {
+                    _notifiedEvents[notifId] = true;
+                    appData.notifications.unshift({
+                        id: notifId,
+                        type: 'viewed',
+                        title: docType === 'estimate' ? 'Estimate Viewed' : 'Contract Viewed',
+                        message: customerName + ' opened ' + docType + ' ' + docNum,
+                        date: new Date().toISOString(),
+                        read: false,
+                        estimateId: docType === 'estimate' ? pubDoc.id : null,
+                        contractId: docType === 'contract' ? pubDoc.id : null
+                    });
+                    saveData();
+                    _showInstantToast('👀 ' + customerName + ' viewed ' + docType + ' ' + docNum);
+                    updateNotificationBadge();
+                    renderNotifications();
+                }
+            }
+        }
+
+        function _notifyNewLead(lead) {
+            var notifId = 'lead-' + (lead.id || lead.createdAt);
+            if (_notifiedEvents[notifId] || appData.notifications.find(function(n){ return n.id === notifId; })) return;
+            _notifiedEvents[notifId] = true;
+
+            appData.notifications.unshift({
+                id: notifId,
+                type: 'lead',
+                title: 'New Website Lead!',
+                message: (lead.name || 'Anonymous') + (lead.email ? ' (' + lead.email + ')' : '') + (lead.service ? ' — ' + lead.service : ''),
+                date: new Date().toISOString(),
+                read: false,
+                leadId: lead.id
+            });
+            saveData();
+            _showInstantToast('🔥 New lead: ' + (lead.name || 'Anonymous'));
+            updateNotificationBadge();
+            renderNotifications();
+        }
+
+        function _showInstantToast(msg) {
+            // Show a more prominent toast for important events
+            var t = document.createElement('div');
+            t.style.cssText = 'position:fixed;top:80px;right:20px;background:#0f172a;color:#fff;padding:14px 20px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:99999;font-weight:600;font-size:14px;max-width:340px;animation:slideInRight 0.3s ease-out;';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(function(){ t.style.opacity='0'; t.style.transition='opacity 0.3s'; }, 5000);
+            setTimeout(function(){ t.remove(); }, 5400);
         }
 
         var _renderTimer = null;
@@ -5045,6 +5340,39 @@
             openModal('customerModal');
         }
 
+        function _searchCustomers(query) {
+            var div = document.getElementById('custSuggest');
+            if (!div) return;
+            query = (query||'').trim().toLowerCase();
+            var matches = appData.customers.filter(function(c) {
+                if (!query) return true;
+                return (c.name||'').toLowerCase().indexOf(query) >= 0
+                    || (c.email||'').toLowerCase().indexOf(query) >= 0
+                    || (c.phone||'').indexOf(query) >= 0;
+            }).slice(0, 8);
+
+            if (matches.length === 0) {
+                div.innerHTML = '<div style="padding:14px;color:#94a3b8;font-size:13px;text-align:center;">No customers found</div>';
+            } else {
+                div.innerHTML = matches.map(function(c) {
+                    return '<div onclick="_selectCustomer(\'' + c.id + '\')" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f1f5f9;" onmouseover="this.style.background=\'#f8f9fb\'" onmouseout="this.style.background=\'#fff\'">' +
+                        '<div style="font-weight:600;font-size:14px;color:#0f172a;">' + (c.name||'(no name)') + '</div>' +
+                        (c.email || c.phone ? '<div style="font-size:12px;color:#64748b;margin-top:2px;">' + (c.email||'') + (c.email&&c.phone?' · ':'') + (c.phone||'') + '</div>' : '') +
+                    '</div>';
+                }).join('');
+            }
+            div.style.display = '';
+        }
+
+        function _selectCustomer(id) {
+            var c = appData.customers.find(function(x){ return x.id === id; });
+            if (!c) return;
+            document.getElementById('estCustomer').value       = id;
+            document.getElementById('estCustomerSearch').value = c.name || '';
+            var d = document.getElementById('custSuggest');
+            if (d) d.style.display = 'none';
+        }
+
         function renderCustomers() {
             const tbody = document.getElementById('customersTable');
             if (appData.customers.length === 0) {
@@ -5628,6 +5956,12 @@
             // Pre-fill fields
             populateCustomerSelect('estCustomer');
             document.getElementById('estCustomer').value = doc.customerId || '';
+            // Set search input to show customer name
+            var custForEdit = appData.customers.find(function(c){ return c.id === doc.customerId; });
+            if (custForEdit) {
+                var srch = document.getElementById('estCustomerSearch');
+                if (srch) srch.value = custForEdit.name || '';
+            }
             document.getElementById('estDate').value = doc.date || new Date().toISOString().split('T')[0];
             document.getElementById('estNotes').value = doc.notes || '';
 
@@ -6218,12 +6552,14 @@
                 docs.map(function(doc) {
                     var estBtns = '<button onclick="viewEstimate(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#ff6b35;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">View</button>' +
                         '<button onclick="sendDocument(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Send</button>' +
-                        '<button onclick="convertToInvoice(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">→ Inv</button>' +
-                        '<button onclick="deleteDocument(\'' + doc.id + '\',\'estimate\')" style="padding:7px 8px;background:#fff0f0;color:#ef4444;border:1px solid #fecaca;border-radius:7px;font-size:12px;cursor:pointer;">✕</button>';
+                        '<button onclick="printDocument(\'' + doc.id + '\',\'estimate\')" title="Print or Save as PDF" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">PDF</button>' +
+                        '<button onclick="convertToInvoice(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">&rarr; Inv</button>' +
+                        '<button onclick="deleteDocument(\'' + doc.id + '\',\'estimate\')" style="padding:7px 8px;background:#fff0f0;color:#ef4444;border:1px solid #fecaca;border-radius:7px;font-size:12px;cursor:pointer;">&times;</button>';
                     var invBtns = '<button onclick="viewInvoice(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#ff6b35;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">View</button>' +
                         '<button onclick="sendDocument(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Send</button>' +
-                        (doc.status === 'unpaid' ? '<button onclick="markInvoicePaid(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f0fdf4;color:#22c55e;border:1px solid #bbf7d0;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Paid ✓</button>' : '') +
-                        '<button onclick="deleteDocument(\'' + doc.id + '\',\'invoice\')" style="padding:7px 8px;background:#fff0f0;color:#ef4444;border:1px solid #fecaca;border-radius:7px;font-size:12px;cursor:pointer;">✕</button>';
+                        '<button onclick="printDocument(\'' + doc.id + '\',\'invoice\')" title="Print or Save as PDF" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">PDF</button>' +
+                        (doc.status === 'unpaid' ? '<button onclick="markInvoicePaid(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f0fdf4;color:#22c55e;border:1px solid #bbf7d0;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Paid &check;</button>' : '') +
+                        '<button onclick="deleteDocument(\'' + doc.id + '\',\'invoice\')" style="padding:7px 8px;background:#fff0f0;color:#ef4444;border:1px solid #fecaca;border-radius:7px;font-size:12px;cursor:pointer;">&times;</button>';
                     return '<div style="background:#fff;border-radius:12px;border:1px solid #e5e5e5;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 1px 4px rgba(0,0,0,0.05);">' +
                         '<div style="background:#ff6b35;padding:12px 14px;">' +
                             '<div style="display:flex;justify-content:space-between;align-items:center;">' +
@@ -6313,6 +6649,8 @@
                 businessPhone: _safe(s.phone, ''),
                 businessAddress: _safe(s.address, ''),
                 businessLogo: _safe(s.logo, ''),
+                slogan: _safe(s.slogan, ''),
+                license: _safe(s.license, ''),
                 businessColor: _safe(bizColor, '#ff6b35'),
                 stripeLink: _safe(s.stripeLink, ''),
                 paymentInstructions: _safe(s.paymentInstructions, ''),
@@ -6387,10 +6725,20 @@
                 // Full HTML email
                 var emailHtml = '<!DOCTYPE html><html><body style="margin:0;padding:20px;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;">' +
                     '<div style="max-width:620px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">' +
-                        '<div style="background:' + bizColor + ';padding:28px 30px;text-align:center;">' +
-                            (s.logo ? '<img src="' + s.logo + '" style="max-height:60px;margin:0 auto 10px;display:block;border-radius:6px;">' : '') +
-                            '<h1 style="color:#000;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0;">' + bizName + '</h1>' +
-                            (s.phone || s.email ? '<p style="color:#000;margin:6px 0 0;font-size:13px;">' + (s.phone||'') + (s.phone&&s.email?' &middot; ':'') + (s.email||'') + '</p>' : '') +
+                        // Top header — brand color + logo + business name + slogan
+                        '<div style="background:' + bizColor + ';padding:30px;text-align:center;">' +
+                            (s.logo
+                                ? '<img src="' + s.logo + '" alt="" style="max-height:80px;max-width:240px;margin:0 auto 10px;display:block;border-radius:8px;">'
+                                : ''
+                            ) +
+                            '<h1 style="color:#000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + bizName + '</h1>' +
+                            (s.slogan ? '<p style="color:#000;margin:6px 0 0;font-size:12px;font-weight:600;letter-spacing:1px;">' + s.slogan + '</p>' : '') +
+                            '<div style="margin-top:10px;">' +
+                                (s.phone ? '<span style="color:#000;font-size:13px;font-weight:600;">' + s.phone + '</span>' : '') +
+                                (s.phone && s.email ? '<span style="color:#000;font-size:13px;margin:0 8px;">|</span>' : '') +
+                                (s.email ? '<span style="color:#000;font-size:13px;font-weight:600;">' + s.email + '</span>' : '') +
+                            '</div>' +
+                            (s.license ? '<p style="color:#000;font-size:11px;margin:6px 0 0;font-weight:600;">License: ' + s.license + '</p>' : '') +
                         '</div>' +
                         '<div style="padding:28px 30px;">' +
                             '<div style="display:flex;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px;">' +
@@ -6641,6 +6989,78 @@
                 viewInvoice(id);
                 toast('Marked as paid ✓');
             }
+        }
+
+        function printDocument(id, type) {
+            var doc = type === 'estimate'
+                ? appData.estimates.find(function(d){ return d.id === id; })
+                : (type === 'invoice'
+                    ? appData.invoices.find(function(d){ return d.id === id; })
+                    : appData.contracts.find(function(d){ return d.id === id; }));
+            if (!doc) { toast('Document not found'); return; }
+            var s = appData.settings;
+            var bizName = s.businessName || 'My Business';
+            var bizColor = s.brandColor || '#ff6b35';
+            var docType = type.charAt(0).toUpperCase() + type.slice(1);
+            var docNum = '#' + id.slice(-6).toUpperCase();
+
+            var itemsHtml = (doc.lineItems || []).map(function(item, idx) {
+                var bg = idx % 2 === 0 ? '#fff' : '#fafafa';
+                return '<tr style="background:' + bg + ';">' +
+                    '<td style="padding:12px 16px;border-bottom:1px solid #eee;font-size:14px;">' + (item.description||'') + '</td>' +
+                    '<td style="padding:12px 16px;text-align:right;border-bottom:1px solid #eee;font-weight:700;font-size:14px;">$' + (item.amount||'0') + '</td>' +
+                '</tr>';
+            }).join('');
+
+            var win = window.open('', '_blank');
+            if (!win) { toast('Pop-up blocked — allow pop-ups to print'); return; }
+
+            win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + docType + ' ' + docNum + '</title>' +
+                '<style>body{font-family:Arial,sans-serif;margin:0;padding:30px;background:#fff;}@page{size:auto;margin:15mm;}.no-print{display:flex;gap:8px;margin-bottom:20px;}@media print{.no-print{display:none!important;}}</style>' +
+                '</head><body>' +
+                '<div class="no-print"><button onclick="window.print()" style="padding:10px 20px;background:' + bizColor + ';color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Print / Save as PDF</button>' +
+                '<button onclick="window.close()" style="padding:10px 20px;background:#e5e5e5;color:#333;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Close</button></div>' +
+                '<div style="max-width:720px;margin:0 auto;">' +
+                    '<div style="background:' + bizColor + ';padding:24px;text-align:center;border-radius:12px 12px 0 0;">' +
+                        (s.logo ? '<img src="' + s.logo + '" style="max-height:60px;margin-bottom:8px;">' : '') +
+                        '<h1 style="margin:0;font-size:22px;color:#000;text-transform:uppercase;letter-spacing:2px;">' + bizName + '</h1>' +
+                        (s.slogan ? '<p style="margin:4px 0 0;color:#000;font-size:12px;">' + s.slogan + '</p>' : '') +
+                        '<p style="margin:6px 0 0;color:#000;font-size:13px;">' + (s.phone||'') + (s.phone&&s.email?' | ':'') + (s.email||'') + '</p>' +
+                        (s.license ? '<p style="margin:4px 0 0;color:#000;font-size:11px;">License: ' + s.license + '</p>' : '') +
+                    '</div>' +
+                    '<div style="padding:24px;background:#fafafa;">' +
+                        '<div style="display:flex;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;">' +
+                            '<div><h2 style="margin:0;font-size:24px;color:#222;">' + docType.toUpperCase() + '</h2><p style="margin:4px 0 0;color:#555;font-size:13px;">' + docNum + '</p></div>' +
+                            '<p style="margin:0;color:#555;font-size:13px;">Date: <strong>' + (doc.date||'') + '</strong></p>' +
+                        '</div>' +
+                        '<div style="margin-bottom:16px;padding:14px;background:#fff;border-left:4px solid ' + bizColor + ';border-radius:4px;">' +
+                            '<p style="margin:0;font-size:11px;color:#666;text-transform:uppercase;font-weight:700;">TO:</p>' +
+                            '<p style="margin:4px 0 0;font-weight:700;font-size:15px;">' + (doc.customerName||'') + '</p>' +
+                            (doc.customerEmail ? '<p style="margin:2px 0 0;color:#555;font-size:13px;">' + doc.customerEmail + '</p>' : '') +
+                            (doc.customerPhone ? '<p style="margin:2px 0 0;color:#555;font-size:13px;">' + doc.customerPhone + '</p>' : '') +
+                            (doc.customerAddress ? '<p style="margin:2px 0 0;color:#555;font-size:13px;">' + doc.customerAddress + '</p>' : '') +
+                        '</div>' +
+                        '<table style="width:100%;border-collapse:collapse;margin-bottom:16px;background:#fff;border-radius:8px;overflow:hidden;">' +
+                            '<tr style="background:' + bizColor + ';"><th style="padding:12px 16px;text-align:left;color:#000;font-size:13px;">SERVICE</th><th style="padding:12px 16px;text-align:right;color:#000;font-size:13px;">AMOUNT</th></tr>' +
+                            itemsHtml +
+                        '</table>' +
+                        '<div style="display:flex;justify-content:flex-end;">' +
+                            '<div style="width:280px;">' +
+                                '<div style="display:flex;justify-content:space-between;padding:14px;background:' + bizColor + ';border-radius:8px;color:#000;"><span style="font-weight:800;">TOTAL</span><span style="font-weight:800;font-size:22px;">$' + (doc.total||'0') + '</span></div>' +
+                            '</div>' +
+                        '</div>' +
+                        (doc.notes ? '<div style="margin-top:16px;padding:14px;background:#fff;border-left:4px solid ' + bizColor + ';"><strong>Notes:</strong> ' + doc.notes + '</div>' : '') +
+                        (doc.terms ? '<div style="margin-top:16px;padding:14px;background:#fff;border:1px solid #eee;border-radius:8px;"><p style="margin:0 0 6px;font-size:12px;font-weight:700;text-transform:uppercase;">Terms</p><p style="margin:0;font-size:12px;color:#555;white-space:pre-wrap;">' + doc.terms + '</p></div>' : '') +
+                        (doc.signature ? '<div style="margin-top:16px;padding:14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;"><p style="margin:0;font-size:12px;font-weight:700;color:#166534;">Signed by ' + (doc.signedBy||doc.customerName) + ' on ' + new Date(doc.signedDate).toLocaleDateString() + '</p><img src="' + doc.signature + '" style="max-height:60px;margin-top:8px;"></div>' : '') +
+                    '</div>' +
+                    '<div style="background:' + bizColor + ';padding:14px 24px;text-align:center;border-radius:0 0 12px 12px;color:#000;font-size:12px;">' +
+                        bizName + ' &middot; ' + (s.phone||'') + (s.email?' &middot; ' + s.email : '') +
+                    '</div>' +
+                '</div>' +
+                '</body></html>');
+            win.document.close();
+            // Auto-trigger print dialog after 500ms (gives time to render)
+            setTimeout(function(){ try { win.print(); } catch(e){} }, 600);
         }
 
         function generateReceipt(id) {
@@ -7182,6 +7602,10 @@
             document.getElementById('settingsGoogle').value = appData.settings.google || '';
             var wuEl = document.getElementById('settingsWebsiteUrl');
             if (wuEl) wuEl.value = appData.settings.websiteUrl || '';
+            var slEl = document.getElementById('settingsSlogan');
+            if (slEl) slEl.value = appData.settings.slogan || '';
+            var licEl = document.getElementById('settingsLicense');
+            if (licEl) licEl.value = appData.settings.license || '';
             document.getElementById('invoiceReminderEnabled').value = String(appData.settings.invoiceReminderEnabled !== false);
             document.getElementById('reminder1Days').value = appData.settings.reminder1Days || 7;
             document.getElementById('reminder2Days').value = appData.settings.reminder2Days || 7;
@@ -7244,12 +7668,45 @@
                 toast('File too large — max 2MB');
                 return;
             }
+            if (!currentUserId) { toast('Please log in first'); return; }
 
+            toast('Uploading logo...');
+            // Resize image first
             const reader = new FileReader();
             reader.onload = function(e) {
-                const logoData = e.target.result;
-                appData.settings.logo = logoData;
-                displayLogoPreview(logoData);
+                var img = new Image();
+                img.onload = function() {
+                    var canvas = document.createElement('canvas');
+                    var maxW = 400, maxH = 200;
+                    var w = img.width, h = img.height;
+                    if (w > maxW) { h = h * (maxW/w); w = maxW; }
+                    if (h > maxH) { w = w * (maxH/h); h = maxH; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+
+                    // Upload to Firebase Storage so logo is a real URL
+                    canvas.toBlob(function(blob) {
+                        if (!blob) { toast('Logo processing failed'); return; }
+                        var storageRef = storage.ref('logos/' + currentUserId + '/logo.png');
+                        storageRef.put(blob).then(function(snap) {
+                            return snap.ref.getDownloadURL();
+                        }).then(function(downloadURL) {
+                            appData.settings.logo = downloadURL;
+                            displayLogoPreview(downloadURL);
+                            saveData();
+                            toast('Logo uploaded ✓');
+                        }).catch(function(err) {
+                            console.error('Logo upload error:', err);
+                            toast('Logo upload failed: ' + err.message);
+                            // Fallback to base64 (will show in app but maybe not emails)
+                            var base64 = canvas.toDataURL('image/png', 0.9);
+                            appData.settings.logo = base64;
+                            displayLogoPreview(base64);
+                            saveData();
+                        });
+                    }, 'image/png', 0.95);
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -7279,7 +7736,9 @@
                 facebook: document.getElementById('settingsFacebook').value,
                 tiktok: document.getElementById('settingsTiktok').value,
                 google: document.getElementById('settingsGoogle').value,
-                websiteUrl: (document.getElementById('settingsWebsiteUrl')||{}).value || '',
+                websiteUrl:    (document.getElementById('settingsWebsiteUrl')||{}).value || '',
+                license:       (document.getElementById('settingsLicense')||{}).value || '',
+                slogan: (document.getElementById('settingsSlogan')||{}).value || '',
                 invoiceReminderEnabled: document.getElementById('invoiceReminderEnabled').value === 'true',
                 reminder1Days: parseInt(document.getElementById('reminder1Days').value) || 7,
                 reminder2Days: parseInt(document.getElementById('reminder2Days').value) || 7,
@@ -10422,31 +10881,11 @@
         var _brandColor = '#ff6b35'; // default
 
         function applyBrandColor(color) {
+            // Brand color is ONLY used in customer-facing estimates/invoices
+            // The app itself stays with its default orange theme
             if (!color || !color.startsWith('#')) return;
             _brandColor = color;
-            // Update all CSS orange references via style tag
-            var styleId = 'kdr-brand-style';
-            var existing = document.getElementById(styleId);
-            if (existing) existing.remove();
-            var style = document.createElement('style');
-            style.id = styleId;
-            style.textContent = [
-                '.text-orange { color: ' + color + ' !important; }',
-                '.logo-text { color: ' + color + ' !important; }',
-                '.btn-primary { background: ' + color + ' !important; }',
-                '.btn-primary:hover { background: ' + shadeColor(color, -15) + ' !important; }',
-                '.nav-btn-side.active { color: ' + color + ' !important; border-left-color: ' + color + ' !important; background: ' + color + '15 !important; }',
-                '.nav-btn-side.active:hover { color: ' + color + ' !important; }',
-                '.nav-btn-side:hover { color: ' + color + ' !important; background: ' + color + '12 !important; }',
-                '.gradient-orange { background: ' + color + ' !important; }',
-                'input:focus, select:focus, textarea:focus { border-color: ' + color + ' !important; box-shadow: 0 0 0 3px ' + color + '22 !important; }',
-                '.calendar-day.today { border-color: ' + color + ' !important; background: ' + color + '12 !important; }',
-                '.calendar-event { background: ' + color + ' !important; }',
-                '.notification-item.unread { border-left-color: ' + color + ' !important; background: ' + color + '10 !important; }',
-                '::-webkit-scrollbar-thumb:hover { background: ' + color + ' !important; }',
-            ].join('\n');
-            document.head.appendChild(style);
-            // sync color picker in settings
+            // Just sync the color picker in settings — DO NOT apply to app CSS
             var cp = document.getElementById('settingsBrandColor');
             var ch = document.getElementById('settingsBrandColorHex');
             if (cp) cp.value = color;
