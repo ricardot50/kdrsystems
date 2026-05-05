@@ -4,330 +4,261 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KDRSYSTEMS — Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * { font-family: 'Inter', -apple-system, sans-serif; }
-        body { background: #0f172a; margin: 0; min-height: 100vh; }
-
-        .card {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 14px;
-            padding: 24px;
-        }
-
-        input {
-            background: #0f172a;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 12px 14px;
-            width: 100%;
-            color: #e2e8f0;
-            font-size: 15px;
-            box-sizing: border-box;
-        }
+        * { font-family: 'Inter', -apple-system, sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #0f172a; min-height: 100vh; color: #e2e8f0; }
+        input { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px 14px; width: 100%; color: #e2e8f0; font-size: 15px; }
         input:focus { outline: none; border-color: #ff6b35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
         input::placeholder { color: #475569; }
-
-        .btn-orange {
-            background: #ff6b35;
-            color: #fff;
-            border: none;
-            padding: 13px 20px;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.15s;
-        }
-        .btn-orange:hover { background: #e85d2c; }
-
-        .btn-slate {
-            background: #1e293b;
-            color: #94a3b8;
-            border: 1px solid #334155;
-            padding: 9px 16px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
+        .btn-orange { background: linear-gradient(135deg,#ff6b35,#e85d2c); color: #fff; border: none; padding: 13px 20px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; }
+        .btn-slate { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
         .btn-slate:hover { background: #334155; color: #e2e8f0; }
-
-        .stat-box {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 12px;
-            padding: 18px 20px;
-            text-align: center;
-        }
-
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 24px; }
         table { width: 100%; border-collapse: collapse; }
-        thead th {
-            background: #0f172a;
-            color: #64748b;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #334155;
-        }
-        tbody tr { border-bottom: 1px solid #1e293b; transition: background 0.1s; }
+        thead th { background: #0f172a; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 16px; text-align: left; border-bottom: 1px solid #334155; }
+        tbody tr { border-bottom: 1px solid #1e293b; }
         tbody tr:hover { background: #1e293b; }
         tbody td { padding: 12px 16px; font-size: 13px; color: #cbd5e1; }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .badge-active    { background: #14532d; color: #4ade80; }
-        .badge-trialing  { background: #451a03; color: #fbbf24; }
-        .badge-locked    { background: #450a0a; color: #f87171; }
-        .badge-grace     { background: #431407; color: #fb923c; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .badge-active { background: #14532d; color: #4ade80; }
+        .badge-trialing { background: #451a03; color: #fbbf24; }
+        .badge-locked { background: #450a0a; color: #f87171; }
+        .badge-grace { background: #431407; color: #fb923c; }
         .badge-cancelled { background: #1e293b; color: #64748b; }
-
-        .action-btn {
-            padding: 5px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            transition: all 0.15s;
-        }
+        .action-btn { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; border: none; }
         .action-activate { background: #14532d; color: #4ade80; }
-        .action-activate:hover { background: #166534; }
-        .action-lock     { background: #450a0a; color: #f87171; }
-        .action-lock:hover { background: #7f1d1d; }
-        .action-grace    { background: #431407; color: #fb923c; }
-        .action-grace:hover { background: #7c2d12; }
-
-        #toast {
-            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-            background: #1e293b; color: #fff; padding: 12px 22px; border-radius: 12px;
-            font-size: 14px; font-weight: 600; z-index: 9999;
-            border: 1px solid #334155;
-            opacity: 0; transition: opacity 0.2s; pointer-events: none;
-        }
+        .action-lock { background: #450a0a; color: #f87171; }
+        .action-grace { background: #431407; color: #fb923c; }
+        #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 22px; border-radius: 12px; font-size: 14px; font-weight: 600; z-index: 9999; border: 1px solid #334155; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
         #toast.show { opacity: 1; }
     </style>
 </head>
 <body>
-
 <div id="toast"></div>
 
-<!-- ── LOGIN SCREEN ──────────────────────────────────────────────────────── -->
+<!-- LOGIN -->
 <div id="loginScreen" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;">
     <div style="max-width:420px;width:100%;">
-
         <div style="text-align:center;margin-bottom:32px;">
             <div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:12px;">
-                <div style="width:44px;height:44px;background:#ff6b35;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;">K</div>
+                <div style="width:44px;height:44px;background:linear-gradient(135deg,#ff6b35,#e85d2c);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;color:#fff;">K</div>
                 <span style="color:#fff;font-size:24px;font-weight:900;letter-spacing:-0.03em;">KDRSYSTEMS</span>
             </div>
-            <div style="display:inline-block;background:#ff6b3520;color:#ff6b35;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid #ff6b3540;">
-                🔑 ADMIN PORTAL
+            <div style="display:inline-block;background:rgba(255,107,53,0.15);color:#ff6b35;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:700;border:1px solid rgba(255,107,53,0.3);">
+                ADMIN PORTAL
             </div>
         </div>
-
         <div class="card">
             <h2 style="color:#fff;font-size:20px;font-weight:800;margin:0 0 6px;">Admin Login</h2>
-            <p style="color:#64748b;font-size:13px;margin:0 0 24px;">This portal is restricted to KDRSYSTEMS administrators only.</p>
-
+            <p style="color:#64748b;font-size:13px;margin:0 0 24px;">Restricted to KDRSYSTEMS administrators only.</p>
             <div style="margin-bottom:14px;">
-                <label style="display:block;color:#94a3b8;font-size:12px;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Admin Email</label>
+                <label style="display:block;color:#94a3b8;font-size:12px;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Email</label>
                 <input type="email" id="adminEmail" placeholder="your@email.com" autocomplete="username">
             </div>
             <div style="margin-bottom:20px;">
                 <label style="display:block;color:#94a3b8;font-size:12px;font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Password</label>
-                <input type="password" id="adminPassword" placeholder="Admin password" autocomplete="current-password" onkeydown="if(event.key==='Enter') adminLogin()">
+                <input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter') adminLogin()">
             </div>
             <p id="loginErr" style="color:#f87171;font-size:13px;margin:0 0 14px;display:none;"></p>
             <button class="btn-orange" onclick="adminLogin()">Log In to Admin Panel</button>
         </div>
-
         <p style="text-align:center;color:#334155;font-size:12px;margin-top:20px;">
-            Not an admin? <a href="index.html" style="color:#ff6b35;">Go to contractor app →</a>
+            Not an admin? <a href="index.html" style="color:#ff6b35;">Go to contractor app</a>
         </p>
     </div>
 </div>
 
-<!-- ── ADMIN DASHBOARD ────────────────────────────────────────────────────── -->
+<!-- DASHBOARD -->
 <div id="dashboard" style="display:none;min-height:100vh;">
-
-    <!-- Header -->
     <div style="background:#1e293b;border-bottom:1px solid #334155;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;">
         <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:36px;height:36px;background:#ff6b35;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px;">K</div>
+            <div style="width:36px;height:36px;background:linear-gradient(135deg,#ff6b35,#e85d2c);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px;">K</div>
             <div>
                 <div style="color:#fff;font-weight:800;font-size:15px;">KDRSYSTEMS Admin</div>
-                <div style="color:#475569;font-size:11px;" id="adminEmailLabel">—</div>
+                <div style="color:#475569;font-size:11px;" id="adminEmailLabel"></div>
             </div>
         </div>
         <div style="display:flex;gap:10px;">
-            <button class="btn-slate" onclick="loadData()">↻ Refresh</button>
+            <button class="btn-slate" onclick="loadData()">Refresh</button>
             <button class="btn-slate" onclick="adminLogout()">Log Out</button>
         </div>
     </div>
 
     <div style="max-width:1200px;margin:0 auto;padding:28px 20px;">
+        <!-- Webhook status banner -->
+        <div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:14px 20px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <span style="width:10px;height:10px;background:#22c55e;border-radius:50%;display:inline-block;animation:pulse 2s infinite;"></span>
+                <span style="color:#e2e8f0;font-size:13px;font-weight:600;">Auto-Activation: Active</span>
+                <span style="color:#64748b;font-size:12px;">— Stripe payments automatically activate accounts</span>
+            </div>
+            <button class="btn-slate" onclick="loadData()" style="font-size:12px;">Refresh List</button>
+        </div>
+        <style>@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }</style>
 
         <!-- Stats -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px;">
-            <div class="stat-box">
+            <div class="card" style="text-align:center;">
                 <div style="font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Total Users</div>
-                <div style="font-size:36px;font-weight:900;color:#e2e8f0;" id="sTotalUsers">—</div>
+                <div style="font-size:36px;font-weight:900;" id="sTotalUsers">—</div>
             </div>
-            <div class="stat-box" style="border-top:3px solid #4ade80;">
+            <div class="card" style="text-align:center;border-top:3px solid #4ade80;">
                 <div style="font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Active</div>
                 <div style="font-size:36px;font-weight:900;color:#4ade80;" id="sActive">—</div>
             </div>
-            <div class="stat-box" style="border-top:3px solid #fbbf24;">
+            <div class="card" style="text-align:center;border-top:3px solid #fbbf24;">
                 <div style="font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Trialing</div>
                 <div style="font-size:36px;font-weight:900;color:#fbbf24;" id="sTrial">—</div>
             </div>
-            <div class="stat-box" style="border-top:3px solid #fb923c;">
-                <div style="font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Grace Period</div>
+            <div class="card" style="text-align:center;border-top:3px solid #fb923c;">
+                <div style="font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Grace</div>
                 <div style="font-size:36px;font-weight:900;color:#fb923c;" id="sGrace">—</div>
             </div>
-            <div class="stat-box" style="border-top:3px solid #f87171;">
+            <div class="card" style="text-align:center;border-top:3px solid #f87171;">
                 <div style="font-size:11px;color:#475569;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Locked</div>
                 <div style="font-size:36px;font-weight:900;color:#f87171;" id="sLocked">—</div>
             </div>
-            <div class="stat-box" style="background:linear-gradient(135deg,#ff6b35,#e85d2c);border:none;">
-                <div style="font-size:11px;color:rgba(255,255,255,0.7);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">MRR</div>
+            <div style="background:linear-gradient(135deg,#ff6b35,#e85d2c);border-radius:14px;padding:18px 20px;text-align:center;">
+                <div style="font-size:11px;color:rgba(255,255,255,0.7);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Monthly Revenue</div>
                 <div style="font-size:36px;font-weight:900;color:#fff;" id="sMRR">—</div>
             </div>
         </div>
 
-        <!-- Search + table -->
+        <!-- Table -->
         <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;overflow:hidden;">
             <div style="padding:16px 20px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-                <h3 style="color:#e2e8f0;font-size:15px;font-weight:800;margin:0;">All Subscribers</h3>
-                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-                    <!-- Filter buttons -->
-                    <div style="display:flex;gap:4px;">
-                        <button class="action-btn" onclick="filterBy('')"     id="fAll"       style="background:#334155;color:#94a3b8;">All</button>
-                        <button class="action-btn action-activate"           onclick="filterBy('active')"    id="fActive">Active</button>
-                        <button class="action-btn action-grace"              onclick="filterBy('trialing')"  id="fTrial">Trial</button>
-                        <button class="action-btn action-lock"               onclick="filterBy('locked')"   id="fLocked">Locked</button>
-                    </div>
-                    <input type="text" id="searchBox" placeholder="Search email / name..." oninput="filterTable()" style="width:200px;padding:8px 12px;font-size:13px;">
+                <h3 style="color:#e2e8f0;font-size:15px;font-weight:800;">All Subscribers</h3>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                    <button class="action-btn" onclick="filterBy('')" id="fAll" style="background:#334155;color:#94a3b8;">All</button>
+                    <button class="action-btn action-activate" onclick="filterBy('active')" id="fActive">Active</button>
+                    <button class="action-btn action-grace" onclick="filterBy('trialing')" id="fTrial">Trial</button>
+                    <button class="action-btn action-lock" onclick="filterBy('locked')" id="fLocked">Locked</button>
+                    <input type="text" id="searchBox" placeholder="Search..." oninput="filterTable()" style="width:180px;padding:6px 10px;font-size:13px;">
                 </div>
             </div>
             <div style="overflow-x:auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Business Name</th>
+                            <th>Business</th>
                             <th>Email</th>
                             <th>Status</th>
                             <th>Joined</th>
-                            <th>Trial End / Active Since</th>
+                            <th>Trial / Active Since</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="subTable">
-                        <tr><td colspan="6" style="text-align:center;padding:48px;color:#475569;">Loading subscribers...</td></tr>
+                        <tr><td colspan="6" style="text-align:center;padding:48px;color:#475569;">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
-            <div style="padding:12px 20px;border-top:1px solid #334155;display:flex;justify-content:space-between;align-items:center;">
-                <span style="color:#475569;font-size:12px;" id="tableCount">— records</span>
-                <span style="color:#475569;font-size:11px;">💡 Activate = let them in · Grace = payment failed (3-day warning) · Lock = no access</span>
+            <div style="padding:12px 20px;border-top:1px solid #334155;">
+                <span style="color:#475569;font-size:12px;" id="tableCount"></span>
             </div>
         </div>
 
-        <!-- Firestore Rules reminder -->
+        <!-- App Settings: Default Pricing & Trial Length -->
+        <div style="margin-top:20px;background:#1e293b;border:1px solid #334155;border-radius:14px;padding:24px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                <div>
+                    <h3 style="color:#e2e8f0;font-size:16px;font-weight:800;margin:0;">App-Wide Settings</h3>
+                    <p style="color:#64748b;font-size:12px;margin:4px 0 0;">These defaults apply to all new signups. Existing users can be edited individually below.</p>
+                </div>
+                <button class="btn-slate" onclick="loadAppSettings()">Refresh</button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;">
+                <div>
+                    <label style="display:block;font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Subscription Price ($/mo)</label>
+                    <input type="number" id="settingPrice" placeholder="49" step="0.01" min="0" style="width:100%;">
+                </div>
+                <div>
+                    <label style="display:block;font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Trial Length (days)</label>
+                    <input type="number" id="settingTrialDays" placeholder="7" step="1" min="0" style="width:100%;">
+                </div>
+                <div>
+                    <label style="display:block;font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Grace Period (days)</label>
+                    <input type="number" id="settingGraceDays" placeholder="3" step="1" min="0" style="width:100%;">
+                </div>
+                <div>
+                    <label style="display:block;font-size:11px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Stripe Payment Link</label>
+                    <input type="text" id="settingStripeLink" placeholder="https://buy.stripe.com/..." style="width:100%;">
+                </div>
+            </div>
+            <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+                <button class="btn-orange" style="flex:1;max-width:240px;" onclick="saveAppSettings()">Save Settings</button>
+                <p id="settingsSavedNote" style="font-size:12px;color:#22c55e;margin:auto 0;display:none;">✓ Saved — applies to all new signups</p>
+            </div>
+        </div>
+
+        <!-- Bulk Actions Card -->
+        <div style="margin-top:20px;background:#1e293b;border:1px solid #334155;border-radius:14px;padding:24px;">
+            <h3 style="color:#e2e8f0;font-size:16px;font-weight:800;margin:0 0 6px;">Bulk Actions</h3>
+            <p style="color:#64748b;font-size:12px;margin:0 0 16px;">Run these on multiple users at once. Use carefully.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
+                <button class="btn-slate" onclick="extendAllTrials(7)">+ Extend All Trials by 7 Days</button>
+                <button class="btn-slate" onclick="extendAllTrials(14)">+ Extend All Trials by 14 Days</button>
+                <button class="btn-slate" onclick="extendAllTrials(30)">+ Extend All Trials by 30 Days</button>
+                <button class="btn-slate" onclick="convertAllTrialsToActive()" style="background:#14532d;color:#4ade80;border-color:#166534;">Convert All Trials to Active (free)</button>
+            </div>
+        </div>
+
+        <!-- Firestore rules reminder -->
         <div style="margin-top:20px;background:#1e293b;border:1px solid #334155;border-radius:12px;padding:18px 20px;">
-            <p style="color:#ff6b35;font-size:13px;font-weight:700;margin:0 0 8px;">📋 Required Firestore Rules</p>
-            <p style="color:#64748b;font-size:12px;margin:0 0 10px;">Add these to Firebase Console → Firestore → Rules so this admin panel can read all subscriptions:</p>
-            <pre style="background:#0f172a;color:#94a3b8;padding:14px;border-radius:8px;font-size:11px;overflow-x:auto;margin:0;">match /subscriptions/{userId} {
+            <p style="color:#ff6b35;font-size:13px;font-weight:700;margin:0 0 8px;">Required Firestore Rules</p>
+            <pre style="background:#0f172a;color:#94a3b8;padding:14px;border-radius:8px;font-size:11px;overflow-x:auto;">match /subscriptions/{userId} {
   allow read, write: if request.auth != null;
 }</pre>
         </div>
     </div>
 </div>
 
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-
 <script>
-    // ── YOUR CONFIG ───────────────────────────────────────────────
-    const firebaseConfig = {
+    var ADMIN_EMAILS = ['kdrfencing@gmail.com'];
+    var SUBSCRIPTION_PRICE = 49;
+    var GRACE_DAYS = 3;
+
+    firebase.initializeApp({
         apiKey: "AIzaSyDs8Hl8_NBzBEvJ-oou6Gi7nrq8ALy8dmY",
         authDomain: "kdrsystems-c269c.firebaseapp.com",
         projectId: "kdrsystems-c269c",
         storageBucket: "kdrsystems-c269c.firebasestorage.app",
         messagingSenderId: "436571279407",
         appId: "1:436571279407:web:eeb521438b8ff87cd6b6da"
-    };
+    });
 
-    // ── ADMIN EMAILS — only these can log into this panel ─────────
-    var ADMIN_EMAILS = [
-        'kdrsystemsllc@gmail.com'   // ← your email
-        // add more: 'other@email.com'
-    ];
-
-    var SUBSCRIPTION_PRICE = 49;
-    var GRACE_DAYS = 3;
-
-    firebase.initializeApp(firebaseConfig);
     var auth = firebase.auth();
     var db   = firebase.firestore();
+    var _allSubs = [];
+    var _filter  = '';
+    var _search  = '';
 
-    var _allSubs  = [];
-    var _filter   = '';
-    var _search   = '';
-
-    // ── Auth ──────────────────────────────────────────────────────
     auth.onAuthStateChanged(function(user) {
-        if (user && ADMIN_EMAILS.map(function(e){ return e.toLowerCase(); }).indexOf(user.email.toLowerCase()) >= 0) {
+        if (user && ADMIN_EMAILS.indexOf(user.email.toLowerCase()) >= 0) {
             document.getElementById('loginScreen').style.display  = 'none';
             document.getElementById('dashboard').style.display    = 'block';
             document.getElementById('adminEmailLabel').textContent = user.email;
+            loadAppSettings();
             loadData();
         } else if (user) {
-            // Logged in but NOT an admin — kick them out
             auth.signOut();
-            showErr('Access denied. This portal is for admins only.');
+            showErr('Access denied. Admins only.');
         }
     });
 
     function adminLogin() {
-        var email    = document.getElementById('adminEmail').value.trim();
-        var password = document.getElementById('adminPassword').value;
-        var errEl    = document.getElementById('loginErr');
-        errEl.style.display = 'none';
-
-        if (!email || !password) { showErr('Enter your email and password.'); return; }
-
-        if (ADMIN_EMAILS.map(function(e){ return e.toLowerCase(); }).indexOf(email.toLowerCase()) < 0) {
-            showErr('This email is not authorized for admin access.');
-            return;
-        }
-
+        var email = document.getElementById('adminEmail').value.trim();
+        var pass  = document.getElementById('adminPassword').value;
+        if (!email || !pass) { showErr('Enter your email and password.'); return; }
+        if (ADMIN_EMAILS.indexOf(email.toLowerCase()) < 0) { showErr('This email is not authorized.'); return; }
         var btn = document.querySelector('.btn-orange');
-        btn.textContent = 'Logging in...';
-        btn.disabled = true;
-
-        auth.signInWithEmailAndPassword(email, password)
+        btn.textContent = 'Logging in...'; btn.disabled = true;
+        auth.signInWithEmailAndPassword(email, pass)
             .catch(function(err) {
-                var msg = err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential'
-                    ? 'Invalid email or password.'
-                    : err.message;
-                showErr(msg);
+                showErr(err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' ? 'Invalid email or password.' : err.message);
             })
             .finally(function() { btn.textContent = 'Log In to Admin Panel'; btn.disabled = false; });
     }
@@ -344,7 +275,6 @@
         if (el) { el.textContent = msg; el.style.display = 'block'; }
     }
 
-    // ── Data ──────────────────────────────────────────────────────
     function loadData() {
         document.getElementById('subTable').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:48px;color:#475569;">Loading...</td></tr>';
         db.collection('subscriptions').orderBy('createdAt','desc').get()
@@ -353,32 +283,30 @@
                 snap.forEach(function(doc) { _allSubs.push(Object.assign({ _id: doc.id }, doc.data())); });
                 updateStats();
                 renderTable();
-                toast('Loaded ' + _allSubs.length + ' subscribers ✓');
+                toast('Loaded ' + _allSubs.length + ' subscribers');
             })
             .catch(function(err) { toast('Error: ' + err.message); });
     }
 
     function updateStats() {
-        var active  = _allSubs.filter(function(s){ return s.status === 'active';    }).length;
-        var trial   = _allSubs.filter(function(s){ return s.status === 'trialing';  }).length;
-        var grace   = _allSubs.filter(function(s){ return s.status === 'grace';     }).length;
+        var active  = _allSubs.filter(function(s){ return s.status === 'active'; }).length;
+        var trial   = _allSubs.filter(function(s){ return s.status === 'trialing'; }).length;
+        var grace   = _allSubs.filter(function(s){ return s.status === 'grace'; }).length;
         var locked  = _allSubs.filter(function(s){ return s.status === 'locked' || s.status === 'cancelled'; }).length;
-        var mrr     = active * SUBSCRIPTION_PRICE;
-
         set('sTotalUsers', _allSubs.length);
-        set('sActive',     active);
-        set('sTrial',      trial);
-        set('sGrace',      grace);
-        set('sLocked',     locked);
-        set('sMRR',        '$' + mrr.toLocaleString() + '/mo');
+        set('sActive', active);
+        set('sTrial', trial);
+        set('sGrace', grace);
+        set('sLocked', locked);
+        set('sMRR', '$' + (active * SUBSCRIPTION_PRICE).toLocaleString() + '/mo');
     }
 
     function filtered() {
         return _allSubs.filter(function(s) {
-            var matchStatus = !_filter || s.status === _filter;
-            var q = _search.toLowerCase();
-            var matchSearch = !q || (s.email||'').toLowerCase().includes(q) || (s.businessName||'').toLowerCase().includes(q);
-            return matchStatus && matchSearch;
+            var ms = !_filter || s.status === _filter;
+            var q  = _search.toLowerCase();
+            var mq = !q || (s.email||'').toLowerCase().includes(q) || (s.businessName||'').toLowerCase().includes(q);
+            return ms && mq;
         });
     }
 
@@ -386,102 +314,168 @@
         var data = filtered();
         set('tableCount', data.length + ' record' + (data.length !== 1 ? 's' : ''));
         if (!data.length) {
-            document.getElementById('subTable').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:48px;color:#475569;">No subscribers match this filter.</td></tr>';
+            document.getElementById('subTable').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:48px;color:#475569;">No subscribers match.</td></tr>';
             return;
         }
         document.getElementById('subTable').innerHTML = data.map(function(s) {
-            var badge = '<span class="badge badge-' + (s.status||'locked') + '">' + (s.status||'unknown') + '</span>';
-            var joined   = s.createdAt   ? new Date(s.createdAt).toLocaleDateString()   : '—';
-            var dateInfo = s.status === 'trialing' && s.trialEnd
-                ? 'Trial ends: ' + new Date(s.trialEnd).toLocaleDateString()
-                : s.status === 'active' && s.activatedAt
-                ? 'Since: ' + new Date(s.activatedAt).toLocaleDateString()
-                : s.status === 'grace' && s.graceStart
-                ? 'Grace until: ' + new Date(new Date(s.graceStart).getTime() + GRACE_DAYS*86400000).toLocaleDateString()
-                : '—';
-
-            var actions = '';
-            if (s.status !== 'active') {
-                actions += '<button class="action-btn action-activate" onclick="activate(\'' + s._id + '\')" style="margin-right:4px;">Activate</button>';
+            var badge    = '<span class="badge badge-' + (s.status||'locked') + '">' + (s.status||'unknown') + '</span>';
+            // Show "AUTO" tag if activated by webhook
+            if (s.status === 'active' && s.activatedAt) {
+                var activatedTime = new Date(s.activatedAt).getTime();
+                var createdTime   = s.createdAt ? new Date(s.createdAt).getTime() : 0;
+                // If activated within 5 min of last update from any field, likely automated
+                if (activatedTime > createdTime + 60000) {
+                    badge += ' <span style="font-size:9px;background:#0c4a6e;color:#7dd3fc;padding:2px 6px;border-radius:10px;margin-left:4px;font-weight:700;">AUTO</span>';
+                }
             }
-            if (s.status === 'active' || s.status === 'trialing') {
-                actions += '<button class="action-btn action-grace" onclick="setGrace(\'' + s._id + '\')" style="margin-right:4px;">Grace</button>';
-            }
-            if (s.status !== 'locked' && s.status !== 'cancelled') {
-                actions += '<button class="action-btn action-lock" onclick="lockUser(\'' + s._id + '\')">Lock</button>';
-            }
-            if (s.status === 'locked' || s.status === 'cancelled') {
-                actions += '<button class="action-btn action-activate" onclick="activate(\'' + s._id + '\')">Unlock</button>';
-            }
-
-            return '<tr>' +
-                '<td style="font-weight:600;color:#e2e8f0;">' + (s.businessName || '—') + '</td>' +
-                '<td>' + (s.email || '—') + '</td>' +
-                '<td>' + badge + '</td>' +
-                '<td>' + joined + '</td>' +
-                '<td style="font-size:12px;color:#475569;">' + dateInfo + '</td>' +
-                '<td>' + actions + '</td>' +
-            '</tr>';
+            var joined   = s.createdAt ? new Date(s.createdAt).toLocaleDateString() : '—';
+            var dateInfo = s.status === 'trialing' && s.trialEnd ? 'Ends: ' + new Date(s.trialEnd).toLocaleDateString()
+                         : s.status === 'active' && s.activatedAt ? 'Since: ' + new Date(s.activatedAt).toLocaleDateString()
+                         : s.status === 'grace' && s.graceStart ? 'Until: ' + new Date(new Date(s.graceStart).getTime() + GRACE_DAYS*86400000).toLocaleDateString()
+                         : '—';
+            var isLocked = s.status === 'locked' || s.status === 'cancelled';
+            var actions  = '';
+            if (s.status !== 'active') actions += '<button class="action-btn action-activate" onclick="activate(\'' + s._id + '\')" style="margin-right:4px;">Activate</button>';
+            if (s.status === 'active' || s.status === 'trialing') actions += '<button class="action-btn action-grace" onclick="setGrace(\'' + s._id + '\')" style="margin-right:4px;">Grace</button>';
+            if (!isLocked) actions += '<button class="action-btn action-lock" onclick="lockUser(\'' + s._id + '\')" style="margin-right:4px;">Lock</button>';
+            if (isLocked)  actions += '<button class="action-btn action-activate" onclick="activate(\'' + s._id + '\')" style="margin-right:4px;">Unlock</button>';
+            actions += '<button class="action-btn" style="background:#1e3a8a;color:#93c5fd;" onclick="editUser(\'' + s._id + '\')">Edit</button>';
+            return '<tr><td style="font-weight:600;color:#e2e8f0;">' + (s.businessName||'—') + '</td><td>' + (s.email||'—') + '</td><td>' + badge + '</td><td>' + joined + '</td><td style="font-size:12px;color:#475569;">' + dateInfo + '</td><td>' + actions + '</td></tr>';
         }).join('');
     }
 
     function filterBy(status) {
         _filter = status;
         document.querySelectorAll('[id^="f"]').forEach(function(b){ b.style.opacity = '0.5'; });
-        var activeBtn = { '': 'fAll', active: 'fActive', trialing: 'fTrial', locked: 'fLocked' }[status];
-        var el = document.getElementById(activeBtn);
+        var map = { '': 'fAll', active: 'fActive', trialing: 'fTrial', locked: 'fLocked' };
+        var el = document.getElementById(map[status]);
         if (el) el.style.opacity = '1';
         renderTable();
     }
 
-    function filterTable() {
-        _search = document.getElementById('searchBox').value;
-        renderTable();
-    }
+    function filterTable() { _search = document.getElementById('searchBox').value; renderTable(); }
 
-    // ── Actions ───────────────────────────────────────────────────
     function activate(uid) {
-        db.collection('subscriptions').doc(uid).update({
-            status: 'active',
-            activatedAt: new Date().toISOString(),
-            graceStart: null
-        }).then(function() {
-            toast('Account activated ✓');
-            loadData();
-        }).catch(function(e) { toast('Error: ' + e.message); });
+        db.collection('subscriptions').doc(uid).update({ status: 'active', activatedAt: new Date().toISOString(), graceStart: null })
+            .then(function() { toast('Activated'); loadData(); }).catch(function(e) { toast('Error: ' + e.message); });
     }
 
     function setGrace(uid) {
-        db.collection('subscriptions').doc(uid).update({
-            status: 'grace',
-            graceStart: new Date().toISOString()
-        }).then(function() {
-            toast('Account set to grace period — locks in ' + GRACE_DAYS + ' days');
-            loadData();
-        }).catch(function(e) { toast('Error: ' + e.message); });
+        db.collection('subscriptions').doc(uid).update({ status: 'grace', graceStart: new Date().toISOString() })
+            .then(function() { toast('Grace period started — locks in ' + GRACE_DAYS + ' days'); loadData(); }).catch(function(e) { toast('Error: ' + e.message); });
     }
 
     function lockUser(uid) {
-        if (!confirm('Lock this account? The contractor will see the paywall on next login.')) return;
-        db.collection('subscriptions').doc(uid).update({
-            status: 'locked',
-            lockedAt: new Date().toISOString()
-        }).then(function() {
-            toast('Account locked');
-            loadData();
-        }).catch(function(e) { toast('Error: ' + e.message); });
+        if (!confirm('Lock this account?')) return;
+        db.collection('subscriptions').doc(uid).update({ status: 'locked', lockedAt: new Date().toISOString() })
+            .then(function() { toast('Locked'); loadData(); }).catch(function(e) { toast('Error: ' + e.message); });
     }
 
-    // ── Helpers ───────────────────────────────────────────────────
+    // ── PER-USER EDIT ────────────────────────────────────────────────────
+    function editUser(uid) {
+        var sub = _allSubs.find(function(s){ return s._id === uid; });
+        if (!sub) return;
+
+        var newPrice = prompt('Custom monthly price for this user (leave blank for default $' + SUBSCRIPTION_PRICE + '):', sub.customPrice || '');
+        if (newPrice === null) return; // cancelled
+
+        var newTrialEnd = prompt('Trial end date (YYYY-MM-DD), leave blank for current:\nCurrent: ' + (sub.trialEnd ? new Date(sub.trialEnd).toLocaleDateString() : 'none'),
+            sub.trialEnd ? new Date(sub.trialEnd).toISOString().slice(0,10) : '');
+        if (newTrialEnd === null) return;
+
+        var newNote = prompt('Internal note about this user (visible only to admin):', sub.adminNote || '');
+        if (newNote === null) return;
+
+        var updates = { adminNote: newNote };
+        if (newPrice !== '' && !isNaN(parseFloat(newPrice))) {
+            updates.customPrice = parseFloat(newPrice);
+        } else if (newPrice === '') {
+            updates.customPrice = null;
+        }
+        if (newTrialEnd) {
+            updates.trialEnd = new Date(newTrialEnd + 'T23:59:59').toISOString();
+        }
+
+        db.collection('subscriptions').doc(uid).update(updates)
+            .then(function(){ toast('User updated ✓'); loadData(); })
+            .catch(function(e){ toast('Error: ' + e.message); });
+    }
+
+    // ── APP-WIDE SETTINGS ────────────────────────────────────────────────
+    function loadAppSettings() {
+        db.collection('app_settings').doc('global').get().then(function(doc) {
+            var d = doc.exists ? doc.data() : {};
+            document.getElementById('settingPrice').value      = d.subscriptionPrice != null ? d.subscriptionPrice : 49;
+            document.getElementById('settingTrialDays').value  = d.trialDays         != null ? d.trialDays         : 7;
+            document.getElementById('settingGraceDays').value  = d.graceDays         != null ? d.graceDays         : 3;
+            document.getElementById('settingStripeLink').value = d.stripeLink        || '';
+            if (d.subscriptionPrice) SUBSCRIPTION_PRICE = d.subscriptionPrice;
+            if (d.graceDays)         GRACE_DAYS         = d.graceDays;
+        }).catch(function(){});
+    }
+
+    function saveAppSettings() {
+        var data = {
+            subscriptionPrice: parseFloat(document.getElementById('settingPrice').value)     || 49,
+            trialDays:         parseInt(document.getElementById('settingTrialDays').value)   || 7,
+            graceDays:         parseInt(document.getElementById('settingGraceDays').value)   || 3,
+            stripeLink:        document.getElementById('settingStripeLink').value.trim()     || '',
+            updatedAt:         new Date().toISOString()
+        };
+        db.collection('app_settings').doc('global').set(data)
+            .then(function() {
+                SUBSCRIPTION_PRICE = data.subscriptionPrice;
+                GRACE_DAYS = data.graceDays;
+                var note = document.getElementById('settingsSavedNote');
+                if (note) { note.style.display = ''; setTimeout(function(){ note.style.display = 'none'; }, 4000); }
+                toast('Settings saved ✓');
+                updateStats();
+            })
+            .catch(function(e){ toast('Error: ' + e.message); });
+    }
+
+    // ── BULK ACTIONS ─────────────────────────────────────────────────────
+    function extendAllTrials(days) {
+        var trials = _allSubs.filter(function(s){ return s.status === 'trialing'; });
+        if (!trials.length) { toast('No trialing users to extend'); return; }
+        if (!confirm('Extend ' + trials.length + ' trial accounts by ' + days + ' days?')) return;
+
+        var batch = db.batch();
+        trials.forEach(function(sub) {
+            var current = sub.trialEnd ? new Date(sub.trialEnd) : new Date();
+            var extended = new Date(current.getTime() + days * 86400000);
+            batch.update(db.collection('subscriptions').doc(sub._id), { trialEnd: extended.toISOString() });
+        });
+        batch.commit().then(function(){ toast('Extended ' + trials.length + ' trials by ' + days + ' days ✓'); loadData(); })
+            .catch(function(e){ toast('Error: ' + e.message); });
+    }
+
+    function convertAllTrialsToActive() {
+        var trials = _allSubs.filter(function(s){ return s.status === 'trialing'; });
+        if (!trials.length) { toast('No trialing users to convert'); return; }
+        if (!confirm('Convert ' + trials.length + ' trial accounts to ACTIVE (free)?\n\nThey will have full access without paying. This is for early access / promo accounts.')) return;
+
+        var batch = db.batch();
+        trials.forEach(function(sub) {
+            batch.update(db.collection('subscriptions').doc(sub._id), {
+                status: 'active',
+                activatedAt: new Date().toISOString(),
+                customPrice: 0,
+                adminNote: 'Converted free by admin'
+            });
+        });
+        batch.commit().then(function(){ toast('Converted ' + trials.length + ' to active ✓'); loadData(); })
+            .catch(function(e){ toast('Error: ' + e.message); });
+    }
+
     function set(id, val) { var e = document.getElementById(id); if (e) e.textContent = val; }
 
-    var _toastTimer = null;
+    var _tt = null;
     function toast(msg) {
         var el = document.getElementById('toast');
-        el.textContent = msg;
-        el.classList.add('show');
-        clearTimeout(_toastTimer);
-        _toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 3000);
+        el.textContent = msg; el.classList.add('show');
+        clearTimeout(_tt);
+        _tt = setTimeout(function(){ el.classList.remove('show'); }, 3000);
     }
 </script>
 </body>
