@@ -579,6 +579,12 @@
             border-width: 2px;
         }
         
+        .calendar-event-job       { background: #ff6b35 !important; color: #fff !important; }
+        .calendar-event-estimate  { background: #3b82f6 !important; color: #fff !important; }
+        .calendar-event-meeting   { background: #8b5cf6 !important; color: #fff !important; }
+        .calendar-event-follow-up { background: #f59e0b !important; color: #fff !important; }
+        .calendar-event-delivery  { background: #14b8a6 !important; color: #fff !important; }
+        .calendar-event-other     { background: #64748b !important; color: #fff !important; }
         .calendar-event {
             background: #ff6b35;
             color: white;
@@ -1705,7 +1711,15 @@
                     <div class="flex flex-wrap gap-3">
                         <button class="btn-secondary" onclick="previousMonth()">← Prev</button>
                         <button class="btn-secondary" onclick="nextMonth()">Next →</button>
-                        <button class="btn-primary" onclick="openModal('scheduleModal')">Schedule Job</button>
+                        <button class="btn-primary" onclick="openModal('scheduleModal')">+ Schedule</button>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:11px;font-weight:600;">
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#ff6b35;color:#fff;border-radius:14px;">🔨 Job</span>
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#3b82f6;color:#fff;border-radius:14px;">📋 Estimate</span>
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#8b5cf6;color:#fff;border-radius:14px;">🤝 Meeting</span>
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#f59e0b;color:#fff;border-radius:14px;">📞 Follow-Up</span>
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#14b8a6;color:#fff;border-radius:14px;">🚚 Delivery</span>
+                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#64748b;color:#fff;border-radius:14px;">📌 Other</span>
                     </div>
                 </div>
                 
@@ -1898,12 +1912,12 @@
                         <div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #fed7c5;">
                             <p style="margin:0;font-size:11px;color:#9a3412;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Profit Margin</p>
                             <p style="margin:4px 0;font-size:18px;font-weight:900;color:#0f172a;">15-25%</p>
-                            <p style="margin:0;font-size:11px;color:#64748b;">Healthy net profit margin for fence/home service business</p>
+                            <p style="margin:0;font-size:11px;color:#64748b;">Healthy net profit margin for service businesses</p>
                         </div>
                         <div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #fed7c5;">
-                            <p style="margin:0;font-size:11px;color:#9a3412;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Hourly Rate (NJ)</p>
+                            <p style="margin:0;font-size:11px;color:#9a3412;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Typical Hourly Rate</p>
                             <p style="margin:4px 0;font-size:18px;font-weight:900;color:#0f172a;">$75-150</p>
-                            <p style="margin:0;font-size:11px;color:#64748b;">Typical NJ fence contractor rate. Varies by experience &amp; market.</p>
+                            <p style="margin:0;font-size:11px;color:#64748b;">Typical contractor rate. Varies by experience &amp; service type.</p>
                         </div>
                     </div>
                     <div style="margin-top:14px;padding:12px 14px;background:#fff;border-radius:8px;border:1px solid #fed7c5;">
@@ -2573,12 +2587,23 @@
             <div class="p-6">
                 <form id="scheduleForm" class="space-y-4">
                     <div>
+                        <label class="block mb-2">Type</label>
+                        <select id="schedType" required>
+                            <option value="job">🔨 Job / Service</option>
+                            <option value="estimate">📋 Estimate / Site Visit</option>
+                            <option value="meeting">🤝 Meeting / Consultation</option>
+                            <option value="follow-up">📞 Follow-Up</option>
+                            <option value="delivery">🚚 Delivery / Pickup</option>
+                            <option value="other">📌 Other</option>
+                        </select>
+                    </div>
+                    <div>
                         <label class="block mb-2">Customer</label>
                         <select id="schedCustomer" required></select>
                     </div>
                     <div>
-                        <label class="block mb-2">Job Title</label>
-                        <input type="text" id="schedTitle" placeholder="e.g., Kitchen Renovation" required>
+                        <label class="block mb-2">Title</label>
+                        <input type="text" id="schedTitle" placeholder="e.g., Kitchen renovation, Site visit, etc." required>
                     </div>
                     <div>
                         <label class="block mb-2">Date</label>
@@ -5374,8 +5399,11 @@
                 const jobsForDay = appData.scheduledJobs.filter(function(j) { return j.date === dateStr; });
                 jobsForDay.forEach(function(job) {
                     const eventDiv = document.createElement('div');
-                    eventDiv.className = 'calendar-event';
-                    eventDiv.textContent = job.time + ' - ' + job.title;
+                    eventDiv.className = 'calendar-event calendar-event-' + (job.type || 'job');
+                    var icons = { job:'🔨', estimate:'📋', meeting:'🤝', 'follow-up':'📞', delivery:'🚚', other:'📌' };
+                    var icon = icons[job.type] || '🔨';
+                    eventDiv.textContent = icon + ' ' + job.time + ' ' + job.title;
+                    eventDiv.title = (job.type||'job').toUpperCase() + ': ' + job.title + ' (' + job.customerName + ')';
                     eventDiv.onclick = function(e) {
                         e.stopPropagation();
                         viewJob(job.id);
@@ -5425,6 +5453,7 @@
                 time: document.getElementById('schedTime').value,
                 duration: parseFloat(document.getElementById('schedDuration').value),
                 notes: document.getElementById('schedNotes').value,
+                type: (document.getElementById('schedType')||{}).value || 'job',
                 status: 'scheduled',
                 createdAt: new Date().toISOString()
             };
