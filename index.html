@@ -1285,8 +1285,50 @@
             <main class="main-content flex-1 ml-64 p-8">
             <!-- Dashboard -->
             <div id="dashboard" class="tab-content active">
-                <h2 class="text-3xl font-bold mb-8">Dashboard Overview</h2>
-                
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+                    <h2 class="text-3xl font-bold" style="margin:0;">Dashboard</h2>
+                    <!-- Time period switcher -->
+                    <div style="display:flex;background:#f1f5f9;border-radius:10px;padding:3px;gap:2px;">
+                        <button class="dash-period-btn" data-period="today" onclick="setDashPeriod('today')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">Today</button>
+                        <button class="dash-period-btn" data-period="week" onclick="setDashPeriod('week')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">Week</button>
+                        <button class="dash-period-btn active" data-period="month" onclick="setDashPeriod('month')" style="padding:8px 14px;border:none;background:#fff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.06);">This Month</button>
+                        <button class="dash-period-btn" data-period="year" onclick="setDashPeriod('year')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">Year</button>
+                        <button class="dash-period-btn" data-period="all" onclick="setDashPeriod('all')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">All Time</button>
+                    </div>
+                </div>
+
+                <!-- Monthly Goal Tracker -->
+                <div id="goalTrackerCard" style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-radius:16px;padding:24px 28px;margin-bottom:24px;color:#fff;position:relative;overflow:hidden;">
+                    <div style="position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(255,107,53,0.15) 0%,transparent 70%);pointer-events:none;"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;position:relative;">
+                        <div style="flex:1;min-width:200px;">
+                            <p style="margin:0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;" id="goalLabel">MONTHLY REVENUE GOAL</p>
+                            <h3 id="goalTitle" style="margin:6px 0 0;font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.02em;">$0 / $0</h3>
+                            <p id="goalSubtext" style="margin:8px 0 0;font-size:13px;color:#cbd5e1;">Set your monthly goal in Settings</p>
+                        </div>
+                        <div style="text-align:right;min-width:200px;">
+                            <p style="margin:0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#94a3b8;">PROGRESS</p>
+                            <p id="goalPercent" style="margin:6px 0 0;font-size:48px;font-weight:900;color:#ff6b35;line-height:1;">0%</p>
+                            <p id="goalDaysLeft" style="margin:6px 0 0;font-size:12px;color:#cbd5e1;">— days left</p>
+                        </div>
+                    </div>
+                    <!-- Progress bar -->
+                    <div style="margin-top:20px;background:rgba(255,255,255,0.08);border-radius:8px;height:12px;overflow:hidden;position:relative;">
+                        <div id="goalProgressFill" style="background:linear-gradient(90deg,#ff6b35,#f59e0b);height:100%;width:0%;border-radius:8px;transition:width 0.5s ease;"></div>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:8px;">
+                        <div>
+                            <p style="margin:0;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Daily Pace Needed</p>
+                            <p id="goalDailyPace" style="margin:4px 0 0;font-size:18px;font-weight:800;color:#fff;">$0/day</p>
+                        </div>
+                        <div>
+                            <p style="margin:0;font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;font-weight:700;">Profit Goal</p>
+                            <p id="goalProfit" style="margin:4px 0 0;font-size:18px;font-weight:800;color:#22c55e;">— / —</p>
+                        </div>
+                        <button onclick="openGoalSettings()" style="padding:10px 20px;background:rgba(255,107,53,0.15);color:#ff6b35;border:1px solid rgba(255,107,53,0.3);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">Edit Goals</button>
+                    </div>
+                </div>
+
                 <!-- Top stat cards -->
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8" style="margin-bottom:24px;">
                     <div class="stat-card">
@@ -1311,8 +1353,84 @@
                         <p class="text-4xl font-bold text-red-600" id="dashUnpaid">$0</p>
                     </div>
                     <div class="stat-card">
-                        <p class="text-sm text-gray-700 mb-2">Total Revenue</p>
+                        <p class="text-sm text-gray-700 mb-2" id="revenueLabel">Revenue (This Month)</p>
                         <p class="text-4xl font-bold text-green-600" id="dashRevenue">$0</p>
+                    </div>
+                </div>
+
+                <!-- Revenue trend chart -->
+                <div style="background:#fff;border:1px solid #e8e8ec;border-radius:14px;padding:20px 24px;margin-bottom:24px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                        <h3 class="font-bold text-lg" style="margin:0;">Revenue Trend (Last 12 Months)</h3>
+                        <span id="trendTotal" style="font-size:14px;color:#64748b;font-weight:600;">$0 total</span>
+                    </div>
+                    <div id="revenueTrendChart" style="height:160px;display:flex;align-items:flex-end;gap:6px;padding:0 4px;"></div>
+                    <div id="revenueTrendLabels" style="display:flex;gap:6px;padding:0 4px;margin-top:8px;"></div>
+                </div>
+
+                <!-- Business Intelligence Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 mb-6" style="margin-bottom:24px;">
+                    <!-- Win Rate -->
+                    <div class="card" style="background:linear-gradient(135deg,#fef3c7,#fff);border-left:4px solid #f59e0b;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#92400e;margin:0;">WIN RATE</p>
+                            <span style="font-size:18px;">🎯</span>
+                        </div>
+                        <p id="biWinRate" style="font-size:28px;font-weight:900;margin:4px 0;color:#92400e;">—</p>
+                        <p id="biWinRateDetail" style="font-size:11px;color:#78350f;margin:0;">— signed of —</p>
+                    </div>
+                    <!-- Avg Job Size -->
+                    <div class="card" style="background:linear-gradient(135deg,#dbeafe,#fff);border-left:4px solid #3b82f6;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#1e40af;margin:0;">AVG JOB SIZE</p>
+                            <span style="font-size:18px;">💼</span>
+                        </div>
+                        <p id="biAvgJob" style="font-size:28px;font-weight:900;margin:4px 0;color:#1e40af;">$0</p>
+                        <p id="biAvgJobDetail" style="font-size:11px;color:#1e3a8a;margin:0;">based on signed estimates</p>
+                    </div>
+                    <!-- Days to Close -->
+                    <div class="card" style="background:linear-gradient(135deg,#dcfce7,#fff);border-left:4px solid #22c55e;">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+                            <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#166534;margin:0;">AVG DAYS TO CLOSE</p>
+                            <span style="font-size:18px;">⚡</span>
+                        </div>
+                        <p id="biDaysToClose" style="font-size:28px;font-weight:900;margin:4px 0;color:#166534;">—</p>
+                        <p id="biDaysToCloseDetail" style="font-size:11px;color:#14532d;margin:0;">sent → signed</p>
+                    </div>
+                </div>
+
+                <!-- Top Customers + Lead Sources side by side -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6" style="margin-bottom:24px;">
+                    <!-- Top Customers (LTV) -->
+                    <div style="background:#fff;border:1px solid #e8e8ec;border-radius:14px;padding:20px 24px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                            <h3 class="font-bold text-lg" style="margin:0;">⭐ Top Customers</h3>
+                            <span style="font-size:11px;color:#94a3b8;">By total spent</span>
+                        </div>
+                        <div id="topCustomersList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No paid invoices yet</p></div>
+                    </div>
+
+                    <!-- Lead Sources -->
+                    <div style="background:#fff;border:1px solid #e8e8ec;border-radius:14px;padding:20px 24px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                            <h3 class="font-bold text-lg" style="margin:0;">📊 Lead Sources</h3>
+                            <span style="font-size:11px;color:#94a3b8;">All time</span>
+                        </div>
+                        <div id="leadSourcesList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No leads yet</p></div>
+                    </div>
+                </div>
+
+                <!-- Overdue invoices alert -->
+                <div id="overdueAlertCard" style="display:none;background:linear-gradient(135deg,#fee2e2,#fff5f5);border:2px solid #ef4444;border-radius:14px;padding:18px 22px;margin-bottom:24px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+                        <div style="display:flex;align-items:center;gap:14px;">
+                            <span style="font-size:32px;">⚠️</span>
+                            <div>
+                                <h3 style="margin:0;font-size:15px;font-weight:800;color:#991b1b;">Overdue Invoices Alert</h3>
+                                <p id="overdueText" style="margin:4px 0 0;font-size:13px;color:#7f1d1d;">— invoices unpaid for 30+ days</p>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('estimates', document.querySelector('[onclick*=estimates]'))" style="padding:10px 20px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">Review Overdue</button>
                     </div>
                 </div>
 
@@ -2135,6 +2253,7 @@
                                     <p class="text-xs text-gray-500 mt-1">Shown on estimates under your business name</p>
                                 </div>
                                 <div>
+                                <div>
                                     <label class="block mb-2">Your Website URL</label>
                                     <input type="text" id="settingsWebsiteUrl" placeholder="https://yourwebsite.com">
                                     <p class="text-xs text-gray-500 mt-1">Paste your website URL — leads from your site will flow into your Leads board</p>
@@ -2212,6 +2331,17 @@
                         </div>
                         
                         <div class="pt-4 border-t border-gray-200">
+                            <h4 class="text-lg font-semibold mb-4 text-orange">Email Alerts</h4>
+                            <div class="flex items-center justify-between mb-4 p-3 rounded" style="background:#f8f9fb;border:1px solid #e2e8f0;">
+                                <div>
+                                    <p class="text-sm font-semibold">Get email alerts for important events</p>
+                                    <p class="text-xs text-gray-700 mt-1">When customers sign estimates/contracts or decline, you will get an email at the address in this Settings.</p>
+                                </div>
+                                <label class="toggle-switch" style="position:relative;display:inline-block;width:52px;height:30px;flex-shrink:0;">
+                                    <input type="checkbox" id="settingsEmailAlerts" checked style="opacity:0;width:0;height:0;">
+                                    <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#cbd5e1;border-radius:30px;transition:0.3s;"></span>
+                                </label>
+                            </div>
                             <h4 class="text-lg font-semibold mb-4 text-orange">Sharing Estimates &amp; Invoices</h4>
                             <p class="text-xs text-gray-700 mb-4">No setup needed. Click Send on any estimate or invoice — the app generates a link you share via text, WhatsApp, email, or any app. Your customer taps the link and sees a professional page where they can sign or pay.</p>
                             <div class="p-3 rounded" style="background:#f0fdf4;border:1px solid #bbf7d0;">
@@ -3503,6 +3633,16 @@
             loadData();
         }
 
+        function _normalizeSocial(value, baseUrl) {
+            if (!value) return '';
+            value = (value || '').trim();
+            if (value.indexOf('http') === 0) return value; // already full URL
+            return baseUrl + value.replace(/^@/, '').replace(/^\//, '');
+        }
+        function _socialPill(url, color, label) {
+            return '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-block;margin:4px 4px;padding:9px 18px;background:' + color + ';color:#ffffff;border-radius:30px;font-size:12px;font-weight:700;text-decoration:none;font-family:Arial,sans-serif;letter-spacing:0.5px;text-transform:uppercase;">' + label + '</a>';
+        }
+        
         // ── Subscription Status Check ─────────────────────────────────────────
         function checkSubscriptionStatus(user) {
             db.collection('subscriptions').doc(user.uid).get()
@@ -3888,7 +4028,7 @@
             var html = '' +
                 // Orange Header Bar with centered logo and BLACK text
                 '<div style="background:' + brandCol + ';border-radius:16px 16px 0 0;padding:30px;text-align:center;">' +
-                    (est.businessLogo ? '<img src="' + est.businessLogo + '" alt="" style="max-height:80px;max-width:240px;margin:0 auto 10px;display:block;border-radius:8px;">' : '') +
+                    (est.businessLogo ? '<img src="' + est.businessLogo + '" alt="" style="max-height:140px;max-width:280px;margin:0 auto 16px;display:block;">' : '') +
                     '<h1 style="color:#000000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + (est.businessName || 'KDRSYSTEMS') + '</h1>' +
                     (est.slogan ? '<p style="color:#000;margin:6px 0 0;font-size:12px;font-weight:600;letter-spacing:1px;">' + est.slogan + '</p>' : '') +
                     '<div style="margin-top:10px;">' +
@@ -4541,6 +4681,57 @@
         // Track which events have been notified to prevent duplicates
         var _notifiedEvents = {};
 
+        // Send email alert to contractor when customer takes action
+        function _sendContractorAlert(title, message, docType, pubDoc) {
+            // Check if contractor wants email alerts (default: yes)
+            if (appData.settings.emailAlertsOff === true) return;
+            var ownerEmail = appData.settings.email || currentUserEmail;
+            if (!ownerEmail) return;
+
+            var bizName = appData.settings.businessName || 'KDRSYSTEMS';
+            var bizColor = appData.settings.brandColor || '#ff6b35';
+            var customerName = (pubDoc && pubDoc.customerName) || 'Customer';
+            var docNum = pubDoc && pubDoc.id ? '#' + pubDoc.id.slice(-6).toUpperCase() : '';
+            var total = (pubDoc && pubDoc.total) || '0';
+
+            var emailHtml = '<!DOCTYPE html><html><body style="margin:0;padding:24px;background:#f3f4f6;font-family:Arial,sans-serif;">' +
+                '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;margin:0 auto;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.08);">' +
+                    '<tr><td style="background:' + bizColor + ';padding:24px;text-align:center;">' +
+                        '<h1 style="margin:0;font-size:22px;color:#000;font-weight:900;letter-spacing:1px;">' + title + '</h1>' +
+                    '</td></tr>' +
+                    '<tr><td style="padding:28px;">' +
+                        '<p style="margin:0 0 16px;font-size:15px;color:#222;line-height:1.6;">' + message + '</p>' +
+                        '<table cellpadding="14" cellspacing="0" border="0" width="100%" style="background:#f9fafb;border-radius:10px;border-left:4px solid ' + bizColor + ';margin:16px 0;">' +
+                            '<tr><td>' +
+                                '<p style="margin:0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-weight:700;">CUSTOMER</p>' +
+                                '<p style="margin:4px 0 8px;font-weight:700;color:#0f172a;font-size:16px;">' + customerName + '</p>' +
+                                (docNum ? '<p style="margin:0;font-size:13px;color:#475569;">Document: ' + docNum + '</p>' : '') +
+                                (total !== '0' ? '<p style="margin:2px 0 0;font-size:13px;color:#475569;">Amount: <strong>$' + total + '</strong></p>' : '') +
+                            '</td></tr>' +
+                        '</table>' +
+                        '<p style="margin:16px 0 0;font-size:13px;color:#64748b;">Open KDRSYSTEMS to see full details.</p>' +
+                        '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:20px;"><tr><td align="center">' +
+                            '<a href="https://kdrsystems.net" style="display:inline-block;background:' + bizColor + ';color:#000;padding:12px 28px;border-radius:8px;text-decoration:none;font-weight:800;font-size:14px;">OPEN KDRSYSTEMS</a>' +
+                        '</td></tr></table>' +
+                    '</td></tr>' +
+                    '<tr><td style="background:#f9fafb;padding:14px;text-align:center;font-size:11px;color:#94a3b8;">' +
+                        'Automated alert from KDRSYSTEMS &middot; Turn off in Settings' +
+                    '</td></tr>' +
+                '</table></body></html>';
+
+            // Send via Cloudflare Worker → Resend
+            fetch('https://kdr-send.kdrsystemsnet.workers.dev/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    to: ownerEmail,
+                    subject: '[' + bizName + '] ' + title + ' — ' + customerName,
+                    html: emailHtml,
+                    fromName: 'KDRSYSTEMS Alerts'
+                })
+            }).catch(function(err){ console.error('Alert email failed:', err); });
+        }
+
         function _handlePublicDocUpdate(pubDoc, docType) {
             if (!pubDoc || !pubDoc.id) return;
 
@@ -4556,7 +4747,7 @@
             // ── SIGNED EVENT ──
             if (pubDoc.signature && pubDoc.signedDate) {
                 notifId = 'signed-' + pubDoc.id;
-                if (!_notifiedEvents[notifId] && !appData.notifications.find(function(n){ return n.id === notifId; })) {
+                if (!_notifiedEvents[notifId] && !_dismissedNotifIds[notifId] && !appData.notifications.find(function(n){ return n.id === notifId; })) {
                     _notifiedEvents[notifId] = true;
                     appData.notifications.unshift({
                         id: notifId,
@@ -4568,6 +4759,13 @@
                         estimateId: docType === 'estimate' ? pubDoc.id : null,
                         contractId: docType === 'contract' ? pubDoc.id : null
                     });
+                    // Send email alert to contractor
+                    _sendContractorAlert(
+                        docType === 'estimate' ? 'Estimate Signed!' : 'Contract Signed!',
+                        customerName + ' signed ' + docType + ' ' + docNum + ' for $' + (pubDoc.total || '0') + '.',
+                        docType,
+                        pubDoc
+                    );
                     // Update local doc status
                     if (docType === 'estimate') localDoc.status = 'signed';
                     if (docType === 'contract') localDoc.status = 'signed';
@@ -4583,7 +4781,7 @@
             // ── DECLINED EVENT ──
             if (pubDoc.declined && pubDoc.declinedDate) {
                 notifId = 'declined-' + pubDoc.id;
-                if (!_notifiedEvents[notifId] && !appData.notifications.find(function(n){ return n.id === notifId; })) {
+                if (!_notifiedEvents[notifId] && !_dismissedNotifIds[notifId] && !appData.notifications.find(function(n){ return n.id === notifId; })) {
                     _notifiedEvents[notifId] = true;
                     appData.notifications.unshift({
                         id: notifId,
@@ -4595,6 +4793,12 @@
                         estimateId: docType === 'estimate' ? pubDoc.id : null,
                         contractId: docType === 'contract' ? pubDoc.id : null
                     });
+                    _sendContractorAlert(
+                        'Customer Declined',
+                        customerName + ' declined ' + docType + ' ' + docNum + (pubDoc.declineReason ? ' — Reason: ' + pubDoc.declineReason : ''),
+                        docType,
+                        pubDoc
+                    );
                     if (docType === 'estimate') localDoc.status = 'declined';
                     saveData();
                     _showInstantToast(customerName + ' declined ' + docType + ' ' + docNum);
@@ -4606,7 +4810,7 @@
             // ── VIEWED EVENT ──
             if (pubDoc.viewedDate && !pubDoc.signature) {
                 notifId = 'viewed-' + pubDoc.id + '-' + (pubDoc.viewCount || 1);
-                if (!_notifiedEvents[notifId] && !appData.notifications.find(function(n){ return n.id === notifId; })) {
+                if (!_notifiedEvents[notifId] && !_dismissedNotifIds[notifId] && !appData.notifications.find(function(n){ return n.id === notifId; })) {
                     _notifiedEvents[notifId] = true;
                     appData.notifications.unshift({
                         id: notifId,
@@ -4628,7 +4832,7 @@
 
         function _notifyNewLead(lead) {
             var notifId = 'lead-' + (lead.id || lead.createdAt);
-            if (_notifiedEvents[notifId] || appData.notifications.find(function(n){ return n.id === notifId; })) return;
+            if (_notifiedEvents[notifId] || _dismissedNotifIds[notifId] || appData.notifications.find(function(n){ return n.id === notifId; })) return;
             _notifiedEvents[notifId] = true;
 
             appData.notifications.unshift({
@@ -6651,6 +6855,9 @@
                 businessLogo: _safe(s.logo, ''),
                 slogan: _safe(s.slogan, ''),
                 license: _safe(s.license, ''),
+                logoSize: _safe(s.logoSize, 'medium'),
+                logoLayout: _safe(s.logoLayout, 'center'),
+                websiteUrl: _safe(s.websiteUrl, ''),
                 businessColor: _safe(bizColor, '#ff6b35'),
                 stripeLink: _safe(s.stripeLink, ''),
                 paymentInstructions: _safe(s.paymentInstructions, ''),
@@ -6723,58 +6930,101 @@
                 }
 
                 // Full HTML email
-                var emailHtml = '<!DOCTYPE html><html><body style="margin:0;padding:20px;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;">' +
-                    '<div style="max-width:620px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">' +
-                        // Top header — brand color + logo + business name + slogan
-                        '<div style="background:' + bizColor + ';padding:30px;text-align:center;">' +
-                            (s.logo
-                                ? '<img src="' + s.logo + '" alt="" style="max-height:80px;max-width:240px;margin:0 auto 10px;display:block;border-radius:8px;">'
-                                : ''
-                            ) +
-                            '<h1 style="color:#000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + bizName + '</h1>' +
-                            (s.slogan ? '<p style="color:#000;margin:6px 0 0;font-size:12px;font-weight:600;letter-spacing:1px;">' + s.slogan + '</p>' : '') +
-                            '<div style="margin-top:10px;">' +
-                                (s.phone ? '<span style="color:#000;font-size:13px;font-weight:600;">' + s.phone + '</span>' : '') +
-                                (s.phone && s.email ? '<span style="color:#000;font-size:13px;margin:0 8px;">|</span>' : '') +
-                                (s.email ? '<span style="color:#000;font-size:13px;font-weight:600;">' + s.email + '</span>' : '') +
-                            '</div>' +
-                            (s.license ? '<p style="color:#000;font-size:11px;margin:6px 0 0;font-weight:600;">License: ' + s.license + '</p>' : '') +
-                        '</div>' +
-                        '<div style="padding:28px 30px;">' +
-                            '<div style="display:flex;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px;">' +
-                                '<div><h2 style="font-size:24px;font-weight:900;text-transform:uppercase;color:#222;margin:0;">' + docType.toUpperCase() + '</h2><p style="color:#555;font-size:13px;margin:4px 0 0;">' + docNum + '</p></div>' +
-                                '<p style="color:#555;font-size:13px;margin:0;">Date: <strong>' + (doc.date||'') + '</strong></p>' +
-                            '</div>' +
-                            '<div style="margin-bottom:20px;padding:16px;background:#f9f9f9;border-radius:10px;border-left:4px solid ' + bizColor + ';">' +
-                                '<p style="color:#555;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;font-weight:700;">TO:</p>' +
-                                '<p style="font-weight:700;color:#222;font-size:16px;margin:0;">' + (doc.customerName||'') + '</p>' +
-                                (doc.customerEmail ? '<p style="color:#555;font-size:13px;margin:3px 0 0;">' + doc.customerEmail + '</p>' : '') +
-                                (doc.customerPhone ? '<p style="color:#555;font-size:13px;margin:2px 0 0;">' + doc.customerPhone + '</p>' : '') +
-                                (doc.customerAddress ? '<p style="color:#555;font-size:13px;margin:2px 0 0;">' + doc.customerAddress + '</p>' : '') +
-                            '</div>' +
-                            (doc.notes ? '<div style="margin-bottom:16px;padding:12px 16px;background:#fff8f0;border-left:4px solid ' + bizColor + ';border-radius:4px;"><p style="margin:0;font-size:13px;color:#222;">' + doc.notes + '</p></div>' : '') +
-                            '<table style="width:100%;border-collapse:collapse;margin:0 0 16px;">' +
-                                '<tr style="background:' + bizColor + ';">' +
-                                    '<th style="padding:12px 16px;text-align:left;font-size:12px;color:#000;font-weight:700;text-transform:uppercase;">Service</th>' +
-                                    '<th style="padding:12px 16px;text-align:right;font-size:12px;color:#000;font-weight:700;text-transform:uppercase;">Amount</th>' +
-                                '</tr>' + itemsHtml +
+                // ── PREMIUM EMAIL TEMPLATE — single fixed layout ──
+                
+                // Build line items rows
+                var itemsHtml = (doc.lineItems || []).map(function(item, idx) {
+                    var bg = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
+                    var desc = '<strong style="color:#0f172a;">' + (item.description||'') + '</strong>';
+                    if (item.detail) desc += '<br><span style="font-size:12px;color:#6b7280;font-weight:400;">' + item.detail + '</span>';
+                    return '<tr><td style="padding:16px 20px;border-bottom:1px solid #e5e7eb;font-size:14px;background:' + bg + ';font-family:Arial,sans-serif;">' + desc + '</td>' +
+                        '<td style="padding:16px 20px;text-align:right;border-bottom:1px solid #e5e7eb;font-weight:700;font-size:14px;color:#0f172a;background:' + bg + ';font-family:Arial,sans-serif;white-space:nowrap;">$' + (item.amount||'0') + '</td></tr>';
+                }).join('');
+
+                // Social pill buttons (accept any format)
+                var socialLinks = [];
+                if (s.instagram) socialLinks.push(_socialPill(_normalizeSocial(s.instagram,'https://instagram.com/'), '#E1306C', 'Instagram'));
+                if (s.facebook)  socialLinks.push(_socialPill(_normalizeSocial(s.facebook,'https://facebook.com/'),  '#1877F2', 'Facebook'));
+                if (s.tiktok)    socialLinks.push(_socialPill(_normalizeSocial(s.tiktok,'https://tiktok.com/@'),     '#000000', 'TikTok'));
+                if (s.google)    socialLinks.push(_socialPill(_normalizeSocial(s.google,'https://g.page/'),          '#4285F4', 'Google Review'));
+                if (s.websiteUrl)socialLinks.push(_socialPill(_normalizeSocial(s.websiteUrl,'https://'),              '#0f172a', 'Website'));
+
+                // Action button
+                var actionHtml = '';
+                if (doc.type === 'estimate') {
+                    actionHtml = '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:28px 0 8px;"><tr><td align="center"><a href="' + shareUrl + '" target="_blank" style="display:inline-block;background:' + bizColor + ';color:#000;padding:18px 44px;border-radius:10px;text-decoration:none;font-weight:800;font-size:16px;font-family:Arial,sans-serif;letter-spacing:0.5px;box-shadow:0 4px 14px rgba(0,0,0,0.08);">REVIEW &amp; SIGN ESTIMATE</a></td></tr></table>';
+                } else if (s.stripeLink) {
+                    actionHtml = '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:28px 0 8px;"><tr><td align="center"><a href="' + s.stripeLink + '" target="_blank" style="display:inline-block;background:#22c55e;color:#fff;padding:18px 44px;border-radius:10px;text-decoration:none;font-weight:800;font-size:16px;font-family:Arial,sans-serif;letter-spacing:0.5px;box-shadow:0 4px 14px rgba(34,197,94,0.3);">PAY $' + (doc.total||'0') + ' NOW</a></td></tr></table>';
+                }
+
+                var emailHtml = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + docType + ' ' + docNum + '</title></head>' +
+                    '<body style="margin:0;padding:24px 16px;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;">' +
+                    '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:680px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.08);">' +
+
+                        // ── HEADER: Big logo + business name + slogan + contact ──
+                        '<tr><td style="background:' + bizColor + ';padding:40px 30px;text-align:center;">' +
+                            (s.logo ? '<img src="' + s.logo + '" alt="" style="max-height:140px;max-width:280px;margin:0 auto 16px;display:block;">' : '') +
+                            '<h1 style="color:#000000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:3px;font-family:Arial,sans-serif;">' + bizName + '</h1>' +
+                            (s.slogan ? '<p style="color:#000000;margin:8px 0 0;font-size:13px;font-weight:600;letter-spacing:1px;font-family:Arial,sans-serif;font-style:italic;">' + s.slogan + '</p>' : '') +
+                            '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:16px;"><tr><td align="center">' +
+                                (s.phone ? '<span style="color:#000000;font-size:13px;font-weight:600;font-family:Arial,sans-serif;">' + s.phone + '</span>' : '') +
+                                (s.phone && s.email ? '<span style="color:#000000;font-size:13px;margin:0 10px;">|</span>' : '') +
+                                (s.email ? '<span style="color:#000000;font-size:13px;font-weight:600;font-family:Arial,sans-serif;">' + s.email + '</span>' : '') +
+                            '</td></tr></table>' +
+                            (s.license ? '<p style="color:#000000;font-size:11px;text-align:center;margin:8px 0 0;font-weight:700;letter-spacing:1px;font-family:Arial,sans-serif;">LICENSE #' + s.license + '</p>' : '') +
+                        '</td></tr>' +
+
+                        // ── DOC TITLE ──
+                        '<tr><td style="padding:32px 32px 20px;">' +
+                            '<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr>' +
+                                '<td><h2 style="font-size:32px;font-weight:900;text-transform:uppercase;color:#0f172a;margin:0;font-family:Arial,sans-serif;letter-spacing:1px;">' + docType.toUpperCase() + '</h2>' +
+                                '<p style="color:#64748b;font-size:13px;margin:4px 0 0;font-weight:600;font-family:Arial,sans-serif;">' + docNum + '</p></td>' +
+                                '<td align="right" style="vertical-align:top;"><p style="color:#64748b;font-size:12px;text-transform:uppercase;letter-spacing:1px;margin:0;font-weight:700;font-family:Arial,sans-serif;">DATE</p>' +
+                                '<p style="color:#0f172a;font-size:14px;margin:4px 0 0;font-weight:700;font-family:Arial,sans-serif;">' + (doc.date||'') + '</p></td>' +
+                            '</tr></table>' +
+
+                            // ── BILL TO ──
+                            '<table cellpadding="18" cellspacing="0" border="0" width="100%" style="margin:24px 0;background:#f9fafb;border-radius:10px;border-left:4px solid ' + bizColor + ';"><tr><td>' +
+                                '<p style="color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:1.5px;margin:0 0 6px;font-weight:700;font-family:Arial,sans-serif;">BILL TO</p>' +
+                                '<p style="font-weight:800;color:#0f172a;font-size:17px;margin:0;font-family:Arial,sans-serif;">' + (doc.customerName||'') + '</p>' +
+                                (doc.customerEmail ? '<p style="color:#475569;font-size:13px;margin:4px 0 0;font-family:Arial,sans-serif;">' + doc.customerEmail + '</p>' : '') +
+                                (doc.customerPhone ? '<p style="color:#475569;font-size:13px;margin:2px 0 0;font-family:Arial,sans-serif;">' + doc.customerPhone + '</p>' : '') +
+                                (doc.customerAddress ? '<p style="color:#475569;font-size:13px;margin:2px 0 0;font-family:Arial,sans-serif;">' + doc.customerAddress + '</p>' : '') +
+                            '</td></tr></table>' +
+
+                            (doc.notes ? '<table cellpadding="14" cellspacing="0" border="0" width="100%" style="margin-bottom:18px;background:#fffbeb;border-left:4px solid #f59e0b;border-radius:6px;"><tr><td><p style="margin:0;font-size:13px;color:#78350f;font-family:Arial,sans-serif;line-height:1.5;"><strong>Note:</strong> ' + doc.notes + '</p></td></tr></table>' : '') +
+
+                            // ── ITEMS ──
+                            '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 4px;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;">' +
+                                '<tr><th style="padding:14px 20px;text-align:left;font-size:12px;color:#000000;font-weight:800;text-transform:uppercase;letter-spacing:1px;background:' + bizColor + ';font-family:Arial,sans-serif;">SERVICE / DESCRIPTION</th>' +
+                                '<th style="padding:14px 20px;text-align:right;font-size:12px;color:#000000;font-weight:800;text-transform:uppercase;letter-spacing:1px;background:' + bizColor + ';font-family:Arial,sans-serif;width:130px;">AMOUNT</th></tr>' +
+                                itemsHtml +
                             '</table>' +
-                            '<div style="display:flex;justify-content:flex-end;">' +
-                                '<div style="width:260px;">' +
-                                    '<div style="display:flex;justify-content:space-between;padding:8px 14px;"><span style="color:#555;font-size:13px;font-weight:600;">SUBTOTAL</span><span style="color:#222;font-size:13px;">$' + (doc.total||'0') + '</span></div>' +
-                                    '<div style="display:flex;justify-content:space-between;padding:14px;background:' + bizColor + ';border-radius:8px;margin-top:6px;"><span style="color:#000;font-weight:800;font-size:16px;">TOTAL</span><span style="color:#000;font-weight:800;font-size:22px;">$' + (doc.total||'0') + '</span></div>' +
-                                '</div>' +
-                            '</div>' +
-                            (doc.terms ? '<div style="margin-top:16px;padding:14px;border:1px solid #eee;border-radius:8px;"><p style="font-size:12px;font-weight:700;color:#222;margin:0 0 6px;text-transform:uppercase;">Terms</p><p style="font-size:12px;color:#555;margin:0;white-space:pre-wrap;">' + doc.terms + '</p></div>' : '') +
+
+                            // ── TOTAL ──
+                            '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:16px;"><tr><td align="right">' +
+                                '<table cellpadding="18" cellspacing="0" border="0" style="width:300px;"><tr><td style="background:' + bizColor + ';border-radius:10px;">' +
+                                    '<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr>' +
+                                    '<td style="color:#000000;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:1.5px;font-family:Arial,sans-serif;">TOTAL DUE</td>' +
+                                    '<td align="right" style="color:#000000;font-weight:900;font-size:26px;font-family:Arial,sans-serif;letter-spacing:0.5px;">$' + (doc.total||'0') + '</td>' +
+                                    '</tr></table>' +
+                                '</td></tr></table>' +
+                            '</td></tr></table>' +
+
+                            (doc.terms ? '<table cellpadding="16" cellspacing="0" border="0" width="100%" style="margin-top:20px;border:1px solid #e5e7eb;border-radius:8px;background:#fafafa;"><tr><td><p style="font-size:11px;font-weight:800;color:#0f172a;margin:0 0 8px;text-transform:uppercase;letter-spacing:1px;font-family:Arial,sans-serif;">Terms &amp; Conditions</p><p style="font-size:12px;color:#475569;margin:0;white-space:pre-wrap;font-family:Arial,sans-serif;line-height:1.6;">' + doc.terms + '</p></td></tr></table>' : '') +
+
                             actionHtml +
-                        '</div>' +
-                        '<div style="background:' + bizColor + ';padding:20px 30px;text-align:center;">' +
-                            '<p style="margin:0;font-size:13px;color:#000;font-weight:700;text-transform:uppercase;">' + bizName + '</p>' +
-                            (s.phone ? '<p style="margin:4px 0 0;font-size:13px;color:#000;">' + s.phone + '</p>' : '') +
-                            (socialLinks.length ? '<div style="margin-top:10px;">' + socialLinks.join('') + '</div>' : '') +
-                        '</div>' +
-                    '</div>' +
-                '</body></html>';
+
+                        '</td></tr>' +
+
+                        // ── FOOTER ──
+                        '<tr><td style="background:' + bizColor + ';padding:24px 30px;text-align:center;">' +
+                            '<p style="margin:0;font-size:14px;color:#000000;font-weight:800;text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif;">' + bizName + '</p>' +
+                            (s.phone ? '<p style="margin:6px 0 0;font-size:13px;color:#000000;font-weight:600;font-family:Arial,sans-serif;">' + s.phone + '</p>' : '') +
+                            (socialLinks.length ? '<div style="margin-top:14px;">' + socialLinks.join('') + '</div>' : '') +
+                            '<p style="margin:14px 0 0;font-size:11px;color:rgba(0,0,0,0.6);font-family:Arial,sans-serif;">Thank you for your business</p>' +
+                        '</td></tr>' +
+                    '</table></body></html>';
 
                 // Show sending toast
                 toast('Sending...');
@@ -7604,6 +7854,8 @@
             if (wuEl) wuEl.value = appData.settings.websiteUrl || '';
             var slEl = document.getElementById('settingsSlogan');
             if (slEl) slEl.value = appData.settings.slogan || '';
+            var eaEl = document.getElementById('settingsEmailAlerts');
+            if (eaEl) eaEl.checked = !appData.settings.emailAlertsOff;
             var licEl = document.getElementById('settingsLicense');
             if (licEl) licEl.value = appData.settings.license || '';
             document.getElementById('invoiceReminderEnabled').value = String(appData.settings.invoiceReminderEnabled !== false);
@@ -7737,6 +7989,7 @@
                 tiktok: document.getElementById('settingsTiktok').value,
                 google: document.getElementById('settingsGoogle').value,
                 websiteUrl:    (document.getElementById('settingsWebsiteUrl')||{}).value || '',
+                emailAlertsOff: !((document.getElementById('settingsEmailAlerts')||{}).checked),
                 license:       (document.getElementById('settingsLicense')||{}).value || '',
                 slogan: (document.getElementById('settingsSlogan')||{}).value || '',
                 invoiceReminderEnabled: document.getElementById('invoiceReminderEnabled').value === 'true',
@@ -7756,39 +8009,339 @@
         }
 
         // Dashboard
+        // ── DASHBOARD PERIOD + GOALS ──────────────────────────────────────
+        var _dashPeriod = 'month';
+
+        function setDashPeriod(period) {
+            _dashPeriod = period;
+            document.querySelectorAll('.dash-period-btn').forEach(function(b) {
+                if (b.dataset.period === period) {
+                    b.style.background = '#fff';
+                    b.style.color = '#0f172a';
+                    b.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)';
+                } else {
+                    b.style.background = 'transparent';
+                    b.style.color = '#64748b';
+                    b.style.boxShadow = 'none';
+                }
+            });
+            updateDashboard();
+        }
+
+        function _periodFilter(date) {
+            if (!date) return false;
+            var d = new Date(date);
+            var now = new Date();
+            if (_dashPeriod === 'today') {
+                return d.toDateString() === now.toDateString();
+            } else if (_dashPeriod === 'week') {
+                var weekAgo = new Date(now.getTime() - 7 * 86400000);
+                return d >= weekAgo;
+            } else if (_dashPeriod === 'month') {
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            } else if (_dashPeriod === 'year') {
+                return d.getFullYear() === now.getFullYear();
+            }
+            return true; // all
+        }
+
+        function _periodLabel() {
+            return { today: 'Today', week: 'This Week', month: 'This Month', year: 'This Year', all: 'All Time' }[_dashPeriod];
+        }
+
+        function openGoalSettings() {
+            var current = appData.settings.monthlyGoals || { revenue: 0, profit: 0 };
+            var rev = prompt('Monthly REVENUE goal (in dollars):', current.revenue || 20000);
+            if (rev === null) return;
+            var prof = prompt('Monthly PROFIT goal (in dollars):', current.profit || 8000);
+            if (prof === null) return;
+            appData.settings.monthlyGoals = {
+                revenue: parseFloat(rev) || 0,
+                profit:  parseFloat(prof) || 0
+            };
+            saveData();
+            updateDashboard();
+            toast('Goals updated ✓');
+        }
+
+        function _renderGoalTracker() {
+            var goals = appData.settings.monthlyGoals || { revenue: 0, profit: 0 };
+            var now = new Date();
+            var monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            var monthEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            var totalDays  = monthEnd.getDate();
+            var dayOfMonth = now.getDate();
+            var daysLeft   = totalDays - dayOfMonth + 1;
+
+            // Month-to-date revenue from paid invoices
+            var mtdRevenue = 0;
+            var mtdProfit  = 0;
+            (appData.invoices || []).forEach(function(inv) {
+                if (inv.status === 'paid' && inv.paidDate) {
+                    var pd = new Date(inv.paidDate);
+                    if (pd >= monthStart && pd <= monthEnd) {
+                        mtdRevenue += parseFloat(inv.total) || 0;
+                        mtdProfit  += parseFloat(inv.profit) || (parseFloat(inv.total) * 0.3) || 0;
+                    }
+                }
+            });
+
+            var revPct = goals.revenue > 0 ? Math.min(100, (mtdRevenue / goals.revenue) * 100) : 0;
+            var dailyPace = daysLeft > 0 && goals.revenue > mtdRevenue ? (goals.revenue - mtdRevenue) / daysLeft : 0;
+
+            // Update DOM
+            document.getElementById('goalLabel').textContent = 'MONTHLY REVENUE GOAL';
+            document.getElementById('goalTitle').textContent = '$' + Math.round(mtdRevenue).toLocaleString() + ' / $' + Math.round(goals.revenue).toLocaleString();
+            document.getElementById('goalSubtext').textContent = goals.revenue > 0
+                ? (revPct >= 100 ? '🎉 Goal hit! Crushing it.' : '$' + Math.round(goals.revenue - mtdRevenue).toLocaleString() + ' to go this month')
+                : 'Click "Edit Goals" to set your monthly target';
+            document.getElementById('goalPercent').textContent = Math.round(revPct) + '%';
+            document.getElementById('goalDaysLeft').textContent = daysLeft + ' day' + (daysLeft===1?'':'s') + ' left in ' + now.toLocaleDateString('default', { month: 'long' });
+            document.getElementById('goalProgressFill').style.width = revPct + '%';
+            document.getElementById('goalDailyPace').textContent = goals.revenue > 0
+                ? '$' + Math.round(dailyPace).toLocaleString() + '/day'
+                : '—';
+            document.getElementById('goalProfit').textContent = goals.profit > 0
+                ? '$' + Math.round(mtdProfit).toLocaleString() + ' / $' + Math.round(goals.profit).toLocaleString()
+                : '— / —';
+        }
+
+        function _renderRevenueTrend() {
+            var months = [];
+            var now = new Date();
+            for (var i = 11; i >= 0; i--) {
+                var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                months.push({
+                    label: d.toLocaleDateString('default', { month: 'short' }),
+                    year:  d.getFullYear(),
+                    month: d.getMonth(),
+                    total: 0
+                });
+            }
+
+            (appData.invoices || []).forEach(function(inv) {
+                if (inv.status === 'paid' && inv.paidDate) {
+                    var pd = new Date(inv.paidDate);
+                    months.forEach(function(m) {
+                        if (pd.getFullYear() === m.year && pd.getMonth() === m.month) {
+                            m.total += parseFloat(inv.total) || 0;
+                        }
+                    });
+                }
+            });
+
+            var maxVal = Math.max.apply(null, months.map(function(m){ return m.total; }));
+            if (maxVal === 0) maxVal = 1;
+
+            var chart = document.getElementById('revenueTrendChart');
+            var labels = document.getElementById('revenueTrendLabels');
+            if (!chart || !labels) return;
+
+            chart.innerHTML  = '';
+            labels.innerHTML = '';
+            months.forEach(function(m, idx) {
+                var height = (m.total / maxVal) * 100;
+                var bar = document.createElement('div');
+                var isCurrent = idx === months.length - 1;
+                bar.style.cssText = 'flex:1;background:linear-gradient(180deg,' + (isCurrent ? '#ff6b35,#e85d2c' : '#f59e0b,#fbbf24') + ');border-radius:6px 6px 0 0;height:' + Math.max(2, height) + '%;position:relative;cursor:pointer;transition:opacity 0.2s;';
+                bar.title = m.label + ': $' + Math.round(m.total).toLocaleString();
+                bar.onmouseover = function(){ this.style.opacity = '0.8'; };
+                bar.onmouseout  = function(){ this.style.opacity = '1'; };
+                chart.appendChild(bar);
+
+                var lbl = document.createElement('div');
+                lbl.style.cssText = 'flex:1;text-align:center;font-size:10px;font-weight:600;color:' + (isCurrent ? '#ff6b35' : '#94a3b8') + ';';
+                lbl.textContent = m.label;
+                labels.appendChild(lbl);
+            });
+
+            var total = months.reduce(function(s, m){ return s + m.total; }, 0);
+            document.getElementById('trendTotal').textContent = '$' + Math.round(total).toLocaleString() + ' total';
+        }
+
+        function _renderBusinessIntel() {
+            var ests = appData.estimates || [];
+            var sentEsts = ests.filter(function(e){ return ['sent','viewed','signed','approved','declined'].indexOf(e.status) >= 0; });
+            var signedEsts = ests.filter(function(e){ return e.status === 'signed' || e.status === 'approved'; });
+
+            // Win rate
+            var winRate = sentEsts.length > 0 ? Math.round((signedEsts.length / sentEsts.length) * 100) : 0;
+            var wr = document.getElementById('biWinRate');
+            var wrd = document.getElementById('biWinRateDetail');
+            if (wr) wr.textContent = sentEsts.length > 0 ? winRate + '%' : '—';
+            if (wrd) wrd.textContent = signedEsts.length + ' signed of ' + sentEsts.length + ' sent';
+
+            // Average job size
+            var avgJob = signedEsts.length > 0
+                ? signedEsts.reduce(function(s,e){ return s + parseFloat(e.total||0); }, 0) / signedEsts.length
+                : 0;
+            var aj = document.getElementById('biAvgJob');
+            var ajd = document.getElementById('biAvgJobDetail');
+            if (aj) aj.textContent = '$' + Math.round(avgJob).toLocaleString();
+            if (ajd) ajd.textContent = signedEsts.length + ' signed estimate' + (signedEsts.length===1?'':'s');
+
+            // Days to close
+            var closingTimes = signedEsts.filter(function(e){ return e.sentDate && e.signedDate; })
+                .map(function(e){ return (new Date(e.signedDate) - new Date(e.sentDate)) / 86400000; })
+                .filter(function(d){ return d >= 0 && d < 365; });
+            var avgDays = closingTimes.length > 0
+                ? closingTimes.reduce(function(s,d){ return s + d; }, 0) / closingTimes.length
+                : 0;
+            var dc = document.getElementById('biDaysToClose');
+            var dcd = document.getElementById('biDaysToCloseDetail');
+            if (dc) dc.textContent = closingTimes.length > 0 ? avgDays.toFixed(1) + ' days' : '—';
+            if (dcd) dcd.textContent = closingTimes.length > 0 ? 'across ' + closingTimes.length + ' deals' : 'no signed estimates yet';
+        }
+
+        function _renderTopCustomers() {
+            var customerSpend = {};
+            (appData.invoices || []).forEach(function(inv) {
+                if (inv.status !== 'paid') return;
+                var name = inv.customerName || 'Unknown';
+                customerSpend[name] = (customerSpend[name] || 0) + (parseFloat(inv.total) || 0);
+            });
+            var sorted = Object.keys(customerSpend)
+                .map(function(k){ return { name: k, total: customerSpend[k] }; })
+                .sort(function(a,b){ return b.total - a.total; })
+                .slice(0, 5);
+
+            var container = document.getElementById('topCustomersList');
+            if (!container) return;
+            if (sorted.length === 0) {
+                container.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No paid invoices yet</p>';
+                return;
+            }
+            var maxTotal = sorted[0].total;
+            container.innerHTML = sorted.map(function(c, idx) {
+                var pct = (c.total / maxTotal) * 100;
+                var medal = idx === 0 ? '🥇' : (idx === 1 ? '🥈' : (idx === 2 ? '🥉' : '#' + (idx+1)));
+                return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;">' +
+                    '<span style="font-size:16px;width:30px;text-align:center;">' + medal + '</span>' +
+                    '<div style="flex:1;min-width:0;">' +
+                        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+                            '<span style="font-weight:700;font-size:13px;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.name + '</span>' +
+                            '<span style="font-weight:800;font-size:13px;color:#22c55e;margin-left:8px;">$' + Math.round(c.total).toLocaleString() + '</span>' +
+                        '</div>' +
+                        '<div style="background:#f1f5f9;border-radius:4px;height:6px;overflow:hidden;">' +
+                            '<div style="background:linear-gradient(90deg,#22c55e,#16a34a);height:100%;width:' + pct + '%;border-radius:4px;"></div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        function _renderLeadSources() {
+            var sources = {};
+            (appData.leads || []).forEach(function(lead) {
+                var src = lead.source || 'Unknown';
+                sources[src] = (sources[src] || 0) + 1;
+            });
+            var sorted = Object.keys(sources)
+                .map(function(k){ return { name: k, count: sources[k] }; })
+                .sort(function(a,b){ return b.count - a.count; });
+
+            var container = document.getElementById('leadSourcesList');
+            if (!container) return;
+            if (sorted.length === 0) {
+                container.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No leads yet</p>';
+                return;
+            }
+
+            var total = sorted.reduce(function(s,x){ return s + x.count; }, 0);
+            var colors = ['#3b82f6', '#22c55e', '#f59e0b', '#a855f7', '#ec4899', '#06b6d4'];
+
+            container.innerHTML = sorted.map(function(src, idx) {
+                var pct = (src.count / total) * 100;
+                var color = colors[idx % colors.length];
+                return '<div style="padding:10px 0;border-bottom:1px solid #f1f5f9;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+                        '<span style="font-weight:700;font-size:13px;color:#0f172a;">' + src.name + '</span>' +
+                        '<span style="font-size:12px;color:#64748b;">' + src.count + ' lead' + (src.count===1?'':'s') + ' (' + pct.toFixed(0) + '%)</span>' +
+                    '</div>' +
+                    '<div style="background:#f1f5f9;border-radius:4px;height:6px;overflow:hidden;">' +
+                        '<div style="background:' + color + ';height:100%;width:' + pct + '%;border-radius:4px;"></div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        function _renderOverdueAlert() {
+            var now = new Date();
+            var thirtyDaysAgo = new Date(now.getTime() - 30 * 86400000);
+            var overdue = (appData.invoices || []).filter(function(inv) {
+                if (inv.status !== 'unpaid') return false;
+                var sentOrCreated = inv.sentDate ? new Date(inv.sentDate) : (inv.date ? new Date(inv.date) : null);
+                return sentOrCreated && sentOrCreated < thirtyDaysAgo;
+            });
+            var card = document.getElementById('overdueAlertCard');
+            var text = document.getElementById('overdueText');
+            if (!card) return;
+
+            if (overdue.length > 0) {
+                var totalOverdue = overdue.reduce(function(s,i){ return s + parseFloat(i.total||0); }, 0);
+                card.style.display = '';
+                if (text) text.textContent = overdue.length + ' invoice' + (overdue.length===1?'':'s') + ' totaling $' + Math.round(totalOverdue).toLocaleString() + ' unpaid for 30+ days';
+            } else {
+                card.style.display = 'none';
+            }
+        }
+
         function updateDashboard() {
+            // Filter customers/leads/estimates/invoices by selected period
+            var custInPeriod = appData.customers.filter(function(c){ return _periodFilter(c.createdAt) || _dashPeriod === 'all'; });
+            var leadsInPeriod = appData.leads.filter(function(l){ return _dashPeriod === 'all' || _periodFilter(l.createdAt); });
+            var estsAll = appData.estimates || [];
+            var invsAll = appData.invoices  || [];
+
+            // For "active" stats — these don't filter by date (always show current state)
             document.getElementById('dashCustomers').textContent = appData.customers.length;
-            document.getElementById('dashLeads').textContent = appData.leads.filter(function(l) { return l.status === 'new'; }).length;
-            document.getElementById('dashEstimates').textContent = appData.estimates.filter(function(e) { return e.status === 'pending' || e.status === 'sent' || e.status === 'viewed'; }).length;
-            
-            // Pipeline
-            var pipelineEsts = appData.estimates.filter(function(e) { return e.status === 'sent' || e.status === 'viewed'; });
+            document.getElementById('dashLeads').textContent = leadsInPeriod.filter(function(l) { return l.status === 'new'; }).length;
+            document.getElementById('dashEstimates').textContent = estsAll.filter(function(e) { return e.status === 'pending' || e.status === 'sent' || e.status === 'viewed'; }).length;
+
+            // Pipeline (always current — money waiting to come in)
+            var pipelineEsts = estsAll.filter(function(e) { return e.status === 'sent' || e.status === 'viewed'; });
             var pipelineVal  = pipelineEsts.reduce(function(sum, e) { return sum + parseFloat(e.total || 0); }, 0);
-            document.getElementById('dashPipeline').textContent = '$' + pipelineVal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('dashPipeline').textContent = '$' + pipelineVal.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0});
             document.getElementById('dashPipelineCount').textContent = pipelineEsts.length + ' sent estimate' + (pipelineEsts.length !== 1 ? 's' : '');
 
-            // Invoices
-            const unpaid = appData.invoices.filter(function(i) { return i.status === 'unpaid'; }).reduce(function(sum, i) { return sum + parseFloat(i.total||0); }, 0);
-            const paid   = appData.invoices.filter(function(i) { return i.status === 'paid';   }).reduce(function(sum, i) { return sum + parseFloat(i.total||0); }, 0);
-            document.getElementById('dashUnpaid').textContent  = '$' + unpaid.toFixed(2);
-            document.getElementById('dashRevenue').textContent = '$' + paid.toFixed(2);
+            // Unpaid (always current — money still owed)
+            const unpaid = invsAll.filter(function(i) { return i.status === 'unpaid'; }).reduce(function(sum, i) { return sum + parseFloat(i.total||0); }, 0);
+            document.getElementById('dashUnpaid').textContent  = '$' + unpaid.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0});
 
-            // Monthly summary
+            // Revenue — filter paid invoices by period
+            var paidInPeriod = invsAll.filter(function(i){
+                if (i.status !== 'paid') return false;
+                if (_dashPeriod === 'all') return true;
+                return _periodFilter(i.paidDate || i.date);
+            });
+            var revInPeriod = paidInPeriod.reduce(function(sum,i){ return sum + parseFloat(i.total||0); }, 0);
+            document.getElementById('dashRevenue').textContent = '$' + revInPeriod.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0});
+            document.getElementById('revenueLabel').textContent = 'Revenue (' + _periodLabel() + ')';
+
+            // Monthly summary section (always uses current month for goal calc)
             const teamCost = appData.teamMembers.reduce(function(sum, m) { return sum + (parseFloat(m.hourlyRate)||0) * (parseFloat(m.hoursPerMonth)||0); }, 0);
             const expenses = appData.expenses.reduce(function(sum, e) { return sum + parseFloat(e.amount||0); }, 0);
             const profit   = appData.calculator.desiredProfit || 0;
             const revenue  = teamCost + expenses + profit;
-            document.getElementById('dashRevenueTarget').textContent = '$' + revenue.toFixed(2);
-            document.getElementById('dashExpenses').textContent      = '$' + expenses.toFixed(2);
-            document.getElementById('dashTeamCosts').textContent     = '$' + teamCost.toFixed(2);
-            // Actual profit = paid revenue minus team+expense overhead
+            var dashRevTgt = document.getElementById('dashRevenueTarget'); if (dashRevTgt) dashRevTgt.textContent = '$' + revenue.toFixed(2);
+            var dashExp    = document.getElementById('dashExpenses');     if (dashExp) dashExp.textContent       = '$' + expenses.toFixed(2);
+            var dashTeam   = document.getElementById('dashTeamCosts');    if (dashTeam) dashTeam.textContent     = '$' + teamCost.toFixed(2);
+            var paid = invsAll.filter(function(i) { return i.status === 'paid'; }).reduce(function(sum, i) { return sum + parseFloat(i.total||0); }, 0);
             var actualRevenue = paid;
             var monthlyOverhead = teamCost + expenses;
             var actualProfit = actualRevenue > 0 ? Math.max(0, actualRevenue - monthlyOverhead) : profit;
-            document.getElementById('dashProfit').textContent = '$' + (actualRevenue > 0 ? actualProfit : profit).toFixed(2);
+            var dashProf = document.getElementById('dashProfit'); if (dashProf) dashProf.textContent = '$' + (actualRevenue > 0 ? actualProfit : profit).toFixed(2);
+
+            // Render goal tracker + revenue trend + business intelligence
+            try { _renderGoalTracker(); } catch(e) { console.error(e); }
+            try { _renderRevenueTrend(); } catch(e) { console.error(e); }
+            try { _renderBusinessIntel(); } catch(e) { console.error(e); }
+            try { _renderTopCustomers(); } catch(e) { console.error(e); }
+            try { _renderLeadSources(); } catch(e) { console.error(e); }
+            try { _renderOverdueAlert(); } catch(e) { console.error(e); }
 
             // ── Estimates breakdown widget ──────────────────────────────────
-            var ests = appData.estimates || [];
+            var ests = estsAll;
             var fmt  = function(n) { return '$' + parseFloat(n||0).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}); };
             var estGroups = {
                 draft:    ests.filter(function(e){ return e.status === 'pending' || e.status === 'draft'; }),
