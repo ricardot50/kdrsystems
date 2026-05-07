@@ -12,16 +12,94 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
+        /* ── PREMIUM TYPOGRAPHY ── */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            box-sizing: border-box;
         }
         
         h1, h2, h3, h4, h5, h6, .logo-text {
             font-family: 'Inter', sans-serif;
-            letter-spacing: -0.025em;
+            letter-spacing: -0.02em;
+            font-feature-settings: 'cv11', 'ss01', 'ss03';
         }
+
+        /* Tabular numbers — prevents 1234 vs 1115 from looking different widths */
+        .number, .stat-card p, [class*="text-3xl"], [class*="text-4xl"], [class*="text-2xl"],
+        td, th, input[type="number"], .num {
+            font-variant-numeric: tabular-nums;
+            font-feature-settings: 'tnum';
+        }
+
+        /* Universal text protection — prevents headings from breaking layouts */
+        h1, h2, h3, h4 { 
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+            line-height: 1.2;
+        }
+        body { line-height: 1.5; color: #0f172a; }
         
+
+        /* Premium inputs */
+        input[type="text"], input[type="email"], input[type="tel"], input[type="number"],
+        input[type="date"], input[type="password"], input[type="search"], input[type="url"],
+        select, textarea {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 11px 14px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #0f172a;
+            width: 100%;
+            transition: all 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+        input:hover, select:hover, textarea:hover { border-color: #cbd5e1; }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.12);
+        }
+        input::placeholder, textarea::placeholder { color: #94a3b8; font-weight: 400; }
+
+        /* Better tables */
+        table { border-collapse: separate; border-spacing: 0; width: 100%; }
+        table th { 
+            font-size: 11px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+            color: #64748b; 
+            padding: 12px 16px;
+            background: #f8f9fb;
+            border-bottom: 1px solid #e8e8ec;
+            text-align: left;
+        }
+        table td {
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #0f172a;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        table tr:last-child td { border-bottom: none; }
+
+        /* Headings hierarchy */
+        h2 { font-size: 1.75rem; font-weight: 800; }
+        h3 { font-size: 1.125rem; font-weight: 700; }
+
+        /* Button polish */
+        .btn-primary, .btn-secondary, .btn-danger {
+            transition: all 0.15s;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+        }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,107,53,0.25); }
+
         :root {
             --bg-main: #f8f9fb;
             --bg-card: #ffffff;
@@ -1399,21 +1477,21 @@
                     </div>
                 </div>
 
-                <!-- Top Customers + Lead Sources side by side -->
+                <!-- Conversion Funnel + Lead Sources side by side -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6" style="margin-bottom:24px;">
-                    <!-- Top Customers (LTV) -->
+                    <!-- Conversion Funnel -->
                     <div style="background:#fff;border:1px solid #e8e8ec;border-radius:14px;padding:20px 24px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-                            <h3 class="font-bold text-lg" style="margin:0;">⭐ Top Customers</h3>
-                            <span style="font-size:11px;color:#94a3b8;">By total spent</span>
+                            <h3 class="font-bold text-lg" style="margin:0;">🔥 Conversion Funnel</h3>
+                            <span style="font-size:11px;color:#94a3b8;">All time</span>
                         </div>
-                        <div id="topCustomersList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No paid invoices yet</p></div>
+                        <div id="funnelList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No leads yet</p></div>
                     </div>
 
                     <!-- Lead Sources -->
                     <div style="background:#fff;border:1px solid #e8e8ec;border-radius:14px;padding:20px 24px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-                            <h3 class="font-bold text-lg" style="margin:0;">📊 Lead Sources</h3>
+                            <h3 class="font-bold text-lg" style="margin:0;">📊 Where Customers Find You</h3>
                             <span style="font-size:11px;color:#94a3b8;">All time</span>
                         </div>
                         <div id="leadSourcesList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No leads yet</p></div>
@@ -1754,31 +1832,82 @@
                             <p style="color:#ff6b35;font-size:56px;font-weight:900;margin:0;line-height:1;letter-spacing:-2px;" id="minimumRate">$0.00<span style="font-size:20px;color:#94a3b8;">/hr</span></p>
                             <p style="color:#64748b;font-size:13px;margin:10px 0 0;">Charge this to cover all costs + hit your profit goal</p>
                         </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;min-width:260px;">
-                            <div style="background:#1e293b;border-radius:10px;padding:14px 16px;">
-                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Monthly Hours</p>
-                                <input type="number" id="workingHours" value="160" step="1" oninput="calculateAll()" style="background:transparent;border:none;color:#fff;font-size:22px;font-weight:800;width:100%;padding:0;outline:none;">
-                                <p style="color:#475569;font-size:10px;margin:2px 0 0;" id="hoursHint">40 hrs/wk × 4 wks</p>
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-width:320px;">
+                            <div style="background:#1e293b;border-radius:10px;padding:12px 14px;">
+                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;font-weight:700;">Monthly Hours</p>
+                                <input type="number" id="workingHours" value="160" step="1" oninput="calculateAll()" style="background:transparent;border:none;color:#fff;font-size:20px;font-weight:800;width:100%;padding:0;outline:none;">
+                                <p style="color:#475569;font-size:10px;margin:2px 0 0;" id="hoursHint">work hrs total</p>
                             </div>
-                            <div style="background:#1e293b;border-radius:10px;padding:14px 16px;">
-                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Profit Margin</p>
+                            <div style="background:#1e293b;border-radius:10px;padding:12px 14px;border:1px solid rgba(251,191,36,0.2);">
+                                <p style="color:#fbbf24;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;font-weight:700;">Billable %</p>
                                 <div style="display:flex;align-items:baseline;gap:2px;">
-                                    <input type="number" id="profitMargin" placeholder="20" step="0.5" oninput="calculateFromMargin()" style="background:transparent;border:none;color:#22c55e;font-size:22px;font-weight:800;width:60px;padding:0;outline:none;">
+                                    <input type="number" id="utilizationRate" value="65" step="5" min="30" max="100" oninput="calculateAll()" style="background:transparent;border:none;color:#fbbf24;font-size:20px;font-weight:800;width:50px;padding:0;outline:none;">
+                                    <span style="color:#fbbf24;font-size:16px;font-weight:700;">%</span>
+                                </div>
+                                <p style="color:#475569;font-size:10px;margin:2px 0 0;">on jobs vs admin</p>
+                            </div>
+                            <div style="background:#1e293b;border-radius:10px;padding:12px 14px;">
+                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;font-weight:700;">Margin</p>
+                                <div style="display:flex;align-items:baseline;gap:2px;">
+                                    <input type="number" id="profitMargin" placeholder="20" step="0.5" oninput="calculateFromMargin()" style="background:transparent;border:none;color:#22c55e;font-size:20px;font-weight:800;width:50px;padding:0;outline:none;">
                                     <span style="color:#22c55e;font-size:16px;font-weight:700;">%</span>
                                 </div>
                                 <p style="color:#475569;font-size:10px;margin:2px 0 0;">target margin</p>
                             </div>
-                            <div style="background:#1e293b;border-radius:10px;padding:14px 16px;">
-                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Annual Revenue</p>
+                            <div style="background:#1e293b;border-radius:10px;padding:12px 14px;grid-column:span 1;">
+                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;font-weight:700;">Billable Hrs/Mo</p>
+                                <p style="color:#fbbf24;font-size:18px;font-weight:800;margin:4px 0 0;" id="billableHours">104</p>
+                                <p style="color:#475569;font-size:10px;margin:2px 0 0;">hrs you can charge</p>
+                            </div>
+                            <div style="background:#1e293b;border-radius:10px;padding:12px 14px;">
+                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;font-weight:700;">Annual Revenue</p>
                                 <p style="color:#fff;font-size:18px;font-weight:800;margin:4px 0 0;" id="annualRevenue">$0</p>
                                 <p style="color:#475569;font-size:10px;margin:2px 0 0;">at this rate</p>
                             </div>
-                            <div style="background:#1e293b;border-radius:10px;padding:14px 16px;">
-                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Annual Profit</p>
+                            <div style="background:#1e293b;border-radius:10px;padding:12px 14px;">
+                                <p style="color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;font-weight:700;">Annual Profit</p>
                                 <p style="color:#22c55e;font-size:18px;font-weight:800;margin:4px 0 0;" id="annualProfit">$0</p>
                                 <p style="color:#475569;font-size:10px;margin:2px 0 0;" id="marginDisplay">0% margin</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Industry Benchmark Guide for Contractors -->
+                <div style="background:linear-gradient(135deg,#fef7f4,#fff);border:2px solid #fed7c5;border-radius:14px;padding:20px 24px;margin-bottom:20px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+                        <h3 style="margin:0;font-size:15px;font-weight:800;color:#9a3412;display:flex;align-items:center;gap:8px;">📊 Industry Benchmarks for Contractors</h3>
+                        <span style="font-size:11px;color:#94a3b8;">Use these to fill in the calculator</span>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+                        <div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #fed7c5;">
+                            <p style="margin:0;font-size:11px;color:#9a3412;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Billable % (Solo)</p>
+                            <p style="margin:4px 0;font-size:18px;font-weight:900;color:#0f172a;">60-70%</p>
+                            <p style="margin:0;font-size:11px;color:#64748b;">Solo contractor — accounts for estimating, drive time, follow-ups</p>
+                        </div>
+                        <div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #fed7c5;">
+                            <p style="margin:0;font-size:11px;color:#9a3412;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Billable % (Crew)</p>
+                            <p style="margin:4px 0;font-size:18px;font-weight:900;color:#0f172a;">70-80%</p>
+                            <p style="margin:0;font-size:11px;color:#64748b;">Crew on-site, owner handles estimates and admin</p>
+                        </div>
+                        <div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #fed7c5;">
+                            <p style="margin:0;font-size:11px;color:#9a3412;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Material Markup</p>
+                            <p style="margin:4px 0;font-size:18px;font-weight:900;color:#0f172a;">25-50%</p>
+                            <p style="margin:0;font-size:11px;color:#64748b;">Standard markup on materials. Set per-material in Materials tab.</p>
+                        </div>
+                        <div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #fed7c5;">
+                            <p style="margin:0;font-size:11px;color:#9a3412;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Profit Margin</p>
+                            <p style="margin:4px 0;font-size:18px;font-weight:900;color:#0f172a;">15-25%</p>
+                            <p style="margin:0;font-size:11px;color:#64748b;">Healthy net profit margin for fence/home service business</p>
+                        </div>
+                        <div style="background:#fff;border-radius:10px;padding:14px;border:1px solid #fed7c5;">
+                            <p style="margin:0;font-size:11px;color:#9a3412;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Hourly Rate (NJ)</p>
+                            <p style="margin:4px 0;font-size:18px;font-weight:900;color:#0f172a;">$75-150</p>
+                            <p style="margin:0;font-size:11px;color:#64748b;">Typical NJ fence contractor rate. Varies by experience &amp; market.</p>
+                        </div>
+                    </div>
+                    <div style="margin-top:14px;padding:12px 14px;background:#fff;border-radius:8px;border:1px solid #fed7c5;">
+                        <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;"><strong style="color:#9a3412;">⚠️ Reality check:</strong> This calculator gives you a starting hourly rate based on YOUR costs. In practice, you'll charge per-foot or per-job, not by the hour. Use this number as your <strong>minimum break-even rate</strong> — every job you take should beat this rate after materials. Compare to local competitors before quoting.</p>
                     </div>
                 </div>
 
@@ -2409,6 +2538,23 @@
                     <div class="addr-wrap" style="position:relative;">
                         <input type="text" id="custAddress" placeholder="Start typing address..." autocomplete="off" oninput="addrAutoComplete(this)" onblur="addrBlur(this)">
                         <div class="addr-drop" id="custAddress_drop"></div>
+                    </div>
+                    <div>
+                        <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;">How did you hear about us?</label>
+                        <select id="custSource">
+                            <option value="">— Select source —</option>
+                            <option value="Website">Website</option>
+                            <option value="Referral">Referral / Word of Mouth</option>
+                            <option value="Phone Call">Phone Call</option>
+                            <option value="Walk-in">Walk-in / Drive-by</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Instagram">Instagram</option>
+                            <option value="Google">Google Search / Maps</option>
+                            <option value="Yelp">Yelp</option>
+                            <option value="Door Hanger">Door Hanger / Flyer</option>
+                            <option value="Repeat Customer">Repeat Customer</option>
+                            <option value="Other">Other</option>
+                        </select>
                     </div>
                     <div class="flex gap-3">
                         <button type="submit" class="btn-primary flex-1" id="custSubmitBtn">Add Customer</button>
@@ -3755,6 +3901,17 @@
             _initSubscriptionUI();
             renderTeamMembers();
             renderExpenses();
+            // Restore saved calculator values into input fields
+            try {
+                if (appData.calculator) {
+                    if (appData.calculator.workingHours !== undefined && document.getElementById('workingHours'))
+                        document.getElementById('workingHours').value = appData.calculator.workingHours;
+                    if (appData.calculator.desiredProfit !== undefined && document.getElementById('desiredProfit'))
+                        document.getElementById('desiredProfit').value = appData.calculator.desiredProfit;
+                    if (appData.calculator.utilizationRate !== undefined && document.getElementById('utilizationRate'))
+                        document.getElementById('utilizationRate').value = appData.calculator.utilizationRate;
+                }
+            } catch (e) { console.error(e); }
             calculateAll();
             updateDashboard();
             renderCalendar();
@@ -4089,12 +4246,22 @@
                         (est.businessPhone ? '<p style="color:#333;font-size:13px;margin:4px 0 0;">' + est.businessPhone + '</p>' : '') +
                         (est.businessEmail ? '<p style="color:#333;font-size:13px;margin:2px 0 0;">' + est.businessEmail + '</p>' : '') +
                         (function() {
+                            function _norm(v, base) {
+                                if (!v) return '';
+                                v = (v||'').trim();
+                                if (v.indexOf('http') === 0) return v;
+                                return base + v.replace(/^@/, '').replace(/^\//, '');
+                            }
+                            function _pill(url, color, label) {
+                                return '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-block;margin:4px 4px;padding:8px 16px;background:' + color + ';color:#fff;border-radius:24px;font-size:12px;font-weight:700;text-decoration:none;letter-spacing:0.5px;text-transform:uppercase;">' + label + '</a>';
+                            }
                             var links = [];
-                            if (est.instagram) links.push('<a href="https://instagram.com/' + est.instagram.replace('@','') + '" style="display:inline-block;margin:4px 4px;padding:6px 14px;background:#E1306C;color:#fff;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;" target="_blank">&#x1F4F7; Instagram</a>');
-                            if (est.facebook)  links.push('<a href="https://facebook.com/' + est.facebook + '" style="display:inline-block;margin:4px 4px;padding:6px 14px;background:#1877F2;color:#fff;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;" target="_blank">&#x1F44D; Facebook</a>');
-                            if (est.tiktok)    links.push('<a href="https://tiktok.com/@' + est.tiktok.replace('@','') + '" style="display:inline-block;margin:4px 4px;padding:6px 14px;background:#000;color:#fff;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;" target="_blank">&#x1F3B5; TikTok</a>');
-                            if (est.google)    links.push('<a href="' + (est.google.startsWith('http') ? est.google : 'https://g.page/' + est.google) + '" style="display:inline-block;margin:4px 4px;padding:6px 14px;background:#4285F4;color:#fff;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;" target="_blank">&#x2B50; Google Review</a>');
-                            return links.length ? '<div style="margin-top:12px;">' + links.join('') + '</div>' : '';
+                            if (est.instagram)  links.push(_pill(_norm(est.instagram, 'https://instagram.com/'), '#E1306C', 'Instagram'));
+                            if (est.facebook)   links.push(_pill(_norm(est.facebook, 'https://facebook.com/'),   '#1877F2', 'Facebook'));
+                            if (est.tiktok)     links.push(_pill(_norm(est.tiktok, 'https://tiktok.com/@'),     '#000000', 'TikTok'));
+                            if (est.google)     links.push(_pill(_norm(est.google, 'https://g.page/'),          '#4285F4', 'Google Review'));
+                            if (est.websiteUrl) links.push(_pill(_norm(est.websiteUrl, 'https://'),              '#0f172a', 'Website'));
+                            return links.length ? '<div style="margin-top:14px;">' + links.join('') + '</div>' : '';
                         })() +
                     '</div>' +
                 '</div>';
@@ -4775,6 +4942,7 @@
                     _showInstantToast('🎉 ' + customerName + ' signed ' + docType + ' ' + docNum);
                     updateNotificationBadge();
                     renderNotifications();
+                    updateDashboard(); // refresh Recent Activity
                 }
             }
 
@@ -4804,6 +4972,7 @@
                     _showInstantToast(customerName + ' declined ' + docType + ' ' + docNum);
                     updateNotificationBadge();
                     renderNotifications();
+                    updateDashboard();
                 }
             }
 
@@ -4826,6 +4995,7 @@
                     _showInstantToast('👀 ' + customerName + ' viewed ' + docType + ' ' + docNum);
                     updateNotificationBadge();
                     renderNotifications();
+                    updateDashboard();
                 }
             }
         }
@@ -4848,6 +5018,7 @@
             _showInstantToast('🔥 New lead: ' + (lead.name || 'Anonymous'));
             updateNotificationBadge();
             renderNotifications();
+            updateDashboard();
         }
 
         function _showInstantToast(msg) {
@@ -5341,28 +5512,36 @@
             // Get raw input values (in whatever period is selected)
             var rawProfit = parseFloat(document.getElementById('desiredProfit') ? document.getElementById('desiredProfit').value : 0) || appData.calculator.desiredProfit;
             var rawHours  = parseFloat(document.getElementById('workingHours') ? document.getElementById('workingHours').value : 0) || appData.calculator.workingHours;
+            // ── NEW: utilization rate (what % of total hours are actually billable) ──
+            var utilizationRate = parseFloat(document.getElementById('utilizationRate') ? document.getElementById('utilizationRate').value : 65) || 65;
+            utilizationRate = Math.max(30, Math.min(100, utilizationRate)); // clamp 30-100
 
             // Normalize everything to MONTHLY for hourly rate calculation
-            // Team costs and expenses are already monthly
             var toMonthly = { week: 4.33, month: 1, year: 1/12 };
             var mult = toMonthly[calcPeriod] || 1;
-            var profitMonthly = rawProfit * mult;   // convert period profit → monthly
-            var hoursMonthly  = rawHours  * mult;   // convert period hours  → monthly
+            var profitMonthly = rawProfit * mult;
+            var hoursMonthly  = rawHours  * mult;
+            // ── BILLABLE hours = total hours × utilization% ──
+            // This is the key accuracy fix. A contractor working 160 hrs/mo
+            // only bills clients for ~104 of those (65%). The other 56 hrs
+            // are estimating, drive time, customer calls, paperwork.
+            var billableHoursMonthly = hoursMonthly * (utilizationRate / 100);
 
-            const totalCosts = teamCost + expenses; // already monthly
+            const totalCosts = teamCost + expenses;
             const profitMarginPercent = totalCosts > 0 ? ((profitMonthly / totalCosts) * 100) : 0;
 
             if (document.getElementById('profitMargin') && document.activeElement.id !== 'profitMargin') {
                 document.getElementById('profitMargin').value = profitMarginPercent.toFixed(1);
             }
 
-            const teamCostPerHour = hoursMonthly > 0 ? teamCost / hoursMonthly : 0;
-            const overheadPerHour = hoursMonthly > 0 ? expenses / hoursMonthly : 0;
-            const profitPerHour   = hoursMonthly > 0 ? profitMonthly / hoursMonthly : 0;
+            // Use BILLABLE hours for the rate calculation — this is what makes it accurate
+            const teamCostPerHour = billableHoursMonthly > 0 ? teamCost / billableHoursMonthly : 0;
+            const overheadPerHour = billableHoursMonthly > 0 ? expenses / billableHoursMonthly : 0;
+            const profitPerHour   = billableHoursMonthly > 0 ? profitMonthly / billableHoursMonthly : 0;
             const hourlyRate      = teamCostPerHour + overheadPerHour + profitPerHour;
 
             // Summary numbers shown in the selected period
-            var invMult = 1 / mult; // monthly → selected period
+            var invMult = 1 / mult;
             var dispTeam     = teamCost    * invMult;
             var dispExpenses = expenses    * invMult;
             var dispCosts    = (teamCost + expenses) * invMult;
@@ -5374,14 +5553,13 @@
             document.getElementById('teamCostPerHour').textContent = '$' + teamCostPerHour.toFixed(2);
             document.getElementById('overheadPerHour').textContent = '$' + overheadPerHour.toFixed(2);
             document.getElementById('profitPerHour').textContent = '$' + profitPerHour.toFixed(2);
-            // minimumRate has a nested /hr span — only update the text node
             var rateEl = document.getElementById('minimumRate');
-            if (rateEl) {
-                rateEl.childNodes[0].textContent = '$' + hourlyRate.toFixed(2);
-            }
+            if (rateEl) rateEl.childNodes[0].textContent = '$' + hourlyRate.toFixed(2);
             var rate2El = document.getElementById('minimumRate2');
             if (rate2El) rate2El.textContent = '$' + hourlyRate.toFixed(2);
-            // margin display
+            // ── Display the billable hours in the hero card ──
+            var bhEl = document.getElementById('billableHours');
+            if (bhEl) bhEl.textContent = Math.round(billableHoursMonthly);
             var marginEl = document.getElementById('marginDisplay');
             if (marginEl) marginEl.textContent = profitMarginPercent.toFixed(1) + '% margin';
             document.getElementById('summaryTeam').textContent = '$' + dispTeam.toFixed(2);
@@ -5390,13 +5568,16 @@
             document.getElementById('summaryProfit').textContent = '$' + dispProfit.toFixed(2);
             document.getElementById('requiredRevenue').textContent = '$' + dispRevenue.toFixed(2);
 
-            // Annual stats for hero card
-            var annualRev = hourlyRate * hoursMonthly * 12;
+            // Annual stats — use billable hours
+            var annualRev = hourlyRate * billableHoursMonthly * 12;
             var annualPro = profitMonthly * 12;
             var annRevEl = document.getElementById('annualRevenue');
             var annProEl = document.getElementById('annualProfit');
             if (annRevEl) annRevEl.textContent = '$' + Math.round(annualRev).toLocaleString();
             if (annProEl) annProEl.textContent = '$' + Math.round(annualPro).toLocaleString();
+
+            // Save utilization
+            appData.calculator.utilizationRate = utilizationRate;
 
             // Build GrowZbl-style per-expense rows in the breakdown column
             var rowsEl = document.getElementById('calcExpenseRows');
@@ -5483,6 +5664,7 @@
         function saveCalculator() {
             appData.calculator.desiredProfit = parseFloat(document.getElementById('desiredProfit').value) || 0;
             appData.calculator.workingHours = parseFloat(document.getElementById('workingHours').value) || 160;
+            appData.calculator.utilizationRate = parseFloat(document.getElementById('utilizationRate').value) || 65;
             calculateAll();
             saveData();
             toast('Settings saved ✓');
@@ -5496,7 +5678,8 @@
                 name:    document.getElementById('custName').value,
                 email:   document.getElementById('custEmail').value,
                 phone:   document.getElementById('custPhone').value,
-                address: document.getElementById('custAddress').value
+                address: document.getElementById('custAddress').value,
+                source:  (document.getElementById('custSource')||{}).value || ''
             };
             if (editId) {
                 // Update existing customer
@@ -5526,6 +5709,8 @@
         function openAddCustomerModal() {
             document.getElementById('custEditId').value = '';
             document.getElementById('customerForm').reset();
+            var srcEl2 = document.getElementById('custSource');
+            if (srcEl2) srcEl2.value = '';
             document.getElementById('customerModalTitle').textContent = 'Add Customer';
             document.getElementById('custSubmitBtn').textContent = 'Add Customer';
             openModal('customerModal');
@@ -5539,6 +5724,8 @@
             document.getElementById('custEmail').value   = c.email   || '';
             document.getElementById('custPhone').value   = c.phone   || '';
             document.getElementById('custAddress').value = c.address || '';
+            var srcEl = document.getElementById('custSource');
+            if (srcEl) srcEl.value = c.source || '';
             document.getElementById('customerModalTitle').textContent = 'Edit Customer';
             document.getElementById('custSubmitBtn').textContent = 'Save Changes';
             openModal('customerModal');
@@ -5577,6 +5764,83 @@
             if (d) d.style.display = 'none';
         }
 
+        function _textCustomer(id, presetMessage) {
+            var c = appData.customers.find(function(x){ return x.id === id; });
+            if (!c || !c.phone) { toast('No phone number on file for this customer'); return; }
+            // Strip non-digits from phone
+            var digits = (c.phone || '').replace(/[^0-9]/g, '');
+            if (!digits) { toast('Invalid phone number'); return; }
+            // US numbers: prepend +1 if 10 digits
+            if (digits.length === 10) digits = '1' + digits;
+            // Default messages
+            var s = appData.settings;
+            var bizName = s.businessName || 'KDR';
+            var msgs = {
+                'arriving':  'Hi ' + (c.name||'').split(' ')[0] + '! ' + bizName + ' here — on my way to your property, about 30 minutes out. See you soon!',
+                'starting':  'Hi ' + (c.name||'').split(' ')[0] + '! ' + bizName + ' here — we have arrived and are starting work on your project. Will keep you posted!',
+                'complete':  'Hi ' + (c.name||'').split(' ')[0] + '! ' + bizName + ' here — your project is complete. Please take a look when you get a chance and let me know if you have any questions. Thank you!',
+                'follow-up': 'Hi ' + (c.name||'').split(' ')[0] + '! ' + bizName + ' here — just following up on your estimate. Let me know if you have any questions!',
+                'thanks':    'Hi ' + (c.name||'').split(' ')[0] + '! Thank you for your business with ' + bizName + '. We really appreciate it. If you have a moment, a Google review would mean the world to us!'
+            };
+            var msg = msgs[presetMessage] || presetMessage || '';
+
+            // Open native SMS app
+            var smsUrl = 'sms:+' + digits + (msg ? '?&body=' + encodeURIComponent(msg) : '');
+            try {
+                var a = document.createElement('a');
+                a.href = smsUrl;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                toast('Opening Messages...');
+            } catch (err) {
+                window.location.href = smsUrl;
+            }
+        }
+
+        function _openTextMenu(id) {
+            var c = appData.customers.find(function(x){ return x.id === id; });
+            if (!c) return;
+            if (!c.phone) { toast('Add a phone number for this customer first'); return; }
+
+            // Build menu modal
+            var existing = document.getElementById('textMenuModal');
+            if (existing) existing.remove();
+
+            var modal = document.createElement('div');
+            modal.id = 'textMenuModal';
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            modal.innerHTML = '<div style="background:#fff;border-radius:16px;max-width:420px;width:100%;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,0.3);">' +
+                '<div style="padding:20px 24px;border-bottom:1px solid #e8e8ec;">' +
+                    '<h3 style="margin:0;font-size:18px;font-weight:800;color:#0f172a;">Text ' + (c.name || 'Customer') + '</h3>' +
+                    '<p style="margin:4px 0 0;font-size:13px;color:#64748b;">' + c.phone + '</p>' +
+                '</div>' +
+                '<div style="padding:16px 24px;">' +
+                    '<p style="margin:0 0 12px;font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Quick Templates</p>' +
+                    [
+                        ['arriving',  '🚗 On My Way',         'Im 30 min out from your property'],
+                        ['starting',  '🔨 Started Working',    'Arrived and starting the job'],
+                        ['complete',  '✅ Job Complete',       'Project is finished, please review'],
+                        ['follow-up', '📩 Follow-Up',          'Following up on your estimate'],
+                        ['thanks',    '⭐ Thank You + Review', 'Asks for a Google review']
+                    ].map(function(t) {
+                        return '<button onclick="_textCustomer(\'' + id + '\',\'' + t[0] + '\');document.getElementById(\'textMenuModal\').remove();" style="width:100%;text-align:left;padding:12px 14px;background:#f8f9fb;border:1px solid #e8e8ec;border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;">' +
+                            '<div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:2px;">' + t[1] + '</div>' +
+                            '<div style="font-size:12px;color:#64748b;">' + t[2] + '</div>' +
+                        '</button>';
+                    }).join('') +
+                    '<button onclick="_textCustomer(\'' + id + '\',\'\');document.getElementById(\'textMenuModal\').remove();" style="width:100%;text-align:left;padding:12px 14px;background:#fff;border:1px dashed #cbd5e1;border-radius:10px;cursor:pointer;color:#475569;font-size:14px;">' +
+                        '✏️ Custom message (blank)' +
+                    '</button>' +
+                '</div>' +
+                '<div style="padding:12px 24px;border-top:1px solid #e8e8ec;background:#fafafa;text-align:right;">' +
+                    '<button onclick="document.getElementById(\'textMenuModal\').remove()" style="padding:8px 18px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#475569;">Cancel</button>' +
+                '</div>' +
+            '</div>';
+            modal.onclick = function(e){ if (e.target === modal) modal.remove(); };
+            document.body.appendChild(modal);
+        }
+
         function renderCustomers() {
             const tbody = document.getElementById('customersTable');
             if (appData.customers.length === 0) {
@@ -5590,6 +5854,7 @@
                     '<td class="py-3 px-4">' + (c.phone || '-') + '</td>' +
                     '<td class="py-3 px-4">' + (c.address || '-') + '</td>' +
                     '<td class="py-3 px-4 text-right" style="white-space:nowrap;">' +
+                        (c.phone ? '<button onclick="_openTextMenu(\'' + c.id + '\')" title="Send text" style="margin-right:6px;padding:6px 12px;font-size:12px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;border-radius:8px;font-weight:700;cursor:pointer;">💬 Text</button>' : '') +
                         '<button class="btn-secondary" style="margin-right:6px;padding:6px 12px;font-size:12px;" onclick="editCustomer(\'' + c.id + '\')">✏️ Edit</button>' +
                         '<button class="btn-danger" onclick="deleteCustomer(\'' + c.id + '\')">Delete</button>' +
                     '</td>' +
@@ -8193,48 +8458,78 @@
             if (dcd) dcd.textContent = closingTimes.length > 0 ? 'across ' + closingTimes.length + ' deals' : 'no signed estimates yet';
         }
 
-        function _renderTopCustomers() {
-            var customerSpend = {};
-            (appData.invoices || []).forEach(function(inv) {
-                if (inv.status !== 'paid') return;
-                var name = inv.customerName || 'Unknown';
-                customerSpend[name] = (customerSpend[name] || 0) + (parseFloat(inv.total) || 0);
-            });
-            var sorted = Object.keys(customerSpend)
-                .map(function(k){ return { name: k, total: customerSpend[k] }; })
-                .sort(function(a,b){ return b.total - a.total; })
-                .slice(0, 5);
+        function _renderFunnel() {
+            // Counts: leads → estimates sent → signed → paid
+            var leads = (appData.leads || []).length;
+            var estsSent = (appData.estimates || []).filter(function(e){
+                return e.status === 'sent' || e.status === 'viewed' || e.status === 'signed' || e.status === 'approved' || e.status === 'declined';
+            }).length;
+            var estsSigned = (appData.estimates || []).filter(function(e){
+                return e.status === 'signed' || e.status === 'approved';
+            }).length;
+            var invsPaid = (appData.invoices || []).filter(function(i){ return i.status === 'paid'; }).length;
 
-            var container = document.getElementById('topCustomersList');
+            var stages = [
+                { name: 'Leads',           count: leads,      color: '#3b82f6', icon: '🎯' },
+                { name: 'Estimates Sent',  count: estsSent,   color: '#f59e0b', icon: '📨' },
+                { name: 'Signed',          count: estsSigned, color: '#22c55e', icon: '✍️' },
+                { name: 'Paid',            count: invsPaid,   color: '#8b5cf6', icon: '💰' }
+            ];
+
+            var maxCount = Math.max.apply(null, stages.map(function(s){ return s.count; }));
+            var container = document.getElementById('funnelList');
             if (!container) return;
-            if (sorted.length === 0) {
-                container.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No paid invoices yet</p>';
+
+            if (maxCount === 0) {
+                container.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No leads yet — start sending estimates to fill your funnel</p>';
                 return;
             }
-            var maxTotal = sorted[0].total;
-            container.innerHTML = sorted.map(function(c, idx) {
-                var pct = (c.total / maxTotal) * 100;
-                var medal = idx === 0 ? '🥇' : (idx === 1 ? '🥈' : (idx === 2 ? '🥉' : '#' + (idx+1)));
-                return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f1f5f9;">' +
-                    '<span style="font-size:16px;width:30px;text-align:center;">' + medal + '</span>' +
-                    '<div style="flex:1;min-width:0;">' +
-                        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
-                            '<span style="font-weight:700;font-size:13px;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + c.name + '</span>' +
-                            '<span style="font-weight:800;font-size:13px;color:#22c55e;margin-left:8px;">$' + Math.round(c.total).toLocaleString() + '</span>' +
-                        '</div>' +
-                        '<div style="background:#f1f5f9;border-radius:4px;height:6px;overflow:hidden;">' +
-                            '<div style="background:linear-gradient(90deg,#22c55e,#16a34a);height:100%;width:' + pct + '%;border-radius:4px;"></div>' +
-                        '</div>' +
+
+            container.innerHTML = stages.map(function(stage, idx) {
+                var pct = maxCount > 0 ? (stage.count / maxCount) * 100 : 0;
+                var convRate = '';
+                if (idx > 0 && stages[idx - 1].count > 0) {
+                    var rate = Math.round((stage.count / stages[idx - 1].count) * 100);
+                    convRate = '<span style="font-size:10px;color:#64748b;font-weight:600;margin-left:6px;">(' + rate + '% from prev)</span>';
+                }
+                return '<div style="padding:8px 0;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+                        '<span style="font-weight:700;font-size:13px;color:#0f172a;">' + stage.icon + ' ' + stage.name + convRate + '</span>' +
+                        '<span style="font-weight:800;font-size:14px;color:' + stage.color + ';">' + stage.count + '</span>' +
+                    '</div>' +
+                    '<div style="background:#f1f5f9;border-radius:6px;height:10px;overflow:hidden;">' +
+                        '<div style="background:' + stage.color + ';height:100%;width:' + Math.max(2, pct) + '%;border-radius:6px;transition:width 0.4s;"></div>' +
                     '</div>' +
                 '</div>';
             }).join('');
+
+            // Add overall conversion rate footer
+            if (leads > 0) {
+                var overallRate = Math.round((invsPaid / leads) * 100);
+                container.innerHTML += '<div style="margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9;">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                        '<span style="font-size:12px;color:#64748b;font-weight:600;">Overall Lead → Paid</span>' +
+                        '<span style="font-size:18px;font-weight:900;color:#22c55e;">' + overallRate + '%</span>' +
+                    '</div>' +
+                '</div>';
+            }
+        }
+
+        function _renderTopCustomers() {
+            // Legacy stub — kept to avoid errors. Now replaced by _renderFunnel.
         }
 
         function _renderLeadSources() {
+            // Combine sources from leads (website form) AND customers (manual entries)
             var sources = {};
             (appData.leads || []).forEach(function(lead) {
-                var src = lead.source || 'Unknown';
+                var src = lead.source || 'Website';  // leads default to Website if no source
                 sources[src] = (sources[src] || 0) + 1;
+            });
+            (appData.customers || []).forEach(function(c) {
+                if (c.source) {
+                    sources[c.source] = (sources[c.source] || 0) + 1;
+                }
             });
             var sorted = Object.keys(sources)
                 .map(function(k){ return { name: k, count: sources[k] }; })
@@ -8243,7 +8538,7 @@
             var container = document.getElementById('leadSourcesList');
             if (!container) return;
             if (sorted.length === 0) {
-                container.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No leads yet</p>';
+                container.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No source data yet — set source when adding customers</p>';
                 return;
             }
 
@@ -8336,7 +8631,7 @@
             try { _renderGoalTracker(); } catch(e) { console.error(e); }
             try { _renderRevenueTrend(); } catch(e) { console.error(e); }
             try { _renderBusinessIntel(); } catch(e) { console.error(e); }
-            try { _renderTopCustomers(); } catch(e) { console.error(e); }
+            try { _renderFunnel(); } catch(e) { console.error(e); }
             try { _renderLeadSources(); } catch(e) { console.error(e); }
             try { _renderOverdueAlert(); } catch(e) { console.error(e); }
 
