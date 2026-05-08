@@ -1711,7 +1711,7 @@
                     <div class="flex flex-wrap gap-3">
                         <button class="btn-secondary" onclick="previousMonth()">← Prev</button>
                         <button class="btn-secondary" onclick="nextMonth()">Next →</button>
-                        <button class="btn-primary" onclick="openModal('scheduleModal')">+ Schedule</button>
+                        <button class="btn-primary" onclick="_resetScheduleForm();openModal('scheduleModal')">+ Schedule</button>
                     </div>
                     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:11px;font-weight:600;">
                         <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#ff6b35;color:#fff;border-radius:14px;">🔨 Job</span>
@@ -2396,6 +2396,15 @@
                                     <p class="text-xs text-gray-500 mt-1">Shown on estimates under your business name</p>
                                 </div>
                                 <div>
+                                <div>
+                                    <label class="block mb-2">Logo Size on Estimates &amp; Invoices</label>
+                                    <select id="settingsLogoSize" style="margin-bottom:12px;">
+                                        <option value="small">Small (60px tall)</option>
+                                        <option value="medium">Medium (100px tall)</option>
+                                        <option value="large" selected>Large (140px tall)</option>
+                                        <option value="xl">Extra Large (180px tall)</option>
+                                    </select>
+                                </div>
                                 <div>
                                     <label class="block mb-2">Your Website URL</label>
                                     <input type="text" id="settingsWebsiteUrl" placeholder="https://yourwebsite.com">
@@ -4210,7 +4219,7 @@
             var html = '' +
                 // Orange Header Bar with centered logo and BLACK text
                 '<div style="background:' + brandCol + ';border-radius:16px 16px 0 0;padding:30px;text-align:center;">' +
-                    (est.businessLogo ? '<img src="' + est.businessLogo + '" alt="" style="max-height:140px;max-width:280px;margin:0 auto 16px;display:block;">' : '') +
+                    (est.businessLogo ? (function(){ var sz={small:60,medium:100,large:140,xl:180}[est.logoSize||'large']||140; return '<img src="' + est.businessLogo + '" alt="" style="max-height:' + sz + 'px;max-width:' + (sz*2) + 'px;margin:0 auto 16px;display:block;">'; })() : '') +
                     '<h1 style="color:#000000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + (est.businessName || 'KDRSYSTEMS') + '</h1>' +
                     (est.slogan ? '<p style="color:#000;margin:6px 0 0;font-size:12px;font-weight:600;letter-spacing:1px;">' + est.slogan + '</p>' : '') +
                     '<div style="margin-top:10px;">' +
@@ -5427,23 +5436,99 @@
         }
 
         function openScheduleModalForDate(dateStr) {
+            _resetScheduleForm();
             openModal('scheduleModal');
             document.getElementById('schedDate').value = dateStr;
         }
 
+        var _editingJobId = null;
+
         function viewJob(jobId) {
             const job = appData.scheduledJobs.find(function(j) { return j.id === jobId; });
             if (!job) return;
-            
-            alert('Job: ' + job.title + '\nCustomer: ' + job.customerName + '\nDate: ' + job.date + ' at ' + job.time + '\nDuration: ' + job.duration + ' hours\nNotes: ' + (job.notes || 'None'));
+            _editingJobId = jobId;
+
+            // Populate form with existing values
+            document.getElementById('schedCustomer').value = job.customerId || '';
+            document.getElementById('schedTitle').value    = job.title || '';
+            document.getElementById('schedDate').value     = job.date || '';
+            document.getElementById('schedTime').value     = job.time || '';
+            document.getElementById('schedDuration').value = job.duration || 4;
+            document.getElementById('schedNotes').value    = job.notes || '';
+            var stEl = document.getElementById('schedType');
+            if (stEl) stEl.value = job.type || 'job';
+
+            // Update modal title and button
+            document.querySelector('#scheduleModal h3').textContent = 'Edit ' + (job.type === 'job' ? 'Job' : (job.type || 'Event').charAt(0).toUpperCase() + (job.type || 'event').slice(1));
+            var submitBtn = document.querySelector('#scheduleForm button[type=submit]');
+            if (submitBtn) submitBtn.textContent = 'Save Changes';
+
+            // Add Delete button if not already there
+            var delBtn = document.getElementById('deleteJobBtn');
+            if (!delBtn) {
+                delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.id = 'deleteJobBtn';
+                delBtn.className = 'btn-danger flex-1';
+                delBtn.textContent = 'Cancel/Delete';
+                delBtn.onclick = function() {
+                    kdrConfirm('Cancel this ' + (job.type || 'event') + '?', 'This will permanently remove it from your schedule.', 'Yes, Cancel It', function() {
+                        appData.scheduledJobs = appData.scheduledJobs.filter(function(j){ return j.id !== _editingJobId; });
+                        saveData();
+                        closeModal('scheduleModal');
+                        renderCalendar();
+                        toast('Removed from schedule');
+                        _editingJobId = null;
+                    });
+                };
+                var btnRow = document.querySelector('#scheduleForm .flex.gap-3');
+                if (btnRow) btnRow.appendChild(delBtn);
+            } else {
+                delBtn.style.display = '';
+            }
+
+            openModal('scheduleModal');
+        }
+
+        function _resetScheduleForm() {
+            _editingJobId = null;
+            document.getElementById('scheduleForm').reset();
+            document.querySelector('#scheduleModal h3').textContent = 'Schedule';
+            var submitBtn = document.querySelector('#scheduleForm button[type=submit]');
+            if (submitBtn) submitBtn.textContent = 'Schedule';
+            var delBtn = document.getElementById('deleteJobBtn');
+            if (delBtn) delBtn.style.display = 'none';
         }
 
         document.getElementById('scheduleForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
             const customerId = document.getElementById('schedCustomer').value;
             const customer = appData.customers.find(function(c) { return c.id === customerId; });
-            
+            if (!customer) { toast('Please select a customer'); return; }
+
+            if (_editingJobId) {
+                // EDIT MODE — update existing job
+                var existing = appData.scheduledJobs.find(function(j) { return j.id === _editingJobId; });
+                if (existing) {
+                    existing.customerId   = customerId;
+                    existing.customerName = customer.name;
+                    existing.title        = document.getElementById('schedTitle').value;
+                    existing.date         = document.getElementById('schedDate').value;
+                    existing.time         = document.getElementById('schedTime').value;
+                    existing.duration     = parseFloat(document.getElementById('schedDuration').value) || 4;
+                    existing.notes        = document.getElementById('schedNotes').value;
+                    existing.type         = (document.getElementById('schedType')||{}).value || 'job';
+                    existing.updatedAt    = new Date().toISOString();
+                    saveData();
+                    closeModal('scheduleModal');
+                    renderCalendar();
+                    toast('Updated ✓');
+                    _resetScheduleForm();
+                    return;
+                }
+            }
+
+            // CREATE MODE — new job
             const job = {
                 id: Date.now().toString(),
                 customerId: customerId,
@@ -5451,16 +5536,16 @@
                 title: document.getElementById('schedTitle').value,
                 date: document.getElementById('schedDate').value,
                 time: document.getElementById('schedTime').value,
-                duration: parseFloat(document.getElementById('schedDuration').value),
+                duration: parseFloat(document.getElementById('schedDuration').value) || 4,
                 notes: document.getElementById('schedNotes').value,
                 type: (document.getElementById('schedType')||{}).value || 'job',
                 status: 'scheduled',
                 createdAt: new Date().toISOString()
             };
-            
             appData.scheduledJobs.push(job);
             saveData();
             this.reset();
+            _resetScheduleForm();
             closeModal('scheduleModal');
             renderCalendar();
             checkNotifications();
@@ -6111,26 +6196,22 @@
             
             container.innerHTML = Object.keys(grouped).map(function(category) {
                 return '<div class="card">' +
-                    '<div class="mb-4 pb-3 border-b border-gray-200">' +
-                        '<h4 class="font-bold text-lg text-orange">' + category + '</h4>' +
-                        '<p class="text-xs text-gray-900">' + grouped[category].length + ' items</p>' +
+                    '<div class="mb-3 pb-2 border-b border-gray-200">' +
+                        '<h4 class="font-bold text-lg text-orange" style="margin:0;">' + category + '</h4>' +
+                        '<p class="text-xs text-gray-700">' + grouped[category].length + ' item' + (grouped[category].length===1?'':'s') + '</p>' +
                     '</div>' +
-                    '<div class="space-y-3">' +
+                    '<div style="display:flex;flex-direction:column;gap:6px;">' +
                         grouped[category].map(function(m) {
-                            var photoHtml = m.photo ? '<img src="' + m.photo + '" alt="' + m.name + '" style="width:50px;height:50px;object-fit:cover;border-radius:6px;border:1px solid #e5e5e5;flex-shrink:0;">' : '<div style="width:50px;height:50px;background:#fff5f0;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;"></div>';
-                            return '<div class="p-3 bg-gray-50 rounded border border-gray-100 cursor-pointer" style="position:relative;" onclick="editMaterial(\'' + m.id + '\')">' +
-                                '<button class="btn-danger text-xs" style="position:absolute;top:6px;right:6px;width:22px;height:22px;padding:0;border-radius:50;line-height:22px;text-align:center;" onclick="event.stopPropagation(); deleteMaterial(\'' + m.id + '\')">×</button>' +
-                                '<div class="flex gap-3 items-start">' +
-                                    photoHtml +
-                                    '<div class="flex-1 min-w-0">' +
-                                        '<h5 class="font-semibold text-gray-800">' + m.name + '</h5>' +
-                                        (m.description ? '<p class="text-xs text-gray-700 mt-1">' + m.description + '</p>' : '') +
-                                        '<div class="flex justify-between items-center text-sm mt-1">' +
-                                            '<span class="text-gray-900">$' + m.cost + (m.unit ? ' / ' + m.unit : '') + '</span>' +
-                                            '<span class="text-orange font-medium">' + m.markup + '% markup</span>' +
-                                        '</div>' +
-                                    '</div>' +
+                            var photoHtml = m.photo
+                                ? '<img src="' + m.photo + '" alt="" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid #e5e5e5;flex-shrink:0;">'
+                                : '<div style="width:36px;height:36px;background:#fff5f0;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fcd5c0;font-size:16px;">📦</div>';
+                            return '<div class="material-row" style="position:relative;display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fafafa;border:1px solid #f1f5f9;border-radius:8px;cursor:pointer;transition:all 0.15s;" onclick="editMaterial(\'' + m.id + '\')" onmouseover="this.style.background=\'#fff5ed\';this.style.borderColor=\'#fed7c5\';" onmouseout="this.style.background=\'#fafafa\';this.style.borderColor=\'#f1f5f9\';">' +
+                                photoHtml +
+                                '<div style="flex:1;min-width:0;">' +
+                                    '<div style="font-weight:600;font-size:13px;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;">' + m.name + '</div>' +
+                                    '<div style="font-size:11px;color:#64748b;margin-top:2px;line-height:1.2;">$' + m.cost + (m.unit ? '/' + m.unit : '') + ' · <span style="color:#f97316;font-weight:600;">+' + m.markup + '%</span></div>' +
                                 '</div>' +
+                                '<button onclick="event.stopPropagation(); deleteMaterial(\'' + m.id + '\')" title="Delete" style="background:transparent;border:none;color:#cbd5e1;font-size:18px;cursor:pointer;padding:0 6px;line-height:1;flex-shrink:0;" onmouseover="this.style.color=\'#ef4444\'" onmouseout="this.style.color=\'#cbd5e1\'">×</button>' +
                             '</div>';
                         }).join('') +
                     '</div>' +
@@ -7257,7 +7338,7 @@
 
                         // ── HEADER: Big logo + business name + slogan + contact ──
                         '<tr><td style="background:' + bizColor + ';padding:40px 30px;text-align:center;">' +
-                            (s.logo ? '<img src="' + s.logo + '" alt="" style="max-height:140px;max-width:280px;margin:0 auto 16px;display:block;">' : '') +
+                            (s.logo ? (function(){ var sz={small:60,medium:100,large:140,xl:180}[s.logoSize||'large']||140; return '<img src="' + s.logo + '" alt="" style="max-height:' + sz + 'px;max-width:' + (sz*2) + 'px;margin:0 auto 16px;display:block;">'; })() : '') +
                             '<h1 style="color:#000000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:3px;font-family:Arial,sans-serif;">' + bizName + '</h1>' +
                             (s.slogan ? '<p style="color:#000000;margin:8px 0 0;font-size:13px;font-weight:600;letter-spacing:1px;font-family:Arial,sans-serif;font-style:italic;">' + s.slogan + '</p>' : '') +
                             '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:16px;"><tr><td align="center">' +
@@ -8148,6 +8229,8 @@
             if (wuEl) wuEl.value = appData.settings.websiteUrl || '';
             var slEl = document.getElementById('settingsSlogan');
             if (slEl) slEl.value = appData.settings.slogan || '';
+            var lsEl = document.getElementById('settingsLogoSize');
+            if (lsEl) lsEl.value = appData.settings.logoSize || 'large';
             var eaEl = document.getElementById('settingsEmailAlerts');
             if (eaEl) eaEl.checked = !appData.settings.emailAlertsOff;
             var licEl = document.getElementById('settingsLicense');
@@ -8283,6 +8366,7 @@
                 tiktok: document.getElementById('settingsTiktok').value,
                 google: document.getElementById('settingsGoogle').value,
                 websiteUrl:    (document.getElementById('settingsWebsiteUrl')||{}).value || '',
+                logoSize:      (document.getElementById('settingsLogoSize')||{}).value || 'large',
                 emailAlertsOff: !((document.getElementById('settingsEmailAlerts')||{}).checked),
                 license:       (document.getElementById('settingsLicense')||{}).value || '',
                 slogan: (document.getElementById('settingsSlogan')||{}).value || '',
@@ -8413,12 +8497,15 @@
                 });
             }
 
+            // Initialize invCount
+            months.forEach(function(m) { m.invCount = 0; });
             (appData.invoices || []).forEach(function(inv) {
                 if (inv.status === 'paid' && inv.paidDate) {
                     var pd = new Date(inv.paidDate);
                     months.forEach(function(m) {
                         if (pd.getFullYear() === m.year && pd.getMonth() === m.month) {
-                            m.total += parseFloat(inv.total) || 0;
+                            m.total    += parseFloat(inv.total) || 0;
+                            m.invCount += 1;
                         }
                     });
                 }
@@ -8437,10 +8524,29 @@
                 var height = (m.total / maxVal) * 100;
                 var bar = document.createElement('div');
                 var isCurrent = idx === months.length - 1;
-                bar.style.cssText = 'flex:1;background:linear-gradient(180deg,' + (isCurrent ? '#ff6b35,#e85d2c' : '#f59e0b,#fbbf24') + ');border-radius:6px 6px 0 0;height:' + Math.max(2, height) + '%;position:relative;cursor:pointer;transition:opacity 0.2s;';
-                bar.title = m.label + ': $' + Math.round(m.total).toLocaleString();
-                bar.onmouseover = function(){ this.style.opacity = '0.8'; };
-                bar.onmouseout  = function(){ this.style.opacity = '1'; };
+                bar.style.cssText = 'flex:1;background:linear-gradient(180deg,' + (isCurrent ? '#ff6b35,#e85d2c' : '#f59e0b,#fbbf24') + ');border-radius:6px 6px 0 0;height:' + Math.max(2, height) + '%;position:relative;cursor:pointer;transition:all 0.2s;';
+                bar.title = m.label + ' ' + m.year + ': $' + Math.round(m.total).toLocaleString();
+                bar.onmouseover = function(){ this.style.opacity = '0.85'; this.style.transform = 'scaleY(1.04)'; this.style.transformOrigin = 'bottom'; };
+                bar.onmouseout  = function(){ this.style.opacity = '1'; this.style.transform = 'scaleY(1)'; };
+                bar.onclick = function() {
+                    // Show floating popup with month details
+                    var existing = document.getElementById('barPopup');
+                    if (existing) existing.remove();
+                    var rect = this.getBoundingClientRect();
+                    var pop = document.createElement('div');
+                    pop.id = 'barPopup';
+                    pop.style.cssText = 'position:fixed;background:#0f172a;color:#fff;padding:12px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.25);z-index:9999;font-size:13px;min-width:160px;';
+                    pop.style.left = (rect.left + rect.width/2 - 80) + 'px';
+                    pop.style.top  = (rect.top - 80) + 'px';
+                    pop.innerHTML =
+                        '<div style="font-weight:700;font-size:12px;color:#94a3b8;margin-bottom:4px;">' + m.label + ' ' + m.year + '</div>' +
+                        '<div style="font-size:20px;font-weight:900;color:#22c55e;">$' + Math.round(m.total).toLocaleString() + '</div>' +
+                        '<div style="font-size:11px;color:#cbd5e1;margin-top:4px;">' + m.invCount + ' paid invoice' + (m.invCount===1?'':'s') + '</div>';
+                    document.body.appendChild(pop);
+                    setTimeout(function(){
+                        document.addEventListener('click', function rem(){ var p=document.getElementById('barPopup'); if(p)p.remove(); document.removeEventListener('click', rem); }, { once: true });
+                    }, 50);
+                };
                 chart.appendChild(bar);
 
                 var lbl = document.createElement('div');
