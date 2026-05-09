@@ -44,6 +44,18 @@
         body { line-height: 1.5; color: #0f172a; }
         
 
+        
+        /* Warm sophisticated palette (use these for non-brand accents) */
+        .text-warm-dark   { color: #1e293b; }      /* primary headings */
+        .text-warm-soft   { color: #475569; }      /* secondary text */
+        .text-warm-mute   { color: #94a3b8; }      /* tertiary */
+        .border-warm      { border-color: #e2e8f0; }
+        .bg-warm-soft     { background: #f8f9fb; }
+        .accent-amber     { color: #b45309; }      /* warmer than orange, use sparingly */
+        .accent-emerald   { color: #047857; }      /* for positive/success */
+        .accent-rose      { color: #be123c; }      /* for negative/declined */
+        /* CTA primary button stays brand orange — preserves identity */
+
         /* Premium inputs */
         input[type="text"], input[type="email"], input[type="tel"], input[type="number"],
         input[type="date"], input[type="password"], input[type="search"], input[type="url"],
@@ -2400,7 +2412,7 @@
                         </div>
                         
                         <div class="pt-4 border-t border-gray-200">
-                            <h4 class="text-lg font-semibold mb-4 text-orange">Social Media Links</h4>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Social Media Links</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block mb-2">Business Slogan</label>
@@ -2442,7 +2454,7 @@
                         </div>
                         
                         <div class="pt-4 border-t border-gray-200">
-                            <h4 class="text-lg font-semibold mb-4 text-orange">Invoice Reminder Settings</h4>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Invoice Reminder Settings</h4>
                             <div class="space-y-4">
                                 <div>
                                     <label class="block mb-2">Send Invoice Reminders</label>
@@ -2482,7 +2494,7 @@
                         </div>
                         
                         <div class="pt-4 border-t border-gray-200">
-                            <h4 class="text-lg font-semibold mb-4 text-orange">Job Notification Settings</h4>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Job Notification Settings</h4>
                             <div>
                                 <label class="block mb-2">Notify Me Before Job (hours)</label>
                                 <select id="jobNotificationHours" class="w-full">
@@ -2495,7 +2507,7 @@
                         </div>
                         
                         <div class="pt-4 border-t border-gray-200">
-                            <h4 class="text-lg font-semibold mb-4 text-orange">Email Alerts</h4>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Email Alerts</h4>
                             <div class="flex items-center justify-between mb-4 p-3 rounded" style="background:#f8f9fb;border:1px solid #e2e8f0;">
                                 <div>
                                     <p class="text-sm font-semibold">Get email alerts for important events</p>
@@ -2507,7 +2519,7 @@
                                 </label>
                             </div>
 
-                            <h4 class="text-lg font-semibold mb-4 text-orange">Sharing Estimates &amp; Invoices</h4>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Sharing Estimates &amp; Invoices</h4>
                             <p class="text-xs text-gray-700 mb-4">No setup needed. Click Send on any estimate or invoice — the app generates a link you share via text, WhatsApp, email, or any app. Your customer taps the link and sees a professional page where they can sign or pay.</p>
                             <div class="p-3 rounded" style="background:#f0fdf4;border:1px solid #bbf7d0;">
                                 <p class="text-xs font-semibold" style="color:#15803d;">How it works:</p>
@@ -2519,7 +2531,7 @@
                         </div>
                         
                         <div class="pt-4 border-t border-gray-200">
-                            <h4 class="text-lg font-semibold mb-4 text-orange">Payment Collection (Stripe)</h4>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Payment Collection (Stripe)</h4>
                             <p class="text-xs text-gray-700 mb-4">Add your Stripe Payment Link so customers can pay invoices directly online. Create a payment link at <a href="https://dashboard.stripe.com/payment-links" target="_blank" class="text-orange underline">dashboard.stripe.com/payment-links</a> — set it to collect a custom amount so every invoice works with the same link.</p>
                             <div class="space-y-4">
                                 <div>
@@ -2536,7 +2548,7 @@
                         </div>
 
                         <div class="pt-4 border-t border-gray-200">
-                            <h4 class="text-lg font-semibold mb-4 text-orange">Data Backup & Restore</h4>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Data Backup & Restore</h4>
                             <p class="text-xs text-gray-700 mb-4">Keep your data safe by downloading a backup. You can restore it on any device.</p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <button class="btn-primary w-full" onclick="downloadBackup()">Download Backup</button>
@@ -2840,10 +2852,17 @@
                             <img id="matPhotoImg" src="" alt="Preview" style="max-height:120px;border-radius:8px;border:2px solid #e5e5e5;">
                             <button type="button" class="text-red-600 text-xs ml-2" onclick="clearMatPhoto()">Remove</button>
                         </div>
-                        <label class="btn-secondary text-sm cursor-pointer inline-block">
-                            Upload Photo
-                            <input type="file" accept="image/*" class="hidden" onchange="handleMatPhoto(event)">
-                        </label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <label class="btn-secondary text-sm cursor-pointer inline-block" style="margin:0;">
+                                Choose from Library
+                                <input type="file" accept="image/*" class="hidden" onchange="handleMatPhoto(event)">
+                            </label>
+                            <label class="btn-secondary text-sm cursor-pointer inline-block" style="margin:0;background:#dbeafe;color:#1e40af;border-color:#93c5fd;">
+                                Take Photo
+                                <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleMatPhoto(event)">
+                            </label>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Photo helps you identify materials quickly when picking from the list</p>
                     </div>
                     <div class="flex gap-3">
                         <button type="submit" class="btn-primary flex-1" id="matSubmitBtn">Save Material</button>
@@ -5346,6 +5365,12 @@
         }
 
         function renderNotifications() {
+            // Filter out any dismissed notifications that snuck back in
+            if (Array.isArray(appData.notifications)) {
+                appData.notifications = appData.notifications.filter(function(n) {
+                    return !_dismissedNotifIds[n.id];
+                });
+            }
             const container = document.getElementById('notificationsList');
             
             if (appData.notifications.length === 0) {
@@ -5379,9 +5404,10 @@
         }
 
         // Track dismissed notification IDs so checkNotifications doesn't re-add them
-        var _dismissedNotifIds = (function() {
+        var _dismissedNotifIds = window._dismissedNotifIds || (function() {
             try { return JSON.parse(localStorage.getItem('kdr_dismissed_notifs') || '{}'); } catch(e) { return {}; }
         })();
+        window._dismissedNotifIds = _dismissedNotifIds;
 
         function clearAllNotifications() {
             // Remember all current IDs as dismissed so they do not re-appear
@@ -6231,16 +6257,23 @@
             });
             
             container.innerHTML = Object.keys(grouped).map(function(category) {
+                var items = grouped[category];
+                var totalValue = items.reduce(function(s, m) { return s + (parseFloat(m.cost) || 0); }, 0);
+                var avgMarkup = items.reduce(function(s, m) { return s + (parseFloat(m.markup) || 0); }, 0) / (items.length || 1);
+                var catId = 'cat_' + category.replace(/[^a-zA-Z0-9]/g, '_');
                 return '<div class="card">' +
-                    '<div class="mb-3 pb-2 border-b border-gray-200">' +
-                        '<h4 class="font-bold text-lg text-orange" style="margin:0;">' + category + '</h4>' +
-                        '<p class="text-xs text-gray-700">' + grouped[category].length + ' item' + (grouped[category].length===1?'':'s') + '</p>' +
+                    '<div onclick="document.getElementById(\'' + catId + '\').classList.toggle(\'hidden\');this.querySelector(\'.cat-arrow\').textContent=document.getElementById(\'' + catId + '\').classList.contains(\'hidden\')?\'▶\':\'▼\';" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #e5e5e5;">' +
+                        '<div>' +
+                            '<h4 class="font-bold text-lg" style="margin:0;color:#0f172a;">' + category + '</h4>' +
+                            '<p class="text-xs text-gray-700" style="margin-top:2px;">' + items.length + ' item' + (items.length===1?'':'s') + ' · avg markup ' + Math.round(avgMarkup) + '%</p>' +
+                        '</div>' +
+                        '<span class="cat-arrow" style="font-size:14px;color:#94a3b8;">▼</span>' +
                     '</div>' +
-                    '<div style="display:flex;flex-direction:column;gap:6px;">' +
-                        grouped[category].map(function(m) {
+                    '<div id="' + catId + '" style="display:flex;flex-direction:column;gap:6px;margin-top:10px;">' +
+                        items.map(function(m) {
                             var photoHtml = m.photo
                                 ? '<img src="' + m.photo + '" alt="" style="width:36px;height:36px;object-fit:cover;border-radius:6px;border:1px solid #e5e5e5;flex-shrink:0;">'
-                                : '<div style="width:36px;height:36px;background:#fff5f0;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fcd5c0;font-size:16px;">📦</div>';
+                                : '<div style="width:36px;height:36px;background:#f1f5f9;border-radius:6px;flex-shrink:0;border:1px dashed #cbd5e1;"></div>';
                             return '<div class="material-row" style="position:relative;display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fafafa;border:1px solid #f1f5f9;border-radius:8px;cursor:pointer;transition:all 0.15s;" onclick="editMaterial(\'' + m.id + '\')" onmouseover="this.style.background=\'#fff5ed\';this.style.borderColor=\'#fed7c5\';" onmouseout="this.style.background=\'#fafafa\';this.style.borderColor=\'#f1f5f9\';">' +
                                 photoHtml +
                                 '<div style="flex:1;min-width:0;">' +
@@ -6253,6 +6286,14 @@
                     '</div>' +
                 '</div>';
             }).join('');
+
+            // Add hidden class CSS if not exists
+            if (!document.getElementById('catHiddenStyle')) {
+                var st = document.createElement('style');
+                st.id = 'catHiddenStyle';
+                st.textContent = '.hidden { display: none !important; }';
+                document.head.appendChild(st);
+            }
             
             populateCategoryDropdown();
         }
@@ -6971,13 +7012,16 @@
 
             // Global labor (base, no section)
             var laborHrs  = parseFloat(document.getElementById('estLaborHours').value) || 0;
-            var laborRate = parseFloat(document.getElementById('estLaborRate').value) || 0;
-            if (!document.getElementById('estLaborRate').value && appData.calculator.hourlyRate > 0) {
+            // Labor rate: use what's typed, OR fall back to calculator default (display only)
+            var typedRate = document.getElementById('estLaborRate').value;
+            var laborRate = parseFloat(typedRate) || 0;
+            if (!typedRate && appData.calculator.hourlyRate > 0) {
+                // Show the calculator rate as PLACEHOLDER (gray hint) only, don't set the actual value
                 laborRate = appData.calculator.hourlyRate;
-                document.getElementById('estLaborRate').placeholder = laborRate.toFixed(2);
+                document.getElementById('estLaborRate').placeholder = laborRate.toFixed(0);
             }
             if (appData.calculator.hourlyRate > 0) {
-                document.getElementById('estLaborRateHint').textContent = 'Overhead: $' + appData.calculator.hourlyRate.toFixed(2) + '/hr';
+                document.getElementById('estLaborRateHint').textContent = 'Overhead: $' + appData.calculator.hourlyRate.toFixed(0) + '/hr';
             }
             var globalLaborTotal = laborHrs * laborRate;
 
@@ -7207,8 +7251,15 @@
             var board = document.getElementById('kanbanBoard');
             if (!board) return;
 
-            // Combine estimates + invoices into one list
-            var allDocs = (appData.estimates || []).map(function(e) { return Object.assign({ type: 'estimate' }, e); })
+            // Build list — exclude estimates that were already converted to invoices
+            // (avoids duplicate cards: one in "Signed" + one in "Invoiced")
+            var convertedEstimateIds = {};
+            (appData.invoices || []).forEach(function(inv) {
+                if (inv.estimateId) convertedEstimateIds[inv.estimateId] = true;
+            });
+            var allDocs = (appData.estimates || [])
+                .filter(function(e) { return !convertedEstimateIds[e.id]; })
+                .map(function(e) { return Object.assign({ type: 'estimate' }, e); })
                 .concat((appData.invoices || []).map(function(i) { return Object.assign({ type: 'invoice' }, i); }));
 
             // Group by stage
@@ -7238,16 +7289,18 @@
                         var amount = '$' + (parseFloat(doc.total) || 0).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0});
                         var openFn = doc.type === 'invoice' ? "viewInvoice('" + doc.id + "')" : "viewEstimate('" + doc.id + "')";
                         return '<div draggable="true" ondragstart="_kanbanDragStart(event,\'' + doc.id + '\',\'' + doc.type + '\')" ' +
-                            'onclick="' + openFn + '" ' +
-                            'style="background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;border-left:3px solid ' + stage.color + ';" ' +
-                            'onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\';this.style.transform=\'translateY(-1px)\'" ' +
-                            'onmouseout="this.style.boxShadow=\'none\';this.style.transform=\'\'">' +
-                            '<div style="font-weight:700;font-size:13px;color:#0f172a;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + custName + '</div>' +
-                            '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">' +
-                                '<span style="font-size:10px;color:#94a3b8;font-weight:600;">' + docNum + '</span>' +
-                                '<span style="font-weight:800;font-size:13px;color:' + stage.color + ';">' + amount + '</span>' +
+                            'style="position:relative;background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;border-left:3px solid ' + stage.color + ';" ' +
+                            'onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\';this.style.transform=\'translateY(-1px)\';this.querySelector(\'.k-del\').style.opacity=\'1\';" ' +
+                            'onmouseout="this.style.boxShadow=\'none\';this.style.transform=\'\';this.querySelector(\'.k-del\').style.opacity=\'0\';">' +
+                            '<button class="k-del" onclick="event.stopPropagation();_kanbanDelete(\'' + doc.id + '\',\'' + doc.type + '\')" title="Delete" style="position:absolute;top:6px;right:6px;background:#fee2e2;color:#dc2626;border:none;width:22px;height:22px;border-radius:5px;font-size:14px;line-height:1;cursor:pointer;opacity:0;transition:opacity 0.15s;font-weight:700;">×</button>' +
+                            '<div onclick="' + openFn + '" style="cursor:pointer;">' +
+                                '<div style="font-weight:700;font-size:13px;color:#0f172a;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:24px;">' + custName + '</div>' +
+                                '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">' +
+                                    '<span style="font-size:10px;color:#94a3b8;font-weight:600;">' + docNum + '</span>' +
+                                    '<span style="font-weight:800;font-size:13px;color:' + stage.color + ';">' + amount + '</span>' +
+                                '</div>' +
+                                (doc.date ? '<div style="font-size:10px;color:#94a3b8;margin-top:4px;">' + doc.date + '</div>' : '') +
                             '</div>' +
-                            (doc.date ? '<div style="font-size:10px;color:#94a3b8;margin-top:4px;">' + doc.date + '</div>' : '') +
                         '</div>';
                     }).join('');
 
@@ -7265,6 +7318,25 @@
                     '<div style="overflow-y:auto;flex:1;">' + cardsHtml + '</div>' +
                 '</div>';
             }).join('');
+        }
+
+        // Delete a kanban card (estimate or invoice)
+        function _kanbanDelete(docId, docType) {
+            kdrConfirm(
+                'Delete this ' + docType + '?',
+                'This permanently removes it. The customer record stays.',
+                'Delete',
+                function() {
+                    if (docType === 'invoice') {
+                        appData.invoices = appData.invoices.filter(function(i) { return i.id !== docId; });
+                    } else {
+                        appData.estimates = appData.estimates.filter(function(e) { return e.id !== docId; });
+                    }
+                    saveData();
+                    renderDocuments();
+                    toast('Deleted');
+                }
+            );
         }
 
         // Drag and drop handlers
@@ -7299,18 +7371,20 @@
             }
             doc.status = newStatus;
 
-            // If moved to "Invoiced" stage and it's still an estimate, convert to invoice
-            if (targetStage === 'invoice' && _kanbanDragData.type === 'estimate') {
+            // If moved to "Invoiced" or "Paid" and it's still an estimate, auto-convert
+            if ((targetStage === 'invoice' || targetStage === 'paid') && _kanbanDragData.type === 'estimate') {
                 if (typeof convertToInvoice === 'function') {
-                    if (confirm('Convert this estimate to an invoice?')) {
-                        convertToInvoice(doc.id);
-                    } else {
-                        return;
+                    convertToInvoice(doc.id);
+                    // Find the new invoice and set status
+                    var newInv = appData.invoices.find(function(i) { return i.estimateId === doc.id; });
+                    if (newInv) {
+                        if (targetStage === 'paid') {
+                            newInv.status = 'paid';
+                            newInv.paidDate = new Date().toISOString();
+                        }
                     }
                 }
-            }
-            // If moved to "Paid", set paid status on invoice
-            if (targetStage === 'paid' && _kanbanDragData.type === 'invoice') {
+            } else if (targetStage === 'paid' && _kanbanDragData.type === 'invoice') {
                 doc.status = 'paid';
                 doc.paidDate = new Date().toISOString();
             }
