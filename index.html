@@ -1488,7 +1488,7 @@
                     <!-- Conversion Funnel -->
                     <div style="background:#fff;border:1px solid #e8e8ec;border-radius:14px;padding:20px 24px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-                            <h3 class="font-bold text-lg" style="margin:0;">🔥 Conversion Funnel</h3>
+                            <h3 class="font-bold text-lg" style="margin:0;">Conversion Funnel</h3>
                             <span style="font-size:11px;color:#94a3b8;">All time</span>
                         </div>
                         <div id="funnelList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No leads yet</p></div>
@@ -1497,7 +1497,7 @@
                     <!-- Lead Sources -->
                     <div style="background:#fff;border:1px solid #e8e8ec;border-radius:14px;padding:20px 24px;">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-                            <h3 class="font-bold text-lg" style="margin:0;">📊 Where Customers Find You</h3>
+                            <h3 class="font-bold text-lg" style="margin:0;">Lead Sources</h3>
                             <span style="font-size:11px;color:#94a3b8;">All time</span>
                         </div>
                         <div id="leadSourcesList"><p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px 0;">No leads yet</p></div>
@@ -1508,7 +1508,7 @@
                 <div id="overdueAlertCard" style="display:none;background:linear-gradient(135deg,#fee2e2,#fff5f5);border:2px solid #ef4444;border-radius:14px;padding:18px 22px;margin-bottom:24px;">
                     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
                         <div style="display:flex;align-items:center;gap:14px;">
-                            <span style="font-size:32px;">⚠️</span>
+                            <span style="font-size:32px;">!</span>
                             <div>
                                 <h3 style="margin:0;font-size:15px;font-weight:800;color:#991b1b;">Overdue Invoices Alert</h3>
                                 <p id="overdueText" style="margin:4px 0 0;font-size:13px;color:#7f1d1d;">— invoices unpaid for 30+ days</p>
@@ -1713,13 +1713,13 @@
                         <button class="btn-secondary" onclick="nextMonth()">Next →</button>
                         <button class="btn-primary" onclick="_resetScheduleForm();openModal('scheduleModal')">+ Schedule</button>
                     </div>
-                    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:11px;font-weight:600;">
-                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#ff6b35;color:#fff;border-radius:14px;">🔨 Job</span>
-                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#3b82f6;color:#fff;border-radius:14px;">📋 Estimate</span>
-                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#8b5cf6;color:#fff;border-radius:14px;">🤝 Meeting</span>
-                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#f59e0b;color:#fff;border-radius:14px;">📞 Follow-Up</span>
-                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#14b8a6;color:#fff;border-radius:14px;">🚚 Delivery</span>
-                        <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:#64748b;color:#fff;border-radius:14px;">📌 Other</span>
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;">
+                        <span style="display:inline-block;padding:4px 10px;background:#ff6b35;color:#fff;border-radius:14px;">Job</span>
+                        <span style="display:inline-block;padding:4px 10px;background:#3b82f6;color:#fff;border-radius:14px;">Estimate</span>
+                        <span style="display:inline-block;padding:4px 10px;background:#8b5cf6;color:#fff;border-radius:14px;">Meeting</span>
+                        <span style="display:inline-block;padding:4px 10px;background:#f59e0b;color:#fff;border-radius:14px;">Follow-Up</span>
+                        <span style="display:inline-block;padding:4px 10px;background:#14b8a6;color:#fff;border-radius:14px;">Delivery</span>
+                        <span style="display:inline-block;padding:4px 10px;background:#64748b;color:#fff;border-radius:14px;">Other</span>
                     </div>
                 </div>
                 
@@ -1743,15 +1743,27 @@
 
             <!-- Estimates & Invoices -->
             <div id="estimates" class="tab-content">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-4 flex-wrap gap-3">
                     <h2 class="text-3xl font-bold">Estimates &amp; Invoices</h2>
-                    <button class="btn-primary" onclick="openEstimateModal()">+ Create Estimate</button>
+                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                        <!-- View toggle -->
+                        <div style="display:flex;background:#f1f5f9;border-radius:10px;padding:3px;gap:2px;">
+                            <button id="viewModeKanban" onclick="setEstView('kanban')" style="padding:8px 14px;border:none;background:#fff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.06);">Board</button>
+                            <button id="viewModeList" onclick="setEstView('list')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">List</button>
+                        </div>
+                        <button class="btn-primary" onclick="openEstimateModal()">+ Create Estimate</button>
+                    </div>
                 </div>
                 <div style="display:flex;gap:0;border-bottom:2px solid #e5e5e5;margin-bottom:20px;">
                     <button id="subTabEstimates" onclick="switchDocTab('estimates')" style="padding:10px 24px;font-weight:700;font-size:14px;border:none;background:none;cursor:pointer;border-bottom:3px solid #ff6b35;color:#ff6b35;margin-bottom:-2px;">Estimates</button>
                     <button id="subTabInvoices" onclick="switchDocTab('invoices')" style="padding:10px 24px;font-weight:700;font-size:14px;border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;color:#94a3b8;margin-bottom:-2px;">Invoices</button>
                 </div>
-                <div id="documentsList" class="space-y-3"></div>
+                <!-- Kanban board view (default) -->
+                <div id="kanbanView" style="overflow-x:auto;padding-bottom:8px;">
+                    <div id="kanbanBoard" style="display:flex;gap:12px;min-width:max-content;padding:4px 4px 12px;"></div>
+                </div>
+                <!-- List view -->
+                <div id="documentsList" class="space-y-3" style="display:none;"></div>
             </div>
 
             <!-- Contracts -->
@@ -1890,7 +1902,7 @@
                 <!-- Industry Benchmark Guide for Contractors -->
                 <div style="background:linear-gradient(135deg,#fef7f4,#fff);border:2px solid #fed7c5;border-radius:14px;padding:20px 24px;margin-bottom:20px;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
-                        <h3 style="margin:0;font-size:15px;font-weight:800;color:#9a3412;display:flex;align-items:center;gap:8px;">📊 Industry Benchmarks for Contractors</h3>
+                        <h3 style="margin:0;font-size:15px;font-weight:800;color:#9a3412;display:flex;align-items:center;gap:8px;">Industry Benchmarks</h3>
                         <span style="font-size:11px;color:#94a3b8;">Use these to fill in the calculator</span>
                     </div>
                     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
@@ -1921,7 +1933,7 @@
                         </div>
                     </div>
                     <div style="margin-top:14px;padding:12px 14px;background:#fff;border-radius:8px;border:1px solid #fed7c5;">
-                        <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;"><strong style="color:#9a3412;">⚠️ Reality check:</strong> This calculator gives you a starting hourly rate based on YOUR costs. In practice, you'll charge per-foot or per-job, not by the hour. Use this number as your <strong>minimum break-even rate</strong> — every job you take should beat this rate after materials. Compare to local competitors before quoting.</p>
+                        <p style="margin:0;font-size:12px;color:#475569;line-height:1.5;"><strong style="color:#9a3412;">Reality check:</strong> This calculator gives you a starting hourly rate based on YOUR costs. In practice, you'll charge per-foot or per-job, not by the hour. Use this number as your <strong>minimum break-even rate</strong> — every job you take should beat this rate after materials. Compare to local competitors before quoting.</p>
                     </div>
                 </div>
 
@@ -2494,6 +2506,7 @@
                                     <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:#cbd5e1;border-radius:30px;transition:0.3s;"></span>
                                 </label>
                             </div>
+
                             <h4 class="text-lg font-semibold mb-4 text-orange">Sharing Estimates &amp; Invoices</h4>
                             <p class="text-xs text-gray-700 mb-4">No setup needed. Click Send on any estimate or invoice — the app generates a link you share via text, WhatsApp, email, or any app. Your customer taps the link and sees a professional page where they can sign or pay.</p>
                             <div class="p-3 rounded" style="background:#f0fdf4;border:1px solid #bbf7d0;">
@@ -2598,12 +2611,12 @@
                     <div>
                         <label class="block mb-2">Type</label>
                         <select id="schedType" required>
-                            <option value="job">🔨 Job / Service</option>
-                            <option value="estimate">📋 Estimate / Site Visit</option>
-                            <option value="meeting">🤝 Meeting / Consultation</option>
-                            <option value="follow-up">📞 Follow-Up</option>
-                            <option value="delivery">🚚 Delivery / Pickup</option>
-                            <option value="other">📌 Other</option>
+                            <option value="job">Job / Service</option>
+                            <option value="estimate">Estimate / Site Visit</option>
+                            <option value="meeting">Meeting / Consultation</option>
+                            <option value="follow-up">Follow-Up</option>
+                            <option value="delivery">Delivery / Pickup</option>
+                            <option value="other">Other</option>
                         </select>
                     </div>
                     <div>
@@ -3438,16 +3451,18 @@
                 <!-- Auto-attach banner (shows when opened from estimate/contract) -->
                 <div id="layoutAutoAttachBanner" style="display:none;background:#fef7f4;border:1px solid #fed7c5;border-radius:8px;padding:10px 14px;margin-bottom:10px;display:none;align-items:center;justify-content:space-between;gap:10px;">
                     <span style="font-size:13px;color:#0f172a;font-weight:600;" id="layoutAutoAttachLabel">Attaching to: —</span>
-                    <button class="btn-primary text-sm" onclick="saveAndAutoAttach()" style="white-space:nowrap;">💾 Save &amp; Attach to Estimate</button>
+                    <button class="btn-primary text-sm" onclick="saveAndAutoAttach()" style="white-space:nowrap;">Save &amp; Attach</button>
                 </div>
                 <!-- Manual attach row -->
                 <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
                     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                        <button class="btn-secondary text-sm" onclick="saveLayoutDrawing()">💾 Save Only</button>
+                        <button class="btn-secondary text-sm" onclick="saveLayoutDrawing()">Save Drawing</button>
+                        <button class="btn-secondary text-sm" onclick="document.getElementById('photoUploadInput').click()" style="background:#dbeafe;color:#1e40af;border-color:#93c5fd;">Upload Photo</button>
+                        <input type="file" id="photoUploadInput" accept="image/*" capture="environment" style="display:none;" onchange="uploadJobsitePhoto(event)">
                         <select id="layoutAttachTarget" style="padding:8px 12px;font-size:13px;border-radius:8px;border:1px solid #e2e8f0;max-width:220px;">
                             <option value="">Attach to...</option>
                         </select>
-                        <button class="btn-primary text-sm" onclick="attachLayoutToDoc()">Attach ✓</button>
+                        <button class="btn-primary text-sm" onclick="attachLayoutToDoc()">Attach</button>
                     </div>
                     <div style="display:flex;gap:8px;align-items:center;">
                         <span style="font-size:12px;color:#94a3b8;">Saved:</span>
@@ -3813,6 +3828,27 @@
             loadData();
         }
 
+        // Determine if a hex color is light or dark (for text contrast)
+        function _isLightColor(hex) {
+            if (!hex || typeof hex !== 'string') return false;
+            hex = hex.replace('#', '');
+            if (hex.length === 3) hex = hex.split('').map(function(c){ return c + c; }).join('');
+            if (hex.length !== 6) return false;
+            var r = parseInt(hex.slice(0, 2), 16);
+            var g = parseInt(hex.slice(2, 4), 16);
+            var b = parseInt(hex.slice(4, 6), 16);
+            // Perceived luminance formula (ITU-R BT.601)
+            var luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            return luminance > 0.6; // true = light bg, use dark text
+        }
+        function _textOn(bgHex) {
+            return _isLightColor(bgHex) ? '#0f172a' : '#ffffff';
+        }
+        function _textOnSoft(bgHex) {
+            // Slightly muted version of contrast color (for secondary text)
+            return _isLightColor(bgHex) ? 'rgba(15,23,42,0.7)' : 'rgba(255,255,255,0.85)';
+        }
+
         function _normalizeSocial(value, baseUrl) {
             if (!value) return '';
             value = (value || '').trim();
@@ -3886,7 +3922,7 @@
                             currentUserStatus = 'grace';
                             enterApp();
                             setTimeout(function() {
-                                toast('⚠️ Payment failed — ' + daysLeft + ' day(s) left before lockout. Update billing now.', 8000);
+                                toast('Payment failed — ' + daysLeft + ' day(s) left before lockout. Update billing now.', 8000);
                             }, 2000);
                         }
                         return;
@@ -3950,6 +3986,8 @@
             updateDashboard();
             renderCalendar();
             checkNotifications();
+            // Apply saved view preference for estimates
+            try { setEstView(_estView); } catch (e) {}
             setInterval(checkNotifications, 60 * 60 * 1000); // every hour for time-based reminders
             startLeadsListener();
             initKanbanDrag();
@@ -4266,7 +4304,7 @@
                         '<div style="width:280px;">' +
                             '<div style="display:flex;justify-content:space-between;padding:10px 16px;"><span style="color:#333;font-weight:600;">SUBTOTAL</span><span style="color:#222;" id="pubSubtotal">$' + est.total + '</span></div>' +
                             '<div style="display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #eee;"><span style="color:#333;font-weight:600;">DISCOUNT</span><span style="color:#222;">$0</span></div>' +
-                            '<div style="display:flex;justify-content:space-between;padding:16px;background:' + brandCol + ';border-radius:8px;margin-top:8px;"><span style="color:#000;font-weight:800;font-size:18px;">TOTAL</span><span style="color:#000;font-weight:800;font-size:24px;" id="pubTotal">$' + est.total + '</span></div>' +
+                            '<div style="display:flex;justify-content:space-between;padding:16px;background:' + brandCol + ';border-radius:8px;margin-top:8px;"><span style="color:' + _textOn(brandCol) + ';font-weight:800;font-size:18px;">TOTAL</span><span style="color:' + _textOn(brandCol) + ';font-weight:800;font-size:24px;" id="pubTotal">$' + est.total + '</span></div>' +
                         '</div>' +
                     '</div>' +
                     (hasSections ? '<p style="color:#94a3b8;font-size:12px;text-align:right;margin:6px 0 0;">* Total updates as you toggle sections above</p>' : '') +
@@ -4732,13 +4770,13 @@
                 el.onclick = null;
                 setTimeout(function() { el.style.display = 'none'; }, 3000);
             } else if (status === 'timeout') {
-                el.innerHTML = '⚠️ Sync stuck — <u style="cursor:pointer;">tap to fix</u>';
+                el.innerHTML = 'Sync stuck — <u style="cursor:pointer;">tap to fix</u>';
                 el.style.color = '#ef4444';
                 el.style.display = 'inline';
                 el.style.cursor = 'pointer';
                 el.onclick = function() { forceReconnect(); };
             } else {
-                var msg = detail ? ('⚠️ ' + detail) : '⚠️ Sync error';
+                var msg = detail ? ('' + detail) : 'Sync error';
                 el.innerHTML = msg + ' — <u style="cursor:pointer;">tap to retry</u>';
                 el.style.color = '#ef4444';
                 el.style.display = 'inline';
@@ -4973,7 +5011,7 @@
                     if (!localDoc.signedDate) localDoc.signedDate = pubDoc.signedDate;
                     if (!localDoc.signature) localDoc.signature = pubDoc.signature;
                     saveData();
-                    _showInstantToast('🎉 ' + customerName + ' signed ' + docType + ' ' + docNum);
+                    _showInstantToast('' + customerName + ' signed ' + docType + ' ' + docNum);
                     updateNotificationBadge();
                     renderNotifications();
                     updateDashboard(); // refresh Recent Activity
@@ -5026,7 +5064,7 @@
                         contractId: docType === 'contract' ? pubDoc.id : null
                     });
                     saveData();
-                    _showInstantToast('👀 ' + customerName + ' viewed ' + docType + ' ' + docNum);
+                    _showInstantToast('' + customerName + ' viewed ' + docType + ' ' + docNum);
                     updateNotificationBadge();
                     renderNotifications();
                     updateDashboard();
@@ -5049,7 +5087,7 @@
                 leadId: lead.id
             });
             saveData();
-            _showInstantToast('🔥 New lead: ' + (lead.name || 'Anonymous'));
+            _showInstantToast('New lead: ' + (lead.name || 'Anonymous'));
             updateNotificationBadge();
             renderNotifications();
             updateDashboard();
@@ -5200,7 +5238,7 @@
             const now = new Date();
             const notificationHours = parseInt(appData.settings.jobNotificationHours) || 24;
             const notificationMs = notificationHours * 60 * 60 * 1000;
-            
+
             appData.scheduledJobs.forEach(function(job) {
                 const jobDate = new Date(job.date + ' ' + job.time);
                 const timeUntilJob = jobDate - now;
@@ -5409,9 +5447,7 @@
                 jobsForDay.forEach(function(job) {
                     const eventDiv = document.createElement('div');
                     eventDiv.className = 'calendar-event calendar-event-' + (job.type || 'job');
-                    var icons = { job:'🔨', estimate:'📋', meeting:'🤝', 'follow-up':'📞', delivery:'🚚', other:'📌' };
-                    var icon = icons[job.type] || '🔨';
-                    eventDiv.textContent = icon + ' ' + job.time + ' ' + job.title;
+                    eventDiv.textContent = job.time + ' ' + job.title;
                     eventDiv.title = (job.type||'job').toUpperCase() + ': ' + job.title + ' (' + job.customerName + ')';
                     eventDiv.onclick = function(e) {
                         e.stopPropagation();
@@ -5932,11 +5968,11 @@
                 '<div style="padding:16px 24px;">' +
                     '<p style="margin:0 0 12px;font-size:12px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Quick Templates</p>' +
                     [
-                        ['arriving',  '🚗 On My Way',         'Im 30 min out from your property'],
-                        ['starting',  '🔨 Started Working',    'Arrived and starting the job'],
-                        ['complete',  '✅ Job Complete',       'Project is finished, please review'],
-                        ['follow-up', '📩 Follow-Up',          'Following up on your estimate'],
-                        ['thanks',    '⭐ Thank You + Review', 'Asks for a Google review']
+                        ['arriving',  'On My Way',         'Im 30 min out from your property'],
+                        ['starting',  'Started Working',    'Arrived and starting the job'],
+                        ['complete',  'Job Complete',       'Project is finished, please review'],
+                        ['follow-up', 'Follow-Up',          'Following up on your estimate'],
+                        ['thanks',    'Thank You + Review', 'Asks for a Google review']
                     ].map(function(t) {
                         return '<button onclick="_textCustomer(\'' + id + '\',\'' + t[0] + '\');document.getElementById(\'textMenuModal\').remove();" style="width:100%;text-align:left;padding:12px 14px;background:#f8f9fb;border:1px solid #e8e8ec;border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;">' +
                             '<div style="font-weight:700;font-size:14px;color:#0f172a;margin-bottom:2px;">' + t[1] + '</div>' +
@@ -5944,7 +5980,7 @@
                         '</button>';
                     }).join('') +
                     '<button onclick="_textCustomer(\'' + id + '\',\'\');document.getElementById(\'textMenuModal\').remove();" style="width:100%;text-align:left;padding:12px 14px;background:#fff;border:1px dashed #cbd5e1;border-radius:10px;cursor:pointer;color:#475569;font-size:14px;">' +
-                        '✏️ Custom message (blank)' +
+                        'Custom message' +
                     '</button>' +
                 '</div>' +
                 '<div style="padding:12px 24px;border-top:1px solid #e8e8ec;background:#fafafa;text-align:right;">' +
@@ -5968,8 +6004,8 @@
                     '<td class="py-3 px-4">' + (c.phone || '-') + '</td>' +
                     '<td class="py-3 px-4">' + (c.address || '-') + '</td>' +
                     '<td class="py-3 px-4 text-right" style="white-space:nowrap;">' +
-                        (c.phone ? '<button onclick="_openTextMenu(\'' + c.id + '\')" title="Send text" style="margin-right:6px;padding:6px 12px;font-size:12px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;border-radius:8px;font-weight:700;cursor:pointer;">💬 Text</button>' : '') +
-                        '<button class="btn-secondary" style="margin-right:6px;padding:6px 12px;font-size:12px;" onclick="editCustomer(\'' + c.id + '\')">✏️ Edit</button>' +
+                        (c.phone ? '<button onclick="_openTextMenu(\'' + c.id + '\')" title="Send text" style="margin-right:6px;padding:6px 12px;font-size:12px;background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;border-radius:8px;font-weight:700;cursor:pointer;">Text</button>' : '') +
+                        '<button class="btn-secondary" style="margin-right:6px;padding:6px 12px;font-size:12px;" onclick="editCustomer(\'' + c.id + '\')">Edit</button>' +
                         '<button class="btn-danger" onclick="deleteCustomer(\'' + c.id + '\')">Delete</button>' +
                     '</td>' +
                 '</tr>';
@@ -7116,7 +7152,181 @@
             renderDocuments();
         }
 
+        // ── KANBAN BOARD VIEW ──────────────────────────────────────────────
+        var _estView = localStorage.getItem('kdr_est_view') || 'kanban';
+
+        function setEstView(view) {
+            _estView = view;
+            try { localStorage.setItem('kdr_est_view', view); } catch (e) {}
+
+            var kanbanView = document.getElementById('kanbanView');
+            var listView   = document.getElementById('documentsList');
+            var kanbanBtn  = document.getElementById('viewModeKanban');
+            var listBtn    = document.getElementById('viewModeList');
+
+            if (view === 'kanban') {
+                if (kanbanView) kanbanView.style.display = '';
+                if (listView)   listView.style.display = 'none';
+                if (kanbanBtn) { kanbanBtn.style.background = '#fff'; kanbanBtn.style.color = '#0f172a'; kanbanBtn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)'; }
+                if (listBtn)   { listBtn.style.background = 'transparent'; listBtn.style.color = '#64748b'; listBtn.style.boxShadow = 'none'; }
+            } else {
+                if (kanbanView) kanbanView.style.display = 'none';
+                if (listView)   listView.style.display = '';
+                if (kanbanBtn) { kanbanBtn.style.background = 'transparent'; kanbanBtn.style.color = '#64748b'; kanbanBtn.style.boxShadow = 'none'; }
+                if (listBtn)   { listBtn.style.background = '#fff'; listBtn.style.color = '#0f172a'; listBtn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)'; }
+            }
+            renderDocuments();
+        }
+
+        function _stageOf(doc) {
+            if (doc.type === 'invoice') {
+                return doc.status === 'paid' ? 'paid' : 'invoice';
+            }
+            switch (doc.status) {
+                case 'pending':
+                case 'draft':    return 'draft';
+                case 'sent':     return 'sent';
+                case 'viewed':   return 'viewed';
+                case 'approved':
+                case 'signed':   return 'signed';
+                case 'declined': return 'draft';
+                default:         return 'draft';
+            }
+        }
+
+        var KANBAN_STAGES = [
+            { key: 'draft',     title: 'Draft',     color: '#94a3b8' },
+            { key: 'sent',      title: 'Sent',      color: '#3b82f6' },
+            { key: 'viewed',    title: 'Viewed',    color: '#a855f7' },
+            { key: 'signed',    title: 'Signed',    color: '#22c55e' },
+            { key: 'invoice',   title: 'Invoiced',  color: '#f59e0b' },
+            { key: 'paid',      title: 'Paid',      color: '#16a34a' }
+        ];
+
+        function _renderKanban() {
+            var board = document.getElementById('kanbanBoard');
+            if (!board) return;
+
+            // Combine estimates + invoices into one list
+            var allDocs = (appData.estimates || []).map(function(e) { return Object.assign({ type: 'estimate' }, e); })
+                .concat((appData.invoices || []).map(function(i) { return Object.assign({ type: 'invoice' }, i); }));
+
+            // Group by stage
+            var groups = {};
+            KANBAN_STAGES.forEach(function(s) { groups[s.key] = []; });
+            allDocs.forEach(function(d) {
+                var stage = _stageOf(d);
+                if (groups[stage]) groups[stage].push(d);
+            });
+
+            // Sort each column by date (newest first)
+            Object.keys(groups).forEach(function(k) {
+                groups[k].sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); });
+            });
+
+            // Render columns
+            board.innerHTML = KANBAN_STAGES.map(function(stage) {
+                var docs = groups[stage.key];
+                var totalVal = docs.reduce(function(s, d) { return s + (parseFloat(d.total) || 0); }, 0);
+                var colorBg = stage.color + '15'; // hex with alpha
+
+                var cardsHtml = docs.length === 0
+                    ? '<div style="padding:24px 12px;text-align:center;color:#cbd5e1;font-size:11px;">Empty</div>'
+                    : docs.map(function(doc) {
+                        var docNum = '#' + (doc.id || '').slice(-6).toUpperCase();
+                        var custName = doc.customerName || 'Unknown';
+                        var amount = '$' + (parseFloat(doc.total) || 0).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0});
+                        var openFn = doc.type === 'invoice' ? "viewInvoice('" + doc.id + "')" : "viewEstimate('" + doc.id + "')";
+                        return '<div draggable="true" ondragstart="_kanbanDragStart(event,\'' + doc.id + '\',\'' + doc.type + '\')" ' +
+                            'onclick="' + openFn + '" ' +
+                            'style="background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;border-left:3px solid ' + stage.color + ';" ' +
+                            'onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\';this.style.transform=\'translateY(-1px)\'" ' +
+                            'onmouseout="this.style.boxShadow=\'none\';this.style.transform=\'\'">' +
+                            '<div style="font-weight:700;font-size:13px;color:#0f172a;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + custName + '</div>' +
+                            '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">' +
+                                '<span style="font-size:10px;color:#94a3b8;font-weight:600;">' + docNum + '</span>' +
+                                '<span style="font-weight:800;font-size:13px;color:' + stage.color + ';">' + amount + '</span>' +
+                            '</div>' +
+                            (doc.date ? '<div style="font-size:10px;color:#94a3b8;margin-top:4px;">' + doc.date + '</div>' : '') +
+                        '</div>';
+                    }).join('');
+
+                return '<div ondragover="event.preventDefault()" ondrop="_kanbanDrop(event,\'' + stage.key + '\')" ' +
+                    'style="flex:0 0 270px;background:' + colorBg + ';border-radius:12px;padding:12px;display:flex;flex-direction:column;max-height:75vh;">' +
+                    // Column header
+                    '<div style="margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid ' + stage.color + ';">' +
+                        '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+                            '<span style="font-weight:800;font-size:13px;color:#0f172a;text-transform:uppercase;letter-spacing:0.5px;">' + stage.title + '</span>' +
+                            '<span style="background:' + stage.color + ';color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;">' + docs.length + '</span>' +
+                        '</div>' +
+                        (totalVal > 0 ? '<div style="font-size:11px;color:#64748b;margin-top:3px;font-weight:600;">$' + totalVal.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0}) + ' total</div>' : '') +
+                    '</div>' +
+                    // Cards
+                    '<div style="overflow-y:auto;flex:1;">' + cardsHtml + '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        // Drag and drop handlers
+        var _kanbanDragData = null;
+        function _kanbanDragStart(event, docId, docType) {
+            _kanbanDragData = { id: docId, type: docType };
+            event.stopPropagation();
+            try { event.dataTransfer.effectAllowed = 'move'; } catch(e){}
+        }
+
+        function _kanbanDrop(event, targetStage) {
+            event.preventDefault();
+            if (!_kanbanDragData) return;
+            var doc;
+            if (_kanbanDragData.type === 'invoice') {
+                doc = appData.invoices.find(function(i) { return i.id === _kanbanDragData.id; });
+            } else {
+                doc = appData.estimates.find(function(e) { return e.id === _kanbanDragData.id; });
+            }
+            if (!doc) return;
+
+            // Map kanban stage to status field
+            var newStatus;
+            switch (targetStage) {
+                case 'draft':   newStatus = 'pending'; break;
+                case 'sent':    newStatus = 'sent';    break;
+                case 'viewed':  newStatus = 'viewed';  break;
+                case 'signed':  newStatus = 'signed';  break;
+                case 'invoice': newStatus = 'unpaid';  break;
+                case 'paid':    newStatus = 'paid';    break;
+                default: newStatus = doc.status;
+            }
+            doc.status = newStatus;
+
+            // If moved to "Invoiced" stage and it's still an estimate, convert to invoice
+            if (targetStage === 'invoice' && _kanbanDragData.type === 'estimate') {
+                if (typeof convertToInvoice === 'function') {
+                    if (confirm('Convert this estimate to an invoice?')) {
+                        convertToInvoice(doc.id);
+                    } else {
+                        return;
+                    }
+                }
+            }
+            // If moved to "Paid", set paid status on invoice
+            if (targetStage === 'paid' && _kanbanDragData.type === 'invoice') {
+                doc.status = 'paid';
+                doc.paidDate = new Date().toISOString();
+            }
+
+            saveData();
+            renderDocuments();
+            toast('Moved to ' + targetStage.replace('-', ' ') + ' ✓');
+            _kanbanDragData = null;
+        }
+
         function renderDocuments() {
+            // Render kanban view if active
+            if (_estView === 'kanban') {
+                _renderKanban();
+            }
+            // Always also render list view in case user toggles
             var container = document.getElementById('documentsList');
             if (!container) return;
             var docs = (currentDocTab === 'invoices' ? appData.invoices : appData.estimates)
@@ -7129,12 +7339,12 @@
 
             container.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;">' +
                 docs.map(function(doc) {
-                    var estBtns = '<button onclick="viewEstimate(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#ff6b35;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">View</button>' +
+                    var estBtns = '<button onclick="viewEstimate(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#0f172a;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">View</button>' +
                         '<button onclick="sendDocument(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Send</button>' +
                         '<button onclick="printDocument(\'' + doc.id + '\',\'estimate\')" title="Print or Save as PDF" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">PDF</button>' +
                         '<button onclick="convertToInvoice(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">&rarr; Inv</button>' +
                         '<button onclick="deleteDocument(\'' + doc.id + '\',\'estimate\')" style="padding:7px 8px;background:#fff0f0;color:#ef4444;border:1px solid #fecaca;border-radius:7px;font-size:12px;cursor:pointer;">&times;</button>';
-                    var invBtns = '<button onclick="viewInvoice(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#ff6b35;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">View</button>' +
+                    var invBtns = '<button onclick="viewInvoice(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#0f172a;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">View</button>' +
                         '<button onclick="sendDocument(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Send</button>' +
                         '<button onclick="printDocument(\'' + doc.id + '\',\'invoice\')" title="Print or Save as PDF" style="flex:1;padding:7px 4px;background:#f8f9fb;color:#333;border:1px solid #e5e5e5;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">PDF</button>' +
                         (doc.status === 'unpaid' ? '<button onclick="markInvoicePaid(\'' + doc.id + '\')" style="flex:1;padding:7px 4px;background:#f0fdf4;color:#22c55e;border:1px solid #bbf7d0;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;">Paid &check;</button>' : '') +
@@ -7306,6 +7516,10 @@
 
                 // Full HTML email
                 // ── PREMIUM EMAIL TEMPLATE — single fixed layout ──
+                // Auto-adapt text color to brand color (light vs dark bg)
+                var headerText = _textOn(bizColor);
+                var headerTextSoft = _textOnSoft(bizColor);
+                var actionTextColor = _textOn(bizColor);
                 
                 // Build line items rows
                 var itemsHtml = (doc.lineItems || []).map(function(item, idx) {
@@ -7327,7 +7541,7 @@
                 // Action button
                 var actionHtml = '';
                 if (doc.type === 'estimate') {
-                    actionHtml = '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:28px 0 8px;"><tr><td align="center"><a href="' + shareUrl + '" target="_blank" style="display:inline-block;background:' + bizColor + ';color:#000;padding:18px 44px;border-radius:10px;text-decoration:none;font-weight:800;font-size:16px;font-family:Arial,sans-serif;letter-spacing:0.5px;box-shadow:0 4px 14px rgba(0,0,0,0.08);">REVIEW &amp; SIGN ESTIMATE</a></td></tr></table>';
+                    actionHtml = '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:28px 0 8px;"><tr><td align="center"><a href="' + shareUrl + '" target="_blank" style="display:inline-block;background:' + bizColor + ';color:' + actionTextColor + ';padding:18px 44px;border-radius:10px;text-decoration:none;font-weight:800;font-size:16px;font-family:Arial,sans-serif;letter-spacing:0.5px;box-shadow:0 4px 14px rgba(0,0,0,0.08);">REVIEW &amp; SIGN ESTIMATE</a></td></tr></table>';
                 } else if (s.stripeLink) {
                     actionHtml = '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:28px 0 8px;"><tr><td align="center"><a href="' + s.stripeLink + '" target="_blank" style="display:inline-block;background:#22c55e;color:#fff;padding:18px 44px;border-radius:10px;text-decoration:none;font-weight:800;font-size:16px;font-family:Arial,sans-serif;letter-spacing:0.5px;box-shadow:0 4px 14px rgba(34,197,94,0.3);">PAY $' + (doc.total||'0') + ' NOW</a></td></tr></table>';
                 }
@@ -7339,14 +7553,14 @@
                         // ── HEADER: Big logo + business name + slogan + contact ──
                         '<tr><td style="background:' + bizColor + ';padding:40px 30px;text-align:center;">' +
                             (s.logo ? (function(){ var sz={small:60,medium:100,large:140,xl:180}[s.logoSize||'large']||140; return '<img src="' + s.logo + '" alt="" style="max-height:' + sz + 'px;max-width:' + (sz*2) + 'px;margin:0 auto 16px;display:block;">'; })() : '') +
-                            '<h1 style="color:#000000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:3px;font-family:Arial,sans-serif;">' + bizName + '</h1>' +
-                            (s.slogan ? '<p style="color:#000000;margin:8px 0 0;font-size:13px;font-weight:600;letter-spacing:1px;font-family:Arial,sans-serif;font-style:italic;">' + s.slogan + '</p>' : '') +
+                            '<h1 style="color:' + headerText + ';margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:3px;font-family:Arial,sans-serif;">' + bizName + '</h1>' +
+                            (s.slogan ? '<p style="color:' + headerText + ';margin:8px 0 0;font-size:13px;font-weight:600;letter-spacing:1px;font-family:Arial,sans-serif;font-style:italic;">' + s.slogan + '</p>' : '') +
                             '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:16px;"><tr><td align="center">' +
-                                (s.phone ? '<span style="color:#000000;font-size:13px;font-weight:600;font-family:Arial,sans-serif;">' + s.phone + '</span>' : '') +
-                                (s.phone && s.email ? '<span style="color:#000000;font-size:13px;margin:0 10px;">|</span>' : '') +
-                                (s.email ? '<span style="color:#000000;font-size:13px;font-weight:600;font-family:Arial,sans-serif;">' + s.email + '</span>' : '') +
+                                (s.phone ? '<span style="color:' + headerText + ';font-size:13px;font-weight:600;font-family:Arial,sans-serif;">' + s.phone + '</span>' : '') +
+                                (s.phone && s.email ? '<span style="color:' + headerText + ';font-size:13px;margin:0 10px;">|</span>' : '') +
+                                (s.email ? '<span style="color:' + headerText + ';font-size:13px;font-weight:600;font-family:Arial,sans-serif;">' + s.email + '</span>' : '') +
                             '</td></tr></table>' +
-                            (s.license ? '<p style="color:#000000;font-size:11px;text-align:center;margin:8px 0 0;font-weight:700;letter-spacing:1px;font-family:Arial,sans-serif;">LICENSE #' + s.license + '</p>' : '') +
+                            (s.license ? '<p style="color:' + headerText + ';font-size:11px;text-align:center;margin:8px 0 0;font-weight:700;letter-spacing:1px;font-family:Arial,sans-serif;">LICENSE #' + s.license + '</p>' : '') +
                         '</td></tr>' +
 
                         // ── DOC TITLE ──
@@ -7371,7 +7585,7 @@
 
                             // ── ITEMS ──
                             '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 4px;border-radius:10px;overflow:hidden;border:1px solid #e5e7eb;">' +
-                                '<tr><th style="padding:14px 20px;text-align:left;font-size:12px;color:#000000;font-weight:800;text-transform:uppercase;letter-spacing:1px;background:' + bizColor + ';font-family:Arial,sans-serif;">SERVICE / DESCRIPTION</th>' +
+                                '<tr><th style="padding:14px 20px;text-align:left;font-size:12px;color:#000000;font-weight:800;text-transform:uppercase;letter-spacing:1px;background:' + bizColor + ';font-family:Arial,sans-serif;color:' + headerText + ';">SERVICE / DESCRIPTION</th>' +
                                 '<th style="padding:14px 20px;text-align:right;font-size:12px;color:#000000;font-weight:800;text-transform:uppercase;letter-spacing:1px;background:' + bizColor + ';font-family:Arial,sans-serif;width:130px;">AMOUNT</th></tr>' +
                                 itemsHtml +
                             '</table>' +
@@ -7380,13 +7594,30 @@
                             '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:16px;"><tr><td align="right">' +
                                 '<table cellpadding="18" cellspacing="0" border="0" style="width:300px;"><tr><td style="background:' + bizColor + ';border-radius:10px;">' +
                                     '<table cellpadding="0" cellspacing="0" border="0" width="100%"><tr>' +
-                                    '<td style="color:#000000;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:1.5px;font-family:Arial,sans-serif;">TOTAL DUE</td>' +
-                                    '<td align="right" style="color:#000000;font-weight:900;font-size:26px;font-family:Arial,sans-serif;letter-spacing:0.5px;">$' + (doc.total||'0') + '</td>' +
+                                    '<td style="color:' + headerText + ';font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:1.5px;font-family:Arial,sans-serif;">TOTAL DUE</td>' +
+                                    '<td align="right" style="color:' + headerText + ';font-weight:900;font-size:26px;font-family:Arial,sans-serif;letter-spacing:0.5px;">$' + (doc.total||'0') + '</td>' +
                                     '</tr></table>' +
                                 '</td></tr></table>' +
                             '</td></tr></table>' +
 
                             (doc.terms ? '<table cellpadding="16" cellspacing="0" border="0" width="100%" style="margin-top:20px;border:1px solid #e5e7eb;border-radius:8px;background:#fafafa;"><tr><td><p style="font-size:11px;font-weight:800;color:#0f172a;margin:0 0 8px;text-transform:uppercase;letter-spacing:1px;font-family:Arial,sans-serif;">Terms &amp; Conditions</p><p style="font-size:12px;color:#475569;margin:0;white-space:pre-wrap;font-family:Arial,sans-serif;line-height:1.6;">' + doc.terms + '</p></td></tr></table>' : '') +
+
+                            // ── LAYOUT/PHOTO ATTACHMENTS ──
+                            (function() {
+                                if (!doc.layouts || !doc.layouts.length) return '';
+                                var layoutHtml = '<table cellpadding="16" cellspacing="0" border="0" width="100%" style="margin-top:20px;background:#fafafa;border-radius:10px;"><tr><td>' +
+                                    '<p style="font-size:11px;font-weight:800;color:' + bizColor + ';margin:0 0 12px;text-transform:uppercase;letter-spacing:1px;font-family:Arial,sans-serif;">Photos &amp; Layouts</p>';
+                                doc.layouts.forEach(function(lid) {
+                                    var lay = (appData.layouts || []).find(function(x) { return x.id === lid; });
+                                    if (lay && lay.dataUrl) {
+                                        layoutHtml += '<div style="margin-bottom:12px;"><img src="' + lay.dataUrl + '" alt="" style="max-width:100%;border-radius:8px;border:1px solid #e5e7eb;display:block;">' +
+                                            (lay.name ? '<p style="font-size:11px;color:#64748b;margin:4px 0 0;font-family:Arial,sans-serif;">' + lay.name + '</p>' : '') +
+                                            '</div>';
+                                    }
+                                });
+                                layoutHtml += '</td></tr></table>';
+                                return layoutHtml;
+                            })() +
 
                             actionHtml +
 
@@ -7394,10 +7625,10 @@
 
                         // ── FOOTER ──
                         '<tr><td style="background:' + bizColor + ';padding:24px 30px;text-align:center;">' +
-                            '<p style="margin:0;font-size:14px;color:#000000;font-weight:800;text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif;">' + bizName + '</p>' +
-                            (s.phone ? '<p style="margin:6px 0 0;font-size:13px;color:#000000;font-weight:600;font-family:Arial,sans-serif;">' + s.phone + '</p>' : '') +
+                            '<p style="margin:0;font-size:14px;color:' + headerText + ';font-weight:800;text-transform:uppercase;letter-spacing:2px;font-family:Arial,sans-serif;">' + bizName + '</p>' +
+                            (s.phone ? '<p style="margin:6px 0 0;font-size:13px;color:' + headerText + ';font-weight:600;font-family:Arial,sans-serif;">' + s.phone + '</p>' : '') +
                             (socialLinks.length ? '<div style="margin-top:14px;">' + socialLinks.join('') + '</div>' : '') +
-                            '<p style="margin:14px 0 0;font-size:11px;color:rgba(0,0,0,0.6);font-family:Arial,sans-serif;">Thank you for your business</p>' +
+                            '<p style="margin:14px 0 0;font-size:11px;color:' + headerTextSoft + ';font-family:Arial,sans-serif;">Thank you for your business</p>' +
                         '</td></tr>' +
                     '</table></body></html>';
 
@@ -7881,7 +8112,7 @@
                     '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:24px;padding-top:20px;border-top:1px solid #f1f5f9;">' +
                         '<button class="btn-secondary" onclick="refreshEstimate(\'' + doc.id + '\')">🔄 Refresh</button>' +
                         (!doc.signature ? '<button class="btn-primary" onclick="openSignatureModal(\'' + doc.id + '\')">✍️ Approve &amp; Sign</button>' : '') +
-                        '<button class="btn-secondary" onclick="openEditEstimateModal(\'' + doc.id + '\'); closeModal(\'invoiceViewModal\');">✏️ Edit</button>' +
+                        '<button class="btn-secondary" onclick="openEditEstimateModal(\'' + doc.id + '\'); closeModal(\'invoiceViewModal\');">Edit</button>' +
                         '<button class="btn-secondary" onclick="sendDocument(\'' + doc.id + '\')">📧 Send</button>' +
                         '<button class="btn-secondary" onclick="convertToInvoice(\'' + doc.id + '\'); closeModal(\'invoiceViewModal\');">→ Invoice</button>' +
                         '<button class="btn-secondary" onclick="closeModal(\'invoiceViewModal\')">Close</button>' +
@@ -8471,7 +8702,7 @@
             document.getElementById('goalLabel').textContent = 'MONTHLY REVENUE GOAL';
             document.getElementById('goalTitle').textContent = '$' + Math.round(mtdRevenue).toLocaleString() + ' / $' + Math.round(goals.revenue).toLocaleString();
             document.getElementById('goalSubtext').textContent = goals.revenue > 0
-                ? (revPct >= 100 ? '🎉 Goal hit! Crushing it.' : '$' + Math.round(goals.revenue - mtdRevenue).toLocaleString() + ' to go this month')
+                ? (revPct >= 100 ? 'Goal hit! Crushing it.' : '$' + Math.round(goals.revenue - mtdRevenue).toLocaleString() + ' to go this month')
                 : 'Click "Edit Goals" to set your monthly target';
             document.getElementById('goalPercent').textContent = Math.round(revPct) + '%';
             document.getElementById('goalDaysLeft').textContent = daysLeft + ' day' + (daysLeft===1?'':'s') + ' left in ' + now.toLocaleDateString('default', { month: 'long' });
@@ -8605,10 +8836,10 @@
             var invsPaid = (appData.invoices || []).filter(function(i){ return i.status === 'paid'; }).length;
 
             var stages = [
-                { name: 'Leads',           count: leads,      color: '#3b82f6', icon: '🎯' },
-                { name: 'Estimates Sent',  count: estsSent,   color: '#f59e0b', icon: '📨' },
-                { name: 'Signed',          count: estsSigned, color: '#22c55e', icon: '✍️' },
-                { name: 'Paid',            count: invsPaid,   color: '#8b5cf6', icon: '💰' }
+                { name: 'Leads', count: leads, color: '#3b82f6' },
+                { name: 'Estimates Sent', count: estsSent, color: '#f59e0b' },
+                { name: 'Signed', count: estsSigned, color: '#22c55e' },
+                { name: 'Paid', count: invsPaid, color: '#8b5cf6' }
             ];
 
             var maxCount = Math.max.apply(null, stages.map(function(s){ return s.count; }));
@@ -8629,7 +8860,7 @@
                 }
                 return '<div style="padding:8px 0;">' +
                     '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
-                        '<span style="font-weight:700;font-size:13px;color:#0f172a;">' + stage.icon + ' ' + stage.name + convRate + '</span>' +
+                        '<span style="font-weight:700;font-size:13px;color:#0f172a;">' + stage.name + convRate + '</span>' +
                         '<span style="font-weight:800;font-size:14px;color:' + stage.color + ';">' + stage.count + '</span>' +
                     '</div>' +
                     '<div style="background:#f1f5f9;border-radius:6px;height:10px;overflow:hidden;">' +
@@ -8650,9 +8881,7 @@
             }
         }
 
-        function _renderTopCustomers() {
-            // Legacy stub — kept to avoid errors. Now replaced by _renderFunnel.
-        }
+        function _renderTopCustomers() { /* removed — replaced by Conversion Funnel */ }
 
         function _renderLeadSources() {
             // Combine sources from leads (website form) AND customers (manual entries)
@@ -9608,6 +9837,58 @@
                 if (ev.key === 'Escape') inp.style.display = 'none';
             };
             inp.onblur = function() { setTimeout(function(){ inp.style.display='none'; }, 200); };
+        }
+
+        function uploadJobsitePhoto(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) { toast('Photo too large — max 5MB'); return; }
+
+            toast('Processing photo...');
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var img = new Image();
+                img.onload = function() {
+                    // Resize to max 1200x1200 for reasonable file size
+                    var canvas = document.createElement('canvas');
+                    var maxW = 1200, maxH = 1200;
+                    var w = img.width, h = img.height;
+                    if (w > maxW) { h = h * (maxW/w); w = maxW; }
+                    if (h > maxH) { w = w * (maxH/h); h = maxH; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    var resized = canvas.toDataURL('image/jpeg', 0.85);
+
+                    // Save as a layout
+                    if (!appData.layouts) appData.layouts = [];
+                    var layout = {
+                        id: 'layout_' + Date.now(),
+                        name: 'Photo ' + new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+                        dataUrl: resized,
+                        createdAt: new Date().toISOString(),
+                        type: 'photo'
+                    };
+                    appData.layouts.push(layout);
+                    saveData();
+
+                    // Auto-attach to current doc if opened from estimate
+                    if (window._currentDocForLayout && window._currentDocForLayout.id) {
+                        var doc = window._currentDocForLayout;
+                        if (!doc.layouts) doc.layouts = [];
+                        doc.layouts.push(layout.id);
+                        saveData();
+                        toast('Photo saved & attached ✓');
+                    } else {
+                        toast('Photo saved ✓ Use "Attach to..." to add to estimate');
+                    }
+
+                    // Refresh thumbs and reset input
+                    if (typeof renderSavedLayoutThumbs === 'function') renderSavedLayoutThumbs();
+                    document.getElementById('photoUploadInput').value = '';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         function saveLayoutDrawing() {
@@ -11621,7 +11902,7 @@
             var notes = [];
             var leftover = totalFt % span;
             if (leftover > 0 && leftover < span * 0.5 && !mat.isFabric) {
-                notes.push('⚠️ Last section cut: ~' + leftover.toFixed(1) + ' ft. Order whole panels — cut on site.');
+                notes.push('Last section cut: ~' + leftover.toFixed(1) + ' ft. Order whole panels — cut on site.');
             }
             if (gates > 0) notes.push('🚪 ' + gates + ' gate(s): panels reduced by ' + gates + ', gate posts counted in post total.');
             if (netPosts > 30) notes.push('📦 Large job. Order 5–10% extra posts and caps for breakage/adjustments.');
