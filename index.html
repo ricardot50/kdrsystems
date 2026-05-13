@@ -12,6 +12,39 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
+        
+        
+        body.dark-mode .kanban-card { background: #131b2e !important; border-color: #1e293b !important; color: #e2e8f0 !important; }
+        body.dark-mode .kanban-card div { color: inherit; }
+
+        /* ── Toggle buttons (Board/List, time periods) ── */
+        .view-toggle {
+            display: flex;
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 3px;
+            gap: 2px;
+        }
+        .vt-btn {
+            padding: 8px 14px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.15s;
+        }
+        .vt-btn.active {
+            background: #fff;
+            color: #0f172a;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        body.dark-mode .view-toggle { background: #0a0f1a; }
+        body.dark-mode .vt-btn { color: #64748b; }
+        body.dark-mode .vt-btn.active { background: #1e293b; color: #f1f5f9; }
+
         /* ── PREMIUM TYPOGRAPHY ── */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         
@@ -123,70 +156,105 @@
             --text-muted: #94a3b8;
             --brand: #ff6b35;
         }
-        body.dark-mode {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --bg-sidebar: #1e293b;
-            --bg-header: #1e293b;
-            --border-color: #334155;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-        }
-        body {
-            overscroll-behavior: none;
-            -webkit-tap-highlight-color: transparent;
-            background: var(--bg-main);
-            min-height: 100vh;
-            color: var(--text-primary);
-            transition: background 0.2s, color 0.2s;
-        }
-        body.dark-mode .card { background: var(--bg-card); border-color: var(--border-color); color: #e2e8f0; }
-        body.dark-mode .stat-card { background: var(--bg-card); border-color: var(--border-color); color: #e2e8f0; }
-        body.dark-mode header { background: var(--bg-header) !important; border-color: var(--border-color) !important; }
-        body.dark-mode nav#sidebarNav { background: var(--bg-sidebar) !important; border-color: var(--border-color) !important; }
-        body.dark-mode nav#sidebarNav button { color: #94a3b8 !important; }
-        body.dark-mode nav#sidebarNav button:hover { color: #f1f5f9 !important; background: rgba(255,255,255,0.06) !important; }
-        body.dark-mode nav#sidebarNav button.active { color: #ff6b35 !important; }
-        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background: #0f172a !important; border-color: #334155 !important; color: #e2e8f0 !important; }
-        body.dark-mode input::placeholder, body.dark-mode textarea::placeholder { color: #475569 !important; }
-        body.dark-mode table { color: #e2e8f0; }
-        body.dark-mode table thead { background: #0f172a !important; }
-        body.dark-mode table thead th { color: #64748b !important; }
-        body.dark-mode table tbody tr { border-color: #334155; color: #cbd5e1; }
-        body.dark-mode table tbody tr:hover { background: #1e293b; }
-        body.dark-mode table tbody td { color: #cbd5e1 !important; }
-        body.dark-mode .notification-item { background: #1e293b; border-color: #334155; }
-        body.dark-mode .gradient-dark { background: #1e293b; }
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 { color: #f1f5f9 !important; }
-        body.dark-mode p, body.dark-mode span, body.dark-mode div { color: inherit; }
-        body.dark-mode label { color: #94a3b8 !important; }
-        body.dark-mode .text-gray-400 { color: #64748b !important; }
-        body.dark-mode .text-gray-500 { color: #64748b !important; }
+        /* ── COMPREHENSIVE DARK MODE ── */
+        body.dark-mode { background: #0a0f1a; color: #e2e8f0; }
+        body.dark-mode .stat-card,
+        body.dark-mode .card { background: #131b2e !important; border-color: #1e293b !important; color: #e2e8f0 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important; }
+        body.dark-mode .stat-card .text-sm,
+        body.dark-mode .stat-card p:first-child { color: #64748b !important; }
+        body.dark-mode .stat-card .text-4xl,
+        body.dark-mode .stat-card .text-3xl,
+        body.dark-mode .stat-card .text-2xl,
+        body.dark-mode .stat-card .text-xl { color: #f1f5f9 !important; }
+        body.dark-mode .text-gray-900 { color: #f1f5f9 !important; }
+        body.dark-mode .text-gray-800 { color: #e2e8f0 !important; }
+        body.dark-mode .text-gray-700 { color: #cbd5e1 !important; }
         body.dark-mode .text-gray-600 { color: #94a3b8 !important; }
-        body.dark-mode .text-gray-700 { color: #94a3b8 !important; }
-        body.dark-mode .text-gray-800 { color: #cbd5e1 !important; }
-        body.dark-mode .text-gray-900 { color: #e2e8f0 !important; }
-        body.dark-mode .text-black { color: #e2e8f0 !important; }
-        body.dark-mode .border-gray-200 { border-color: #334155 !important; }
-        body.dark-mode .border-gray-300 { border-color: #475569 !important; }
-        body.dark-mode .bg-white { background: #1e293b !important; }
-        body.dark-mode .bg-gray-50 { background: #0f172a !important; }
-        body.dark-mode .bg-gray-100 { background: #1e293b !important; }
-        body.dark-mode .bg-gray-200 { background: #334155 !important; }
-        body.dark-mode .shadow, body.dark-mode .shadow-lg, body.dark-mode .shadow-xl { box-shadow: 0 4px 24px rgba(0,0,0,0.4) !important; }
-        body.dark-mode .modal-content { background: #1e293b !important; color: #e2e8f0 !important; border-color: #334155 !important; }
-        body.dark-mode .modal-content h2, body.dark-mode .modal-content h3 { color: #f1f5f9 !important; }
-        body.dark-mode .modal-content label { color: #94a3b8 !important; }
+        body.dark-mode .text-gray-500 { color: #64748b !important; }
+        body.dark-mode .text-gray-400 { color: #475569 !important; }
+        body.dark-mode .text-black,
+        body.dark-mode .text-orange { color: #f1f5f9 !important; }
+        body.dark-mode header { background: #0f172a !important; border-color: #1e293b !important; }
+        body.dark-mode nav#sidebarNav { background: #0f172a !important; border-color: #1e293b !important; }
+        body.dark-mode nav#sidebarNav button { color: #94a3b8 !important; }
+        body.dark-mode nav#sidebarNav button:hover { color: #f8fafc !important; background: rgba(255,255,255,0.04) !important; }
+        body.dark-mode nav#sidebarNav button.active { color: #ff6b35 !important; background: rgba(255,107,53,0.08) !important; }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { 
+            background: #0a0f1a !important; 
+            border-color: #1e293b !important; 
+            color: #f1f5f9 !important; 
+        }
+        body.dark-mode input:focus, body.dark-mode select:focus, body.dark-mode textarea:focus {
+            border-color: #ff6b35 !important;
+            box-shadow: 0 0 0 3px rgba(255,107,53,0.15) !important;
+        }
+        body.dark-mode input::placeholder, body.dark-mode textarea::placeholder { color: #475569 !important; }
+        body.dark-mode label { color: #cbd5e1 !important; }
+        body.dark-mode table { color: #e2e8f0 !important; }
+        body.dark-mode table th { background: #0a0f1a !important; color: #94a3b8 !important; border-color: #1e293b !important; }
+        body.dark-mode table td { color: #cbd5e1 !important; border-color: #1e293b !important; }
+        body.dark-mode table tr:hover { background: #131b2e !important; }
+        body.dark-mode .notification-item { background: #131b2e !important; border-color: #1e293b !important; }
+        body.dark-mode .notification-item .text-gray-900 { color: #f1f5f9 !important; }
+        body.dark-mode .gradient-dark, body.dark-mode .gradient-orange-soft { background: #131b2e !important; }
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5 { color: #f1f5f9 !important; }
+        body.dark-mode .modal { background: rgba(0,0,0,0.75) !important; }
+        body.dark-mode .modal-content { background: #131b2e !important; color: #e2e8f0 !important; border-color: #1e293b !important; }
+        body.dark-mode .modal-content h2, body.dark-mode .modal-content h3, body.dark-mode .modal-content h4 { color: #f1f5f9 !important; }
+        body.dark-mode .modal-content label { color: #cbd5e1 !important; }
         body.dark-mode .modal-content p { color: #94a3b8 !important; }
-        body.dark-mode .btn-secondary { background: #334155 !important; color: #e2e8f0 !important; border-color: #475569 !important; }
-        body.dark-mode .kanban-col { background: #1e293b !important; border-color: #334155 !important; }
-        body.dark-mode .kanban-col h3 { color: #e2e8f0 !important; }
-        body.dark-mode .notification-panel-bg { background: #1e293b !important; border-color: #334155 !important; }
-        body.dark-mode #notificationsPanel { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .btn-secondary { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        body.dark-mode .btn-secondary:hover { background: #334155 !important; }
+        body.dark-mode .btn-danger { background: #7f1d1d !important; color: #fecaca !important; }
+        body.dark-mode .border-gray-100 { border-color: #1e293b !important; }
+        body.dark-mode .border-gray-200 { border-color: #1e293b !important; }
+        body.dark-mode .border-gray-300 { border-color: #334155 !important; }
+        body.dark-mode .bg-white { background: #131b2e !important; color: #e2e8f0 !important; }
+        body.dark-mode .bg-gray-50 { background: #0a0f1a !important; }
+        body.dark-mode .bg-gray-100 { background: #131b2e !important; }
+        body.dark-mode .bg-gray-200 { background: #1e293b !important; }
+        body.dark-mode .bg-orange-50 { background: rgba(255,107,53,0.08) !important; }
+        body.dark-mode .bg-blue-50 { background: rgba(59,130,246,0.08) !important; }
+        body.dark-mode .bg-green-50 { background: rgba(34,197,94,0.08) !important; }
+        body.dark-mode .bg-red-50  { background: rgba(239,68,68,0.08) !important; }
+        body.dark-mode .bg-yellow-50 { background: rgba(245,158,11,0.08) !important; }
+        /* Calendar */
+        body.dark-mode .calendar-day { background: #131b2e !important; border-color: #1e293b !important; color: #e2e8f0 !important; }
+        body.dark-mode .calendar-day:hover { background: #1e293b !important; }
+        body.dark-mode .calendar-day.other-month { background: #0a0f1a !important; color: #475569 !important; }
+        body.dark-mode .calendar-day-number { color: #cbd5e1 !important; }
+        body.dark-mode .calendar-header-day { color: #64748b !important; }
+        body.dark-mode .calendar-day.today { border-color: #ff6b35 !important; background: rgba(255,107,53,0.08) !important; }
+        /* Modals */
+        body.dark-mode .shadow, body.dark-mode .shadow-lg, body.dark-mode .shadow-xl { box-shadow: 0 4px 24px rgba(0,0,0,0.5) !important; }
+        body.dark-mode #notificationsPanel { background: #131b2e !important; border-color: #1e293b !important; }
         body.dark-mode #notificationsPanel h3 { color: #f1f5f9 !important; }
-        body.dark-mode .sub-sidebar-section { background: #0f172a !important; border-color: #334155 !important; }
-        
+        body.dark-mode .sub-sidebar-section { background: #0a0f1a !important; border-color: #1e293b !important; }
+        /* Special lighter inline backgrounds */
+        body.dark-mode div[style*="background:#f8f9fb"],
+        body.dark-mode div[style*="background:#f8fafc"],
+        body.dark-mode div[style*="background:#fafafa"],
+        body.dark-mode div[style*="background:#f9fafb"] { background: #131b2e !important; color: #e2e8f0 !important; }
+        body.dark-mode div[style*="background:#f1f5f9"] { background: #1e293b !important; color: #e2e8f0 !important; }
+        body.dark-mode div[style*="background:#fff"]:not([style*="background:#fff5"]):not([style*="background:#fff8"]) { background: #131b2e !important; color: #e2e8f0 !important; }
+        body.dark-mode div[style*="background:#ffffff"] { background: #131b2e !important; color: #e2e8f0 !important; }
+        body.dark-mode div[style*="color:#0f172a"] { color: #f1f5f9 !important; }
+        body.dark-mode div[style*="color:#222"], body.dark-mode div[style*="color:#0f172a"] { color: #f1f5f9 !important; }
+        body.dark-mode span[style*="color:#0f172a"], body.dark-mode span[style*="color:#222"] { color: #f1f5f9 !important; }
+        body.dark-mode p[style*="color:#0f172a"], body.dark-mode p[style*="color:#222"] { color: #f1f5f9 !important; }
+        body.dark-mode div[style*="color:#475569"] { color: #94a3b8 !important; }
+        body.dark-mode span[style*="color:#475569"] { color: #94a3b8 !important; }
+        body.dark-mode div[style*="color:#64748b"] { color: #94a3b8 !important; }
+        /* Kanban dark mode */
+        body.dark-mode #kanbanBoard > div { background: #131b2e !important; }
+        body.dark-mode #kanbanBoard > div > div > div { background: #0a0f1a !important; border-color: #1e293b !important; color: #e2e8f0 !important; }
+        body.dark-mode .stat-card-warning { background: rgba(245,158,11,0.08) !important; border-color: #92400e !important; }
+        /* Toggle buttons (Board/List, time periods) */
+        body.dark-mode div[style*="background:#f1f5f9"] button[style*="background:#fff"] { background: #1e293b !important; color: #f1f5f9 !important; }
+        body.dark-mode #viewModeKanban[style*="background: rgb(255, 255, 255)"],
+        body.dark-mode #viewModeList[style*="background: rgb(255, 255, 255)"],
+        body.dark-mode .dash-period-btn[style*="background: rgb(255, 255, 255)"] { background: #1e293b !important; color: #f1f5f9 !important; }
+
         .gradient-orange {
             background: #ff6b35;
         }
@@ -1384,12 +1452,12 @@
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
                     <h2 class="text-3xl font-bold" style="margin:0;">Dashboard</h2>
                     <!-- Time period switcher -->
-                    <div style="display:flex;background:#f1f5f9;border-radius:10px;padding:3px;gap:2px;">
-                        <button class="dash-period-btn" data-period="today" onclick="setDashPeriod('today')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">Today</button>
-                        <button class="dash-period-btn" data-period="week" onclick="setDashPeriod('week')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">Week</button>
-                        <button class="dash-period-btn active" data-period="month" onclick="setDashPeriod('month')" style="padding:8px 14px;border:none;background:#fff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.06);">This Month</button>
-                        <button class="dash-period-btn" data-period="year" onclick="setDashPeriod('year')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">Year</button>
-                        <button class="dash-period-btn" data-period="all" onclick="setDashPeriod('all')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">All Time</button>
+                    <div class="view-toggle">
+                        <button class="vt-btn dash-period-btn" data-period="today" onclick="setDashPeriod('today')">Today</button>
+                        <button class="vt-btn dash-period-btn" data-period="week" onclick="setDashPeriod('week')">Week</button>
+                        <button class="vt-btn dash-period-btn active" data-period="month" onclick="setDashPeriod('month')">This Month</button>
+                        <button class="vt-btn dash-period-btn" data-period="year" onclick="setDashPeriod('year')">Year</button>
+                        <button class="vt-btn dash-period-btn" data-period="all" onclick="setDashPeriod('all')">All Time</button>
                     </div>
                 </div>
 
@@ -1648,11 +1716,12 @@
                     <div style="display:flex;gap:10px;flex-wrap:wrap;">
                         <button class="btn-primary" style="font-size:13px;padding:9px 18px;" onclick="openModal('addLeadModal')">+ Add Lead</button>
                         <button class="btn-secondary" style="font-size:13px;padding:9px 18px;" onclick="generateLeadCode();openModal('leadCodeModal')">Website Code</button>
+                        <button class="btn-danger" style="font-size:13px;padding:9px 18px;" onclick="deleteAllLeads()">Clear All</button>
                     </div>
                 </div>
 
                 <!-- Stats bar -->
-                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:24px;">
                     <div style="background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e5e5e5;text-align:center;">
                         <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Total</div>
                         <div style="font-size:24px;font-weight:800;color:#111;" id="leadCountTotal">0</div>
@@ -1668,6 +1737,10 @@
                     <div style="background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e5e5e5;border-top:3px solid #22c55e;text-align:center;">
                         <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Converted</div>
                         <div style="font-size:24px;font-weight:800;color:#22c55e;" id="leadCountConverted">0</div>
+                    </div>
+                    <div style="background:#fff;border-radius:10px;padding:14px 16px;border:1px solid #e5e5e5;border-top:3px solid #94a3b8;text-align:center;">
+                        <div style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Lost</div>
+                        <div style="font-size:24px;font-weight:800;color:#64748b;" id="leadCountLost">0</div>
                     </div>
                 </div>
 
@@ -1759,9 +1832,9 @@
                     <h2 class="text-3xl font-bold">Estimates &amp; Invoices</h2>
                     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
                         <!-- View toggle -->
-                        <div style="display:flex;background:#f1f5f9;border-radius:10px;padding:3px;gap:2px;">
-                            <button id="viewModeKanban" onclick="setEstView('kanban')" style="padding:8px 14px;border:none;background:#fff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,0.06);">Board</button>
-                            <button id="viewModeList" onclick="setEstView('list')" style="padding:8px 14px;border:none;background:transparent;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;color:#64748b;">List</button>
+                        <div class="view-toggle">
+                            <button id="viewModeKanban" class="vt-btn active" onclick="setEstView('kanban')">Board</button>
+                            <button id="viewModeList" class="vt-btn" onclick="setEstView('list')">List</button>
                         </div>
                         <button class="btn-primary" onclick="openEstimateModal()">+ Create Estimate</button>
                     </div>
@@ -1772,7 +1845,7 @@
                 </div>
                 <!-- Kanban board view (default) -->
                 <div id="kanbanView" style="overflow-x:auto;padding-bottom:8px;">
-                    <div id="kanbanBoard" style="display:flex;gap:12px;min-width:max-content;padding:4px 4px 12px;"></div>
+                    <div id="estimatesKanbanBoard" style="display:flex;gap:12px;min-width:max-content;padding:4px 4px 12px;"></div>
                 </div>
                 <!-- List view -->
                 <div id="documentsList" class="space-y-3" style="display:none;"></div>
@@ -2519,7 +2592,43 @@
                                 </label>
                             </div>
 
-                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Sharing Estimates &amp; Invoices</h4>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;margin-top:32px;">Lead Capture</h4>
+                            <p class="text-xs text-gray-600 mb-4" style="margin-top:-12px;">Get customers to fill out a form online — leads come straight into your app.</p>
+
+                            <div class="p-4 rounded-xl mb-4" style="background:#f8f9fb;border:1px solid #e2e8f0;">
+                                <label class="block mb-2" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#475569;">Your Unique URL Name</label>
+                                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                                    <span style="font-size:13px;color:#64748b;font-weight:600;">kdrsystems.net/?lead=</span>
+                                    <input type="text" id="settingsLeadHandle" placeholder="my-business-name" style="max-width:200px;font-family:'Inter',monospace;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+                                    <button type="button" onclick="saveLeadHandle()" class="btn-primary" style="padding:9px 18px;font-size:13px;">Save URL</button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">Letters, numbers, dashes only. Choose carefully — this URL will be on your business cards.</p>
+                                <p id="handleStatus" class="text-xs mt-1" style="font-weight:700;display:none;"></p>
+                            </div>
+
+                            <div id="leadCaptureBlock" style="display:none;">
+                                <!-- Public URL display -->
+                                <div class="p-4 rounded-xl mb-4" style="background:linear-gradient(135deg,#fff8f0,#fff);border:2px solid #fed7c5;">
+                                    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9a3412;margin:0 0 8px;">Your Public Lead Form</p>
+                                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+                                        <input type="text" id="leadPublicUrl" readonly style="flex:1;min-width:220px;font-family:'Inter',monospace;font-size:13px;background:#fff;cursor:text;">
+                                        <button type="button" onclick="copyLeadUrl()" class="btn-secondary" style="padding:9px 14px;font-size:12px;">Copy</button>
+                                        <button type="button" onclick="openLeadUrl()" class="btn-secondary" style="padding:9px 14px;font-size:12px;">Open</button>
+                                        <button type="button" onclick="showLeadQR()" class="btn-secondary" style="padding:9px 14px;font-size:12px;">QR Code</button>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mt-3" style="line-height:1.5;">Share this in your Instagram bio, Facebook page, Google Business profile, business cards, yard signs. Every submission appears in your Leads tab instantly.</p>
+                                </div>
+
+                                <!-- Embed code -->
+                                <div class="p-4 rounded-xl mb-4" style="background:#f8f9fb;border:1px solid #e2e8f0;">
+                                    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#475569;margin:0 0 8px;">Embed in Your Website</p>
+                                    <p class="text-xs text-gray-600 mb-2">Have a website? Send this code to your web designer. Paste anywhere on a page to add the form.</p>
+                                    <textarea id="leadEmbedCode" readonly rows="3" style="width:100%;font-family:'Courier New',monospace;font-size:12px;background:#0f172a;color:#7dd3fc;border-color:#1e293b;resize:none;"></textarea>
+                                    <button type="button" onclick="copyEmbedCode()" class="btn-secondary mt-2" style="padding:8px 16px;font-size:12px;">Copy Code</button>
+                                </div>
+                            </div>
+
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;margin-top:32px;">Sharing Estimates &amp; Invoices</h4>
                             <p class="text-xs text-gray-700 mb-4">No setup needed. Click Send on any estimate or invoice — the app generates a link you share via text, WhatsApp, email, or any app. Your customer taps the link and sees a professional page where they can sign or pay.</p>
                             <div class="p-3 rounded" style="background:#f0fdf4;border:1px solid #bbf7d0;">
                                 <p class="text-xs font-semibold" style="color:#15803d;">How it works:</p>
@@ -4132,8 +4241,24 @@
         }
         var signToken = urlParams.get('sign');
         var contractToken = urlParams.get('contract');
+        var leadHandle = urlParams.get('lead');
 
-        if (contractToken) {
+        if (leadHandle) {
+            // Public lead capture form
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('signaturePage').style.display = 'block';
+            if (typeof db !== 'undefined' && db) {
+                loadPublicLeadForm(leadHandle);
+            } else {
+                document.getElementById('signPageContent').innerHTML = '<div style="text-align:center;padding:60px 20px;"><p style="color:#333;">Loading...</p></div>';
+                var retryCount = 0;
+                var retryInterval = setInterval(function() {
+                    retryCount++;
+                    if (typeof db !== 'undefined' && db) { clearInterval(retryInterval); loadPublicLeadForm(leadHandle); }
+                    if (retryCount > 20) { clearInterval(retryInterval); document.getElementById('signPageContent').innerHTML = '<div style="text-align:center;padding:60px 20px;"><p style="color:#333;">Unable to connect. Please refresh.</p></div>'; }
+                }, 500);
+            }
+        } else if (contractToken) {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('signaturePage').style.display = 'block';
             if (typeof db !== 'undefined' && db) {
@@ -4194,6 +4319,179 @@
         }
 
         // Load public estimate for customer to sign
+        // ── PUBLIC LEAD CAPTURE FORM ──────────────────────────────────────
+        function loadPublicLeadForm(handle) {
+            // Look up contractor by their public handle
+            db.collection('lead_handles').doc(handle).get().then(function(doc) {
+                if (!doc.exists) {
+                    document.getElementById('signPageContent').innerHTML =
+                        '<div style="text-align:center;padding:80px 20px;max-width:500px;margin:0 auto;">' +
+                        '<h1 style="font-size:48px;font-weight:900;color:#94a3b8;margin:0;">404</h1>' +
+                        '<p style="font-size:18px;color:#475569;margin-top:16px;">This lead form does not exist.</p>' +
+                        '<p style="font-size:14px;color:#94a3b8;margin-top:8px;">Check the link and try again.</p>' +
+                        '</div>';
+                    return;
+                }
+                var info = doc.data();
+                // Now load contractor's settings
+                db.collection('users').doc(info.ownerId).collection('config').doc('main').get().then(function(cfg) {
+                    var data = cfg.exists ? cfg.data() : {};
+                    var s = (data.settings) || info; // fallback to handle doc info
+                    _renderLeadCaptureForm(handle, info.ownerId, s);
+                }).catch(function() {
+                    _renderLeadCaptureForm(handle, info.ownerId, info);
+                });
+            }).catch(function(err) {
+                console.error('Lead handle lookup failed:', err);
+                document.getElementById('signPageContent').innerHTML =
+                    '<div style="text-align:center;padding:80px 20px;"><p style="color:#475569;">Unable to load form. Please try again.</p></div>';
+            });
+        }
+
+        function _renderLeadCaptureForm(handle, ownerId, s) {
+            var bizName = s.businessName || 'Get an Estimate';
+            var bizColor = s.brandColor || '#ff6b35';
+            var phone = s.phone || '';
+            var email = s.email || '';
+            var slogan = s.slogan || '';
+            var logo = s.logo || '';
+            var license = s.license || '';
+
+            // Auto-contrast text color
+            var headerText = (typeof _textOn === 'function') ? _textOn(bizColor) : '#000';
+
+            var html = '<style>' +
+                '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");' +
+                'body { font-family: Inter, sans-serif !important; background:#f3f4f6 !important; }' +
+                '.lead-form input, .lead-form select, .lead-form textarea {' +
+                '  width:100%; padding:14px 16px; border:1px solid #e2e8f0; border-radius:10px;' +
+                '  font-size:15px; font-weight:500; background:#fff; transition:all 0.15s;' +
+                '  font-family:Inter,sans-serif; color:#0f172a; box-sizing:border-box;' +
+                '}' +
+                '.lead-form input:focus, .lead-form select:focus, .lead-form textarea:focus {' +
+                '  outline:none; border-color:' + bizColor + '; box-shadow:0 0 0 3px ' + bizColor + '20;' +
+                '}' +
+                '.lead-form label { display:block; font-size:12px; font-weight:700; color:#475569; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }' +
+                '.lead-form .form-group { margin-bottom:18px; }' +
+                '.lead-form .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }' +
+                '@media (max-width:600px) { .lead-form .form-row { grid-template-columns:1fr; } }' +
+                '</style>' +
+
+                '<div style="max-width:560px;margin:24px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.08);">' +
+                    // Header
+                    '<div style="background:' + bizColor + ';padding:36px 28px;text-align:center;">' +
+                        (logo ? '<img src="' + logo + '" alt="" style="max-height:80px;max-width:200px;margin:0 auto 12px;display:block;">' : '') +
+                        '<h1 style="color:' + headerText + ';margin:0;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + bizName + '</h1>' +
+                        (slogan ? '<p style="color:' + headerText + ';margin:6px 0 0;font-size:13px;font-weight:600;font-style:italic;opacity:0.9;">' + slogan + '</p>' : '') +
+                    '</div>' +
+
+                    // Form
+                    '<div style="padding:28px;">' +
+                        '<div id="leadSuccess" style="display:none;text-align:center;padding:40px 20px;">' +
+                            '<div style="width:64px;height:64px;background:#dcfce7;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">' +
+                                '<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+                            '</div>' +
+                            '<h2 style="font-size:22px;font-weight:800;color:#166534;margin:0;">Thank You!</h2>' +
+                            '<p style="font-size:14px;color:#475569;margin:8px 0 0;">' + bizName + ' will be in touch shortly to schedule your estimate.</p>' +
+                            (phone ? '<p style="font-size:13px;color:#94a3b8;margin:16px 0 0;">Need to call us? <strong style="color:#0f172a;">' + phone + '</strong></p>' : '') +
+                        '</div>' +
+
+                        '<form id="leadForm" class="lead-form" onsubmit="return _submitPublicLead(event,\'' + handle + '\',\'' + ownerId + '\')">' +
+                            '<h2 style="font-size:20px;font-weight:800;color:#0f172a;margin:0 0 6px;">Get a Free Estimate</h2>' +
+                            '<p style="font-size:13px;color:#64748b;margin:0 0 22px;">Fill out the form and we will get back to you within 24 hours.</p>' +
+
+                            '<div class="form-group">' +
+                                '<label>Your Name *</label>' +
+                                '<input type="text" id="leadName" required placeholder="John Smith">' +
+                            '</div>' +
+
+                            '<div class="form-row">' +
+                                '<div class="form-group">' +
+                                    '<label>Phone *</label>' +
+                                    '<input type="tel" id="leadPhone" required placeholder="(732) 555-0123">' +
+                                '</div>' +
+                                '<div class="form-group">' +
+                                    '<label>Email</label>' +
+                                    '<input type="email" id="leadEmail" placeholder="you@example.com">' +
+                                '</div>' +
+                            '</div>' +
+
+                            '<div class="form-group">' +
+                                '<label>Service Address</label>' +
+                                '<input type="text" id="leadAddress" placeholder="123 Main St, Town, NJ">' +
+                            '</div>' +
+
+                            '<div class="form-group">' +
+                                '<label>What Do You Need?</label>' +
+                                '<input type="text" id="leadService" placeholder="e.g., New fence, repair, installation">' +
+                            '</div>' +
+
+                            '<div class="form-group">' +
+                                '<label>Tell Us More (optional)</label>' +
+                                '<textarea id="leadMessage" rows="3" placeholder="Project details, timing, budget range, etc."></textarea>' +
+                            '</div>' +
+
+                            '<button type="submit" id="leadSubmitBtn" style="width:100%;background:' + bizColor + ';color:' + headerText + ';border:none;padding:16px;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;transition:all 0.15s;">' +
+                                'Get My Free Estimate' +
+                            '</button>' +
+
+                            '<p style="text-align:center;font-size:11px;color:#94a3b8;margin:14px 0 0;">By submitting, you agree to be contacted by ' + bizName + ' about your inquiry.</p>' +
+                        '</form>' +
+                    '</div>' +
+
+                    // Footer
+                    (phone || email ? '<div style="background:#fafafa;padding:16px 28px;text-align:center;border-top:1px solid #f1f5f9;">' +
+                        (phone ? '<p style="margin:0;font-size:12px;color:#475569;font-weight:600;">Call us: <a href="tel:' + phone.replace(/[^0-9+]/g,'') + '" style="color:' + bizColor + ';text-decoration:none;font-weight:700;">' + phone + '</a></p>' : '') +
+                        (license ? '<p style="margin:6px 0 0;font-size:10px;color:#94a3b8;font-weight:600;">License: ' + license + '</p>' : '') +
+                    '</div>' : '') +
+                '</div>' +
+
+                '<p style="text-align:center;font-size:11px;color:#94a3b8;margin:16px 0 24px;">Powered by <a href="https://kdrsystems.net" style="color:#94a3b8;">KDRSYSTEMS</a></p>';
+
+            document.getElementById('signPageContent').innerHTML = html;
+            document.title = 'Get an Estimate — ' + bizName;
+        }
+
+        function _submitPublicLead(event, handle, ownerId) {
+            event.preventDefault();
+            var btn = document.getElementById('leadSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Submitting...';
+            btn.style.opacity = '0.7';
+
+            var src = new URLSearchParams(window.location.search).get('src') || 'Website';
+
+            var lead = {
+                id: 'lead_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+                name:    document.getElementById('leadName').value.trim(),
+                phone:   document.getElementById('leadPhone').value.trim(),
+                email:   document.getElementById('leadEmail').value.trim(),
+                address: document.getElementById('leadAddress').value.trim(),
+                service: document.getElementById('leadService').value.trim(),
+                message: document.getElementById('leadMessage').value.trim(),
+                source:  src,
+                status:  'new',
+                createdAt: new Date().toISOString(),
+                handle:  handle
+            };
+
+            db.collection('users').doc(ownerId).collection('leads').doc(lead.id).set(lead)
+                .then(function() {
+                    document.getElementById('leadForm').style.display = 'none';
+                    document.getElementById('leadSuccess').style.display = '';
+                    // Scroll to success message
+                    document.getElementById('leadSuccess').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                })
+                .catch(function(err) {
+                    console.error(err);
+                    btn.disabled = false;
+                    btn.textContent = 'Get My Free Estimate';
+                    btn.style.opacity = '1';
+                    alert('Could not submit. Please try again or call us directly.');
+                });
+            return false;
+        }
+
         function loadPublicEstimate(token) {
             document.getElementById('signPageContent').innerHTML = '<div style="text-align:center;padding:60px 20px;"><div style="width:40px;height:40px;border:3px solid #ff6b35;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 16px;"></div><p style="color:#333;">Loading estimate...</p></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
             
@@ -4918,22 +5216,8 @@
                 }, function(err){ console.error('public_contracts listener:', err); })
             );
 
-            // Listen for new website leads in real-time
-            _listeners.push(
-                base.collection('leads').orderBy('createdAt', 'desc').limit(50)
-                  .onSnapshot(function(snap) {
-                    snap.docChanges().forEach(function(change) {
-                        if (change.type === 'added') {
-                            var lead = change.doc.data();
-                            // Only notify for leads created in the last 5 minutes (avoids old lead spam on first load)
-                            var leadAge = Date.now() - new Date(lead.createdAt || 0).getTime();
-                            if (leadAge < 5 * 60 * 1000) {
-                                _notifyNewLead(lead);
-                            }
-                        }
-                    });
-                }, function(err){ console.error('leads listener:', err); })
-            );
+            // NOTE: leads listener is handled separately by startLeadsListener() in the LEADS SYSTEM section.
+            // (Removing the duplicate listener that was here previously — it was conflicting.)
         }
 
         // Track which events have been notified to prevent duplicates
@@ -7211,13 +7495,13 @@
             if (view === 'kanban') {
                 if (kanbanView) kanbanView.style.display = '';
                 if (listView)   listView.style.display = 'none';
-                if (kanbanBtn) { kanbanBtn.style.background = '#fff'; kanbanBtn.style.color = '#0f172a'; kanbanBtn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)'; }
-                if (listBtn)   { listBtn.style.background = 'transparent'; listBtn.style.color = '#64748b'; listBtn.style.boxShadow = 'none'; }
+                if (kanbanBtn) kanbanBtn.classList.add('active');
+                if (listBtn)   listBtn.classList.remove('active');
             } else {
                 if (kanbanView) kanbanView.style.display = 'none';
                 if (listView)   listView.style.display = '';
-                if (kanbanBtn) { kanbanBtn.style.background = 'transparent'; kanbanBtn.style.color = '#64748b'; kanbanBtn.style.boxShadow = 'none'; }
-                if (listBtn)   { listBtn.style.background = '#fff'; listBtn.style.color = '#0f172a'; listBtn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)'; }
+                if (kanbanBtn) kanbanBtn.classList.remove('active');
+                if (listBtn)   listBtn.classList.add('active');
             }
             renderDocuments();
         }
@@ -7248,7 +7532,7 @@
         ];
 
         function _renderKanban() {
-            var board = document.getElementById('kanbanBoard');
+            var board = document.getElementById('estimatesKanbanBoard');
             if (!board) return;
 
             // Build list — exclude estimates that were already converted to invoices
@@ -7289,7 +7573,7 @@
                         var amount = '$' + (parseFloat(doc.total) || 0).toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0});
                         var openFn = doc.type === 'invoice' ? "viewInvoice('" + doc.id + "')" : "viewEstimate('" + doc.id + "')";
                         return '<div draggable="true" ondragstart="_kanbanDragStart(event,\'' + doc.id + '\',\'' + doc.type + '\')" ' +
-                            'style="position:relative;background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;border-left:3px solid ' + stage.color + ';" ' +
+                            'class="kanban-card" style="position:relative;background:#fff;border:1px solid #e5e5e5;border-radius:10px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;border-left:3px solid ' + stage.color + ';" ' +
                             'onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\';this.style.transform=\'translateY(-1px)\';this.querySelector(\'.k-del\').style.opacity=\'1\';" ' +
                             'onmouseout="this.style.boxShadow=\'none\';this.style.transform=\'\';this.querySelector(\'.k-del\').style.opacity=\'0\';">' +
                             '<button class="k-del" onclick="event.stopPropagation();_kanbanDelete(\'' + doc.id + '\',\'' + doc.type + '\')" title="Delete" style="position:absolute;top:6px;right:6px;background:#fee2e2;color:#dc2626;border:none;width:22px;height:22px;border-radius:5px;font-size:14px;line-height:1;cursor:pointer;opacity:0;transition:opacity 0.15s;font-weight:700;">×</button>' +
@@ -8657,6 +8941,127 @@
             document.getElementById('logoPreview').innerHTML = '';
         }
 
+        // ── LEAD CAPTURE: handle management ───────────────────────────────
+        function saveLeadHandle() {
+            var handleEl = document.getElementById('settingsLeadHandle');
+            var handle = (handleEl.value || '').toLowerCase().replace(/[^a-z0-9-]/g, '').trim();
+            if (!handle || handle.length < 3) {
+                _showHandleStatus('URL must be at least 3 characters', '#dc2626');
+                return;
+            }
+            if (handle.length > 40) {
+                _showHandleStatus('URL too long (max 40 chars)', '#dc2626');
+                return;
+            }
+            // Check availability — does another contractor own this handle?
+            db.collection('lead_handles').doc(handle).get().then(function(doc) {
+                if (doc.exists && doc.data().ownerId !== currentUserId) {
+                    _showHandleStatus('That URL is taken. Try another.', '#dc2626');
+                    return;
+                }
+                // Reserve / update the handle
+                db.collection('lead_handles').doc(handle).set({
+                    ownerId: currentUserId,
+                    businessName: appData.settings.businessName || '',
+                    phone: appData.settings.phone || '',
+                    email: appData.settings.email || '',
+                    brandColor: appData.settings.brandColor || '#ff6b35',
+                    slogan: appData.settings.slogan || '',
+                    logo: appData.settings.logo || '',
+                    license: appData.settings.license || '',
+                    updatedAt: new Date().toISOString()
+                }).then(function() {
+                    // Delete old handle if user changed it
+                    var oldHandle = appData.settings.leadHandle;
+                    if (oldHandle && oldHandle !== handle) {
+                        db.collection('lead_handles').doc(oldHandle).delete().catch(function(){});
+                    }
+                    appData.settings.leadHandle = handle;
+                    saveData();
+                    _showHandleStatus('URL saved ✓', '#16a34a');
+                    _renderLeadCaptureBlock(handle);
+                }).catch(function(err) {
+                    _showHandleStatus('Save failed: ' + err.message, '#dc2626');
+                });
+            }).catch(function(err) {
+                _showHandleStatus('Check failed: ' + err.message, '#dc2626');
+            });
+        }
+
+        function _showHandleStatus(msg, color) {
+            var el = document.getElementById('handleStatus');
+            if (!el) return;
+            el.textContent = msg;
+            el.style.color = color;
+            el.style.display = '';
+            if (color === '#16a34a') {
+                setTimeout(function(){ el.style.display = 'none'; }, 3000);
+            }
+        }
+
+        function _renderLeadCaptureBlock(handle) {
+            if (!handle) {
+                document.getElementById('leadCaptureBlock').style.display = 'none';
+                return;
+            }
+            var fullUrl = window.location.origin + window.location.pathname + '?lead=' + handle;
+            document.getElementById('leadPublicUrl').value = fullUrl;
+            // Embed code
+            var embedCode = '<iframe src="' + fullUrl + '" width="100%" height="700" frameborder="0" style="border:none;border-radius:12px;max-width:560px;"></iframe>';
+            document.getElementById('leadEmbedCode').value = embedCode;
+            document.getElementById('leadCaptureBlock').style.display = '';
+        }
+
+        function copyLeadUrl() {
+            var input = document.getElementById('leadPublicUrl');
+            input.select(); input.setSelectionRange(0, 99999);
+            try {
+                navigator.clipboard.writeText(input.value).then(function() { toast('URL copied ✓'); });
+            } catch (e) {
+                document.execCommand('copy');
+                toast('URL copied ✓');
+            }
+        }
+
+        function openLeadUrl() {
+            var url = document.getElementById('leadPublicUrl').value;
+            window.open(url, '_blank');
+        }
+
+        function copyEmbedCode() {
+            var input = document.getElementById('leadEmbedCode');
+            input.select(); input.setSelectionRange(0, 99999);
+            try {
+                navigator.clipboard.writeText(input.value).then(function() { toast('Code copied ✓'); });
+            } catch (e) {
+                document.execCommand('copy');
+                toast('Code copied ✓');
+            }
+        }
+
+        function showLeadQR() {
+            var url = document.getElementById('leadPublicUrl').value;
+            if (!url) return;
+            // Use Google Charts API for QR (no library needed)
+            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(url);
+
+            var modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
+            modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+            modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:100%;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,0.3);">' +
+                '<h3 style="margin:0 0 8px;font-size:20px;font-weight:800;color:#0f172a;">Your QR Code</h3>' +
+                '<p style="font-size:13px;color:#64748b;margin:0 0 20px;">Print this on business cards, flyers, or yard signs. Customers scan to open your lead form.</p>' +
+                '<img src="' + qrUrl + '" alt="QR Code" style="width:100%;max-width:300px;border:1px solid #e2e8f0;border-radius:12px;padding:16px;background:#fff;">' +
+                '<div style="display:flex;gap:8px;margin-top:16px;justify-content:center;flex-wrap:wrap;">' +
+                    '<a href="' + qrUrl + '" download="lead-qr-code.png" style="padding:10px 20px;background:#0f172a;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Download PNG</a>' +
+                    '<button onclick="this.closest(\\'.qr-modal\\').remove()" style="padding:10px 20px;background:#e2e8f0;color:#0f172a;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Close</button>' +
+                '</div>' +
+                '<p style="font-size:11px;color:#94a3b8;margin:14px 0 0;font-family:monospace;word-break:break-all;">' + url + '</p>' +
+            '</div>';
+            modal.className = 'qr-modal';
+            document.body.appendChild(modal);
+        }
+
         function saveSettings() {
             var newColor = (document.getElementById('settingsBrandColor')||{}).value || '#ff6b35';
             applyBrandColor(newColor);
@@ -8698,15 +9103,8 @@
         function setDashPeriod(period) {
             _dashPeriod = period;
             document.querySelectorAll('.dash-period-btn').forEach(function(b) {
-                if (b.dataset.period === period) {
-                    b.style.background = '#fff';
-                    b.style.color = '#0f172a';
-                    b.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)';
-                } else {
-                    b.style.background = 'transparent';
-                    b.style.color = '#64748b';
-                    b.style.boxShadow = 'none';
-                }
+                if (b.dataset.period === period) b.classList.add('active');
+                else b.classList.remove('active');
             });
             updateDashboard();
         }
@@ -9230,7 +9628,7 @@
                 col.innerHTML = leads.map(function(lead) {
                     var t = getTimeAgo(lead.createdAt);
                     var src = lead.source && lead.source !== 'manual' ? lead.source : '';
-                    return '<div class="lcard" data-lid="' + lead.id + '" style="' +
+                    return '<div class="lcard kanban-card" data-lid="' + lead.id + '" style="' +
                         'background:#fff;border-radius:10px;margin-bottom:8px;' +
                         'border-left:3px solid ' + accent[status] + ';' +
                         'box-shadow:0 1px 3px rgba(0,0,0,0.07);' +
@@ -9251,11 +9649,14 @@
                             (lead.message ? '<div style="font-size:11px;color:#64748b;background:#f8f9fb;border-radius:6px;padding:5px 7px;margin-top:4px;">' + lead.message.substring(0,70) + (lead.message.length>70?'…':'') + '</div>' : '') +
                         '</div>' +
                         // footer
-                        '<div style="padding:6px 12px 10px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #f3f4f6;margin-top:2px;">' +
-                            '<span style="font-size:10px;color:#94a3b8;">' + t + (src ? ' · ' + src : '') + '</span>' +
-                            (status !== 'converted'
-                                ? '<button data-action="convert" data-lid="' + lead.id + '" style="font-size:10px;font-weight:700;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;border-radius:6px;padding:3px 8px;cursor:pointer;">→ Customer</button>'
-                                : '<span style="font-size:10px;color:#22c55e;font-weight:700;">✓ Customer</span>') +
+                        '<div style="padding:6px 12px 10px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #f3f4f6;margin-top:2px;gap:6px;">' +
+                            '<span style="font-size:10px;color:#94a3b8;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + t + (src ? ' · ' + src : '') + '</span>' +
+                            '<div style="display:flex;gap:4px;align-items:center;flex-shrink:0;">' +
+                                (status !== 'converted'
+                                    ? '<button data-action="convert" data-lid="' + lead.id + '" style="font-size:10px;font-weight:700;background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;border-radius:6px;padding:3px 8px;cursor:pointer;">→ Customer</button>'
+                                    : '<span style="font-size:10px;color:#22c55e;font-weight:700;">✓ Customer</span>') +
+                                '<button data-action="delete-lead" data-lid="' + lead.id + '" title="Delete lead" style="font-size:13px;font-weight:700;background:#fee2e2;color:#dc2626;border:1px solid #fecaca;border-radius:6px;padding:0;width:24px;height:24px;cursor:pointer;line-height:1;">×</button>' +
+                            '</div>' +
                         '</div>' +
                     '</div>';
                 }).join('');
@@ -9377,8 +9778,9 @@
                 if (!btn) return;
                 var action = btn.dataset.action;
                 var lid    = btn.dataset.lid;
-                if (action === 'del')     { e.stopPropagation(); deleteLead(lid); }
-                if (action === 'convert') { e.stopPropagation(); convertLeadToCustomer(lid); }
+                if (action === 'del')         { e.stopPropagation(); deleteLead(lid); }
+                if (action === 'delete-lead') { e.stopPropagation(); deleteLead(lid); }
+                if (action === 'convert')     { e.stopPropagation(); convertLeadToCustomer(lid); }
                 // 'link' falls through naturally (href)
             });
 
@@ -9478,13 +9880,43 @@
         function deleteLead(leadId) {
             kdrConfirm('Delete this lead?', 'This cannot be undone.', 'Delete', function() {
                 var lead = appData.leads.find(function(l) { return l.id === leadId; });
-                if (lead && lead._firebaseId && currentUserId && db) {
-                    db.collection('users').doc(currentUserId).collection('leads').doc(lead._firebaseId).delete();
+                if (currentUserId && db) {
+                    // Try both _firebaseId and id (newer leads use id directly)
+                    var firestoreId = (lead && lead._firebaseId) || leadId;
+                    db.collection('users').doc(currentUserId).collection('leads').doc(firestoreId).delete()
+                        .catch(function(e){ console.warn('Lead delete:', e); });
                 }
                 appData.leads = appData.leads.filter(function(l) { return l.id !== leadId; });
                 renderLeads();
                 updateLeadCounts();
+                toast('Lead deleted');
             });
+        }
+
+        function deleteAllLeads() {
+            if (!appData.leads || appData.leads.length === 0) {
+                toast('No leads to delete');
+                return;
+            }
+            kdrConfirm(
+                'Delete ALL ' + appData.leads.length + ' leads?',
+                'This permanently removes every lead. Useful for clearing test data.',
+                'Delete All',
+                function() {
+                    if (currentUserId && db) {
+                        appData.leads.forEach(function(l) {
+                            var firestoreId = l._firebaseId || l.id;
+                            if (firestoreId) {
+                                db.collection('users').doc(currentUserId).collection('leads').doc(firestoreId).delete().catch(function(e){ console.warn(e); });
+                            }
+                        });
+                    }
+                    appData.leads = [];
+                    renderLeads();
+                    updateLeadCounts();
+                    toast('All leads deleted');
+                }
+            );
         }
         
         // =============================================
