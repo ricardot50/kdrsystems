@@ -156,68 +156,192 @@
             --text-muted: #94a3b8;
             --brand: #ff6b35;
         }
-        /* ── COMPREHENSIVE DARK MODE ── */
-        body.dark-mode { background: #0a0f1a; color: #e2e8f0; }
+        /* ─── DARK MODE — COMPREHENSIVE OVERRIDE ─── */
+        /* Color tokens */
+        body.dark-mode {
+            background: #0a0f1a !important;
+            color: #e2e8f0 !important;
+        }
+        /* Universal element backgrounds */
+        body.dark-mode .card,
         body.dark-mode .stat-card,
-        body.dark-mode .card { background: #131b2e !important; border-color: #1e293b !important; color: #e2e8f0 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important; }
-        body.dark-mode .stat-card .text-sm,
-        body.dark-mode .stat-card p:first-child { color: #64748b !important; }
-        body.dark-mode .stat-card .text-4xl,
-        body.dark-mode .stat-card .text-3xl,
-        body.dark-mode .stat-card .text-2xl,
-        body.dark-mode .stat-card .text-xl { color: #f1f5f9 !important; }
+        body.dark-mode .modal-content,
+        body.dark-mode .notification-item,
+        body.dark-mode .gradient-dark,
+        body.dark-mode .gradient-orange-soft,
+        body.dark-mode .bg-white,
+        body.dark-mode .bg-gray-50,
+        body.dark-mode .bg-gray-100,
+        body.dark-mode .bg-gray-200,
+        body.dark-mode .glass {
+            background: #131b2e !important;
+            border-color: #1e293b !important;
+            color: #e2e8f0 !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+        }
+        /* All inline white/light backgrounds — catch every variant */
+        body.dark-mode [style*="background:#fff"]:not([style*="background:#fff5"]):not([style*="background:#fff8"]):not([style*="background:#fffbeb"]):not([style*="background:#fff7"]):not([style*="background:#ffffe"]),
+        body.dark-mode [style*="background:#FFF"]:not([style*="background:#FFF5"]):not([style*="background:#FFF8"]),
+        body.dark-mode [style*="background:#ffffff"],
+        body.dark-mode [style*="background:#FFFFFF"],
+        body.dark-mode [style*="background: #fff"]:not([style*="background: #fff5"]):not([style*="background: #fff8"]):not([style*="background: #fffbeb"]),
+        body.dark-mode [style*="background: #ffffff"],
+        body.dark-mode [style*="background:white"],
+        body.dark-mode [style*="background: white"],
+        body.dark-mode [style*="background-color:#fff"],
+        body.dark-mode [style*="background-color: #fff"],
+        body.dark-mode [style*="background-color:#ffffff"],
+        body.dark-mode [style*="background-color: #ffffff"],
+        body.dark-mode [style*="background-color:white"],
+        body.dark-mode [style*="background-color: white"] {
+            background: #131b2e !important;
+            color: #e2e8f0 !important;
+        }
+        /* Light gray inline backgrounds */
+        body.dark-mode [style*="background:#f8f9fb"],
+        body.dark-mode [style*="background:#f8fafc"],
+        body.dark-mode [style*="background:#fafafa"],
+        body.dark-mode [style*="background:#f9fafb"],
+        body.dark-mode [style*="background:#f1f5f9"],
+        body.dark-mode [style*="background:#f5f5f5"],
+        body.dark-mode [style*="background:#fafbfc"],
+        body.dark-mode [style*="background:#eee"],
+        body.dark-mode [style*="background:#e5e5e5"],
+        body.dark-mode [style*="background: #f8f9fb"],
+        body.dark-mode [style*="background: #f8fafc"],
+        body.dark-mode [style*="background: #fafafa"],
+        body.dark-mode [style*="background: #f9fafb"],
+        body.dark-mode [style*="background: #f1f5f9"] {
+            background: #1a2235 !important;
+            color: #e2e8f0 !important;
+        }
+        /* Dark text inline → light text */
+        body.dark-mode [style*="color:#0f172a"],
+        body.dark-mode [style*="color: #0f172a"],
+        body.dark-mode [style*="color:#111"],
+        body.dark-mode [style*="color: #111"],
+        body.dark-mode [style*="color:#222"],
+        body.dark-mode [style*="color: #222"],
+        body.dark-mode [style*="color:#1e293b"],
+        body.dark-mode [style*="color: #1e293b"],
+        body.dark-mode [style*="color:#0a0f1a"],
+        body.dark-mode [style*="color:#000"]:not([style*="color:#000000"]),
+        body.dark-mode [style*="color:black"],
+        body.dark-mode [style*="color: black"],
+        body.dark-mode [style*="color:#1f2937"],
+        body.dark-mode [style*="color: #1f2937"],
+        body.dark-mode [style*="color:#374151"],
+        body.dark-mode [style*="color: #374151"] {
+            color: #f1f5f9 !important;
+        }
+        /* Medium gray text inline → softer light */
+        body.dark-mode [style*="color:#475569"],
+        body.dark-mode [style*="color: #475569"],
+        body.dark-mode [style*="color:#64748b"],
+        body.dark-mode [style*="color: #64748b"],
+        body.dark-mode [style*="color:#6b7280"],
+        body.dark-mode [style*="color: #6b7280"],
+        body.dark-mode [style*="color:#4b5563"],
+        body.dark-mode [style*="color: #4b5563"] {
+            color: #cbd5e1 !important;
+        }
+        /* Light gray text inline → mid-light */
+        body.dark-mode [style*="color:#94a3b8"],
+        body.dark-mode [style*="color: #94a3b8"],
+        body.dark-mode [style*="color:#9ca3af"],
+        body.dark-mode [style*="color: #9ca3af"],
+        body.dark-mode [style*="color:#cbd5e1"],
+        body.dark-mode [style*="color: #cbd5e1"] {
+            color: #94a3b8 !important;
+        }
+        /* Tailwind text utility classes */
         body.dark-mode .text-gray-900 { color: #f1f5f9 !important; }
         body.dark-mode .text-gray-800 { color: #e2e8f0 !important; }
         body.dark-mode .text-gray-700 { color: #cbd5e1 !important; }
         body.dark-mode .text-gray-600 { color: #94a3b8 !important; }
         body.dark-mode .text-gray-500 { color: #64748b !important; }
         body.dark-mode .text-gray-400 { color: #475569 !important; }
-        body.dark-mode .text-black,
-        body.dark-mode .text-orange { color: #f1f5f9 !important; }
+        body.dark-mode .text-black { color: #f1f5f9 !important; }
+        /* Tailwind text colors — keep brand colors but ensure visible */
+        body.dark-mode .text-orange { color: #ff8552 !important; }
+        body.dark-mode .text-red-600 { color: #f87171 !important; }
+        body.dark-mode .text-green-600 { color: #4ade80 !important; }
+        body.dark-mode .text-blue-600 { color: #60a5fa !important; }
+        /* Tailwind bg utility classes */
+        body.dark-mode .bg-orange-50 { background: rgba(255,107,53,0.10) !important; }
+        body.dark-mode .bg-blue-50 { background: rgba(59,130,246,0.10) !important; }
+        body.dark-mode .bg-green-50 { background: rgba(34,197,94,0.10) !important; }
+        body.dark-mode .bg-red-50 { background: rgba(239,68,68,0.10) !important; }
+        body.dark-mode .bg-yellow-50 { background: rgba(245,158,11,0.10) !important; }
+        body.dark-mode .bg-amber-50 { background: rgba(245,158,11,0.10) !important; }
+        body.dark-mode .bg-fef7f4,
+        body.dark-mode [style*="background:#fef7f4"] { background: rgba(255,107,53,0.10) !important; }
+        body.dark-mode [style*="background:#fff8f0"],
+        body.dark-mode [style*="background:#fff5f0"] { background: rgba(255,107,53,0.10) !important; }
+        body.dark-mode [style*="background:#fee2e2"] { background: rgba(239,68,68,0.15) !important; }
+        body.dark-mode [style*="background:#fef3c7"] { background: rgba(245,158,11,0.12) !important; }
+        body.dark-mode [style*="background:#dbeafe"] { background: rgba(59,130,246,0.15) !important; }
+        body.dark-mode [style*="background:#dcfce7"] { background: rgba(34,197,94,0.15) !important; }
+        body.dark-mode [style*="background:#f0fdf4"] { background: rgba(34,197,94,0.10) !important; }
+        body.dark-mode [style*="background:#fffbeb"] { background: rgba(245,158,11,0.08) !important; }
+        /* Headings */
+        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5, body.dark-mode h6 {
+            color: #f1f5f9 !important;
+        }
+        /* Header / sidebar / nav */
         body.dark-mode header { background: #0f172a !important; border-color: #1e293b !important; }
         body.dark-mode nav#sidebarNav { background: #0f172a !important; border-color: #1e293b !important; }
         body.dark-mode nav#sidebarNav button { color: #94a3b8 !important; }
         body.dark-mode nav#sidebarNav button:hover { color: #f8fafc !important; background: rgba(255,255,255,0.04) !important; }
-        body.dark-mode nav#sidebarNav button.active { color: #ff6b35 !important; background: rgba(255,107,53,0.08) !important; }
-        body.dark-mode input, body.dark-mode select, body.dark-mode textarea { 
-            background: #0a0f1a !important; 
-            border-color: #1e293b !important; 
-            color: #f1f5f9 !important; 
+        body.dark-mode nav#sidebarNav button.active { color: #ff6b35 !important; background: rgba(255,107,53,0.10) !important; }
+        body.dark-mode .sub-sidebar-section { background: #0a0f1a !important; border-color: #1e293b !important; }
+        body.dark-mode #notificationsPanel { background: #131b2e !important; border-color: #1e293b !important; }
+        body.dark-mode #notificationsPanel h3 { color: #f1f5f9 !important; }
+        /* Forms */
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            background: #0a0f1a !important;
+            border-color: #1e293b !important;
+            color: #f1f5f9 !important;
         }
         body.dark-mode input:focus, body.dark-mode select:focus, body.dark-mode textarea:focus {
             border-color: #ff6b35 !important;
             box-shadow: 0 0 0 3px rgba(255,107,53,0.15) !important;
         }
-        body.dark-mode input::placeholder, body.dark-mode textarea::placeholder { color: #475569 !important; }
+        body.dark-mode input::placeholder,
+        body.dark-mode textarea::placeholder { color: #475569 !important; }
         body.dark-mode label { color: #cbd5e1 !important; }
+        /* Tables */
         body.dark-mode table { color: #e2e8f0 !important; }
         body.dark-mode table th { background: #0a0f1a !important; color: #94a3b8 !important; border-color: #1e293b !important; }
         body.dark-mode table td { color: #cbd5e1 !important; border-color: #1e293b !important; }
         body.dark-mode table tr:hover { background: #131b2e !important; }
-        body.dark-mode .notification-item { background: #131b2e !important; border-color: #1e293b !important; }
-        body.dark-mode .notification-item .text-gray-900 { color: #f1f5f9 !important; }
-        body.dark-mode .gradient-dark, body.dark-mode .gradient-orange-soft { background: #131b2e !important; }
-        body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, body.dark-mode h4, body.dark-mode h5 { color: #f1f5f9 !important; }
+        /* Modal */
         body.dark-mode .modal { background: rgba(0,0,0,0.75) !important; }
         body.dark-mode .modal-content { background: #131b2e !important; color: #e2e8f0 !important; border-color: #1e293b !important; }
-        body.dark-mode .modal-content h2, body.dark-mode .modal-content h3, body.dark-mode .modal-content h4 { color: #f1f5f9 !important; }
+        body.dark-mode .modal-content * { border-color: #1e293b !important; }
+        body.dark-mode .modal-content h2,
+        body.dark-mode .modal-content h3,
+        body.dark-mode .modal-content h4 { color: #f1f5f9 !important; }
         body.dark-mode .modal-content label { color: #cbd5e1 !important; }
         body.dark-mode .modal-content p { color: #94a3b8 !important; }
+        /* Buttons */
         body.dark-mode .btn-secondary { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
         body.dark-mode .btn-secondary:hover { background: #334155 !important; }
         body.dark-mode .btn-danger { background: #7f1d1d !important; color: #fecaca !important; }
-        body.dark-mode .border-gray-100 { border-color: #1e293b !important; }
-        body.dark-mode .border-gray-200 { border-color: #1e293b !important; }
+        /* Borders */
+        body.dark-mode .border-gray-100,
+        body.dark-mode .border-gray-200,
+        body.dark-mode [style*="border:1px solid #e5e5e5"],
+        body.dark-mode [style*="border:1px solid #e2e8f0"],
+        body.dark-mode [style*="border:1px solid #e8e8ec"],
+        body.dark-mode [style*="border:1px solid #f1f5f9"],
+        body.dark-mode [style*="border: 1px solid #e5e5e5"],
+        body.dark-mode [style*="border: 1px solid #e2e8f0"],
+        body.dark-mode [style*="border-color:#e5e5e5"] { border-color: #1e293b !important; }
         body.dark-mode .border-gray-300 { border-color: #334155 !important; }
-        body.dark-mode .bg-white { background: #131b2e !important; color: #e2e8f0 !important; }
-        body.dark-mode .bg-gray-50 { background: #0a0f1a !important; }
-        body.dark-mode .bg-gray-100 { background: #131b2e !important; }
-        body.dark-mode .bg-gray-200 { background: #1e293b !important; }
-        body.dark-mode .bg-orange-50 { background: rgba(255,107,53,0.08) !important; }
-        body.dark-mode .bg-blue-50 { background: rgba(59,130,246,0.08) !important; }
-        body.dark-mode .bg-green-50 { background: rgba(34,197,94,0.08) !important; }
-        body.dark-mode .bg-red-50  { background: rgba(239,68,68,0.08) !important; }
-        body.dark-mode .bg-yellow-50 { background: rgba(245,158,11,0.08) !important; }
+        body.dark-mode [style*="border-bottom:1px solid #e5e5e5"],
+        body.dark-mode [style*="border-bottom:1px solid #f1f5f9"],
+        body.dark-mode [style*="border-bottom: 1px solid #f1f5f9"] { border-bottom-color: #1e293b !important; }
         /* Calendar */
         body.dark-mode .calendar-day { background: #131b2e !important; border-color: #1e293b !important; color: #e2e8f0 !important; }
         body.dark-mode .calendar-day:hover { background: #1e293b !important; }
@@ -225,35 +349,35 @@
         body.dark-mode .calendar-day-number { color: #cbd5e1 !important; }
         body.dark-mode .calendar-header-day { color: #64748b !important; }
         body.dark-mode .calendar-day.today { border-color: #ff6b35 !important; background: rgba(255,107,53,0.08) !important; }
-        /* Modals */
+        /* Kanban (Leads + Estimates) */
+        body.dark-mode #kanbanBoard > div.kdr-col,
+        body.dark-mode #estimatesKanbanBoard > div { background: #1a2235 !important; }
+        body.dark-mode .kdr-col { background: #1a2235 !important; }
+        body.dark-mode .kdr-col .kanban-col { background: transparent !important; }
+        body.dark-mode .lcard,
+        body.dark-mode .kanban-card { background: #131b2e !important; border-color: #1e293b !important; color: #e2e8f0 !important; }
+        body.dark-mode .lcard *,
+        body.dark-mode .kanban-card * { color: inherit; }
+        body.dark-mode .lcard a { color: #93c5fd !important; }
+        /* Toggle buttons */
+        .view-toggle { background: #f1f5f9; }
+        .vt-btn.active { background: #fff; color: #0f172a; }
+        body.dark-mode .view-toggle { background: #0a0f1a !important; }
+        body.dark-mode .vt-btn { color: #94a3b8 !important; }
+        body.dark-mode .vt-btn.active { background: #1e293b !important; color: #f1f5f9 !important; }
+        /* Shadow tweaks */
         body.dark-mode .shadow, body.dark-mode .shadow-lg, body.dark-mode .shadow-xl { box-shadow: 0 4px 24px rgba(0,0,0,0.5) !important; }
-        body.dark-mode #notificationsPanel { background: #131b2e !important; border-color: #1e293b !important; }
-        body.dark-mode #notificationsPanel h3 { color: #f1f5f9 !important; }
-        body.dark-mode .sub-sidebar-section { background: #0a0f1a !important; border-color: #1e293b !important; }
-        /* Special lighter inline backgrounds */
-        body.dark-mode div[style*="background:#f8f9fb"],
-        body.dark-mode div[style*="background:#f8fafc"],
-        body.dark-mode div[style*="background:#fafafa"],
-        body.dark-mode div[style*="background:#f9fafb"] { background: #131b2e !important; color: #e2e8f0 !important; }
-        body.dark-mode div[style*="background:#f1f5f9"] { background: #1e293b !important; color: #e2e8f0 !important; }
-        body.dark-mode div[style*="background:#fff"]:not([style*="background:#fff5"]):not([style*="background:#fff8"]) { background: #131b2e !important; color: #e2e8f0 !important; }
-        body.dark-mode div[style*="background:#ffffff"] { background: #131b2e !important; color: #e2e8f0 !important; }
-        body.dark-mode div[style*="color:#0f172a"] { color: #f1f5f9 !important; }
-        body.dark-mode div[style*="color:#222"], body.dark-mode div[style*="color:#0f172a"] { color: #f1f5f9 !important; }
-        body.dark-mode span[style*="color:#0f172a"], body.dark-mode span[style*="color:#222"] { color: #f1f5f9 !important; }
-        body.dark-mode p[style*="color:#0f172a"], body.dark-mode p[style*="color:#222"] { color: #f1f5f9 !important; }
-        body.dark-mode div[style*="color:#475569"] { color: #94a3b8 !important; }
-        body.dark-mode span[style*="color:#475569"] { color: #94a3b8 !important; }
-        body.dark-mode div[style*="color:#64748b"] { color: #94a3b8 !important; }
-        /* Kanban dark mode */
-        body.dark-mode #kanbanBoard > div { background: #131b2e !important; }
-        body.dark-mode #kanbanBoard > div > div > div { background: #0a0f1a !important; border-color: #1e293b !important; color: #e2e8f0 !important; }
-        body.dark-mode .stat-card-warning { background: rgba(245,158,11,0.08) !important; border-color: #92400e !important; }
-        /* Toggle buttons (Board/List, time periods) */
-        body.dark-mode div[style*="background:#f1f5f9"] button[style*="background:#fff"] { background: #1e293b !important; color: #f1f5f9 !important; }
-        body.dark-mode #viewModeKanban[style*="background: rgb(255, 255, 255)"],
-        body.dark-mode #viewModeList[style*="background: rgb(255, 255, 255)"],
-        body.dark-mode .dash-period-btn[style*="background: rgb(255, 255, 255)"] { background: #1e293b !important; color: #f1f5f9 !important; }
+        /* Lead/customer cards inside lists - extra catch-all */
+        body.dark-mode .lcard { box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important; }
+        /* Stat cards */
+        body.dark-mode .stat-card .text-sm,
+        body.dark-mode .stat-card p:first-child { color: #94a3b8 !important; }
+        body.dark-mode .stat-card .text-4xl,
+        body.dark-mode .stat-card .text-3xl,
+        body.dark-mode .stat-card .text-2xl,
+        body.dark-mode .stat-card .text-xl { color: #f1f5f9 !important; }
+        /* Notification panel */
+        body.dark-mode .notification-item .text-gray-900 { color: #f1f5f9 !important; }
 
         .gradient-orange {
             background: #ff6b35;
@@ -931,6 +1055,77 @@
         .addr-option .addr-icon { color: #ff6b35; font-size: 14px; flex-shrink: 0; margin-top: 1px; }
         .addr-option .addr-main { font-weight: 600; color: #1e293b; }
         .addr-option .addr-sub  { font-size: 11px; color: #94a3b8; margin-top: 1px; }
+
+
+        /* ── DARK MODE CATCH-ALL — last resort overrides ── */
+        body.dark-mode [style*="color:#0c4a6e"],
+        body.dark-mode [style*="color:#075985"],
+        body.dark-mode [style*="color:#0369a1"],
+        body.dark-mode [style*="color:#1e3a8a"],
+        body.dark-mode [style*="color:#1e40af"],
+        body.dark-mode [style*="color:#166534"],
+        body.dark-mode [style*="color:#14532d"],
+        body.dark-mode [style*="color:#15803d"],
+        body.dark-mode [style*="color:#9a3412"],
+        body.dark-mode [style*="color:#c2410c"],
+        body.dark-mode [style*="color:#7f1d1d"],
+        body.dark-mode [style*="color:#991b1b"],
+        body.dark-mode [style*="color:#78350f"],
+        body.dark-mode [style*="color:#92400e"] {
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode [style*="background:#0f172a"] {
+            background: #1e293b !important;
+        }
+        body.dark-mode [style*="background:#eff6ff"],
+        body.dark-mode [style*="background:#dbeafe"],
+        body.dark-mode [style*="background:#bfdbfe"],
+        body.dark-mode [style*="background:#f0f9ff"] {
+            background: rgba(59,130,246,0.10) !important;
+            color: #cbd5e1 !important;
+        }
+        body.dark-mode [style*="background:#f0fdf4"],
+        body.dark-mode [style*="background:#dcfce7"],
+        body.dark-mode [style*="background:#bbf7d0"] {
+            background: rgba(34,197,94,0.10) !important;
+        }
+        body.dark-mode [style*="background:#fef3c7"],
+        body.dark-mode [style*="background:#fef7f4"],
+        body.dark-mode [style*="background:#fff8f0"],
+        body.dark-mode [style*="background:#fff5f0"] {
+            background: rgba(255,107,53,0.10) !important;
+        }
+        body.dark-mode [style*="background:#fee2e2"],
+        body.dark-mode [style*="background:#fca5a5"] {
+            background: rgba(239,68,68,0.10) !important;
+        }
+        /* Force light text in colored callout boxes */
+        body.dark-mode [style*="border-left:4px solid"] *,
+        body.dark-mode [style*="border-left: 4px solid"] * {
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode [style*="border-left:4px solid"] strong,
+        body.dark-mode [style*="border-left: 4px solid"] strong {
+            color: #f1f5f9 !important;
+        }
+        /* Inline ordered/unordered lists in info cards */
+        body.dark-mode ol li, body.dark-mode ul li {
+            color: #cbd5e1 !important;
+        }
+        /* Code/textarea preview boxes — keep dark, force light text */
+        body.dark-mode textarea[readonly][style*="background:#0f172a"] {
+            background: #020617 !important;
+            color: #7dd3fc !important;
+        }
+        /* Bordered/dashed placeholders */
+        body.dark-mode [style*="border:1px dashed"] {
+            border-color: #475569 !important;
+        }
+        /* Calendar event types — keep brand colors but ensure visible */
+        body.dark-mode .calendar-event { color: #fff !important; }
+        /* Lead form preview iframe parent — leave as is */
+        body.dark-mode iframe { background: #fff; }
+
     </style>
 </head>
 <body>
@@ -2592,40 +2787,27 @@
                                 </label>
                             </div>
 
-                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;margin-top:32px;">Lead Capture</h4>
-                            <p class="text-xs text-gray-600 mb-4" style="margin-top:-12px;">Get customers to fill out a form online — leads come straight into your app.</p>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;margin-top:32px;">Website Lead Capture</h4>
+                            <p class="text-xs text-gray-600 mb-4" style="margin-top:-12px;">Get a code snippet to put on your website. When a customer fills out the form, the lead appears in your Leads tab instantly.</p>
 
-                            <div class="p-4 rounded-xl mb-4" style="background:#f8f9fb;border:1px solid #e2e8f0;">
-                                <label class="block mb-2" style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#475569;">Your Unique URL Name</label>
-                                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                                    <span style="font-size:13px;color:#64748b;font-weight:600;">kdrsystems.net/?lead=</span>
-                                    <input type="text" id="settingsLeadHandle" placeholder="my-business-name" style="max-width:200px;font-family:'Inter',monospace;" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
-                                    <button type="button" onclick="saveLeadHandle()" class="btn-primary" style="padding:9px 18px;font-size:13px;">Save URL</button>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2">Letters, numbers, dashes only. Choose carefully — this URL will be on your business cards.</p>
-                                <p id="handleStatus" class="text-xs mt-1" style="font-weight:700;display:none;"></p>
+                            <div class="p-4 rounded-xl mb-4" style="background:#f0f9ff;border:1px solid #bae6fd;">
+                                <p style="font-size:12px;font-weight:700;color:#0c4a6e;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;">How to use it</p>
+                                <ol style="margin:0;padding-left:18px;font-size:12px;line-height:1.7;color:#075985;">
+                                    <li>Click "Copy Code" below</li>
+                                    <li>Send the code to your website designer, OR paste it on your site yourself (Wix, Squarespace, WordPress, etc. all support HTML embed blocks)</li>
+                                    <li>The form appears on your website branded with your business info</li>
+                                    <li>Every submission appears in your KDRSYSTEMS Leads tab in real-time</li>
+                                </ol>
                             </div>
 
-                            <div id="leadCaptureBlock" style="display:none;">
-                                <!-- Public URL display -->
-                                <div class="p-4 rounded-xl mb-4" style="background:linear-gradient(135deg,#fff8f0,#fff);border:2px solid #fed7c5;">
-                                    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9a3412;margin:0 0 8px;">Your Public Lead Form</p>
-                                    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-                                        <input type="text" id="leadPublicUrl" readonly style="flex:1;min-width:220px;font-family:'Inter',monospace;font-size:13px;background:#fff;cursor:text;">
-                                        <button type="button" onclick="copyLeadUrl()" class="btn-secondary" style="padding:9px 14px;font-size:12px;">Copy</button>
-                                        <button type="button" onclick="openLeadUrl()" class="btn-secondary" style="padding:9px 14px;font-size:12px;">Open</button>
-                                        <button type="button" onclick="showLeadQR()" class="btn-secondary" style="padding:9px 14px;font-size:12px;">QR Code</button>
-                                    </div>
-                                    <p class="text-xs text-gray-600 mt-3" style="line-height:1.5;">Share this in your Instagram bio, Facebook page, Google Business profile, business cards, yard signs. Every submission appears in your Leads tab instantly.</p>
+                            <div class="p-4 rounded-xl mb-4" style="background:#f8f9fb;border:1px solid #e2e8f0;">
+                                <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#475569;margin:0 0 10px;">Your Website Code</p>
+                                <textarea id="leadEmbedCode" readonly rows="6" style="width:100%;font-family:'Courier New',monospace;font-size:11px;background:#0f172a;color:#7dd3fc;border-color:#1e293b;resize:vertical;padding:12px;line-height:1.5;"></textarea>
+                                <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+                                    <button type="button" onclick="copyEmbedCode()" class="btn-primary" style="padding:9px 18px;font-size:13px;">Copy Code</button>
+                                    <button type="button" onclick="previewEmbed()" class="btn-secondary" style="padding:9px 18px;font-size:13px;">Preview Form</button>
                                 </div>
-
-                                <!-- Embed code -->
-                                <div class="p-4 rounded-xl mb-4" style="background:#f8f9fb;border:1px solid #e2e8f0;">
-                                    <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#475569;margin:0 0 8px;">Embed in Your Website</p>
-                                    <p class="text-xs text-gray-600 mb-2">Have a website? Send this code to your web designer. Paste anywhere on a page to add the form.</p>
-                                    <textarea id="leadEmbedCode" readonly rows="3" style="width:100%;font-family:'Courier New',monospace;font-size:12px;background:#0f172a;color:#7dd3fc;border-color:#1e293b;resize:none;"></textarea>
-                                    <button type="button" onclick="copyEmbedCode()" class="btn-secondary mt-2" style="padding:8px 16px;font-size:12px;">Copy Code</button>
-                                </div>
+                                <p class="text-xs text-gray-500 mt-3" style="line-height:1.5;">Need help? Send this code to whoever built your website. Tell them: "Paste this HTML on my contact page." That's it.</p>
                             </div>
 
                             <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;margin-top:32px;">Sharing Estimates &amp; Invoices</h4>
@@ -2640,18 +2822,34 @@
                         </div>
                         
                         <div class="pt-4 border-t border-gray-200">
-                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Payment Collection (Stripe)</h4>
-                            <p class="text-xs text-gray-700 mb-4">Add your Stripe Payment Link so customers can pay invoices directly online. Create a payment link at <a href="https://dashboard.stripe.com/payment-links" target="_blank" class="text-orange underline">dashboard.stripe.com/payment-links</a> — set it to collect a custom amount so every invoice works with the same link.</p>
+                            <h4 class="text-lg font-semibold mb-4" style="color:#0f172a;letter-spacing:-0.01em;">Accept Card Payments (Optional)</h4>
+                            <div style="background:#f0fdf4;border-left:4px solid #22c55e;border-radius:8px;padding:14px 16px;margin-bottom:14px;">
+                                <p style="margin:0;font-size:13px;font-weight:700;color:#166534;">Money goes directly to YOUR bank account.</p>
+                                <p style="margin:6px 0 0;font-size:12px;color:#14532d;line-height:1.5;">When customers pay invoices, the money goes straight to your Stripe — never through us. Stripe charges ~2.9% + 30¢ per transaction (standard rates). You can skip this entirely if you prefer cash, check, or Zelle.</p>
+                            </div>
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block mb-2">Stripe Payment Link</label>
+                                    <label class="block mb-2">Your Stripe Payment Link</label>
                                     <input type="text" id="settingsStripeLink" placeholder="https://buy.stripe.com/your_link">
-                                    <p class="text-xs text-gray-500 mt-1">Customers will see a "Pay Now" button on their invoice that opens this link. Stripe sends them a receipt automatically.</p>
+                                    <details style="margin-top:8px;">
+                                        <summary style="font-size:12px;color:#3b82f6;font-weight:600;cursor:pointer;">How to get your Stripe link (5 minutes)</summary>
+                                        <div style="margin-top:10px;padding:12px;background:#eff6ff;border-radius:8px;border:1px solid #bfdbfe;">
+                                            <ol style="margin:0;padding-left:18px;font-size:12px;line-height:1.8;color:#1e3a8a;">
+                                                <li>Go to <a href="https://stripe.com" target="_blank" style="color:#3b82f6;text-decoration:underline;font-weight:700;">stripe.com</a> and sign up (free)</li>
+                                                <li>Click "Payment Links" in left menu</li>
+                                                <li>Click "+ New" — choose <strong>"Customers choose what to pay"</strong></li>
+                                                <li>Set a low minimum (e.g., $1) so any invoice amount works</li>
+                                                <li>Click "Create link" — copy the URL it gives you</li>
+                                                <li>Paste it here and click Save</li>
+                                            </ol>
+                                            <p style="margin:10px 0 0;font-size:11px;color:#1e40af;font-style:italic;">Stripe will ask for your bank info during signup so they can deposit your earnings. They never touch our system.</p>
+                                        </div>
+                                    </details>
                                 </div>
                                 <div>
                                     <label class="block mb-2">Payment Instructions (optional)</label>
-                                    <input type="text" id="settingsPaymentInstructions" placeholder="e.g. Pay by card, Zelle, or check — contact us for details">
-                                    <p class="text-xs text-gray-500 mt-1">Shown on invoice below the Pay Now button</p>
+                                    <input type="text" id="settingsPaymentInstructions" placeholder="e.g. Pay by card above, or call us for check/Zelle">
+                                    <p class="text-xs text-gray-500 mt-1">Shown on invoice below the Pay Now button — useful for alternative payment methods.</p>
                                 </div>
                             </div>
                         </div>
@@ -2718,8 +2916,101 @@
                         <button type="button" class="btn-secondary flex-1" onclick="closeModal('customerModal')">Cancel</button>
                     </div>
                 </form>
+
+                <!-- Site Visits Section — only shows when editing existing customer -->
+                <div id="custSiteVisitsSection" style="display:none;margin-top:24px;padding-top:24px;border-top:1px solid #e5e5e5;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+                        <h4 style="margin:0;font-size:16px;font-weight:800;color:#0f172a;">Site Visits & Notes</h4>
+                        <button type="button" class="btn-primary" style="padding:8px 16px;font-size:13px;" onclick="openSiteVisitModal()">+ New Visit</button>
+                    </div>
+                    <div id="custSiteVisitsList" style="display:flex;flex-direction:column;gap:10px;max-height:400px;overflow-y:auto;">
+                        <p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">No site visits yet. Add your first one to keep notes and photos for this customer.</p>
+                    </div>
+                </div>
             </div>
         </div>
+    </div>
+
+    <!-- ── SITE VISIT MODAL ── -->
+    <div id="siteVisitModal" class="modal">
+        <div class="modal-content" style="max-width:680px;width:100%;">
+            <div class="p-6 border-b border-gray-200" style="display:flex;justify-content:space-between;align-items:center;">
+                <h3 class="text-2xl font-bold" id="siteVisitModalTitle">New Site Visit</h3>
+                <button type="button" onclick="closeModal('siteVisitModal')" style="background:none;border:none;font-size:24px;color:#94a3b8;cursor:pointer;">×</button>
+            </div>
+            <div class="p-6">
+                <form id="siteVisitForm" class="space-y-4">
+                    <input type="hidden" id="svEditId" value="">
+                    <input type="hidden" id="svCustomerId" value="">
+
+                    <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div>
+                            <label style="font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Visit Date</label>
+                            <input type="date" id="svDate" required>
+                        </div>
+                        <div>
+                            <label style="font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Visit Type</label>
+                            <select id="svType">
+                                <option value="initial">Initial Estimate Visit</option>
+                                <option value="measurement">Measurement</option>
+                                <option value="walkthrough">Walk-Through</option>
+                                <option value="followup">Follow-Up</option>
+                                <option value="inspection">Inspection</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style="font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Notes</label>
+                        <textarea id="svNotes" rows="6" placeholder="e.g., Backyard 60ft x 30ft. Existing fence rotted. Customer wants 6ft cedar. 2 dogs. Hard ground — need auger." style="resize:vertical;"></textarea>
+                    </div>
+
+                    <!-- Voice memo dictation -->
+                    <div style="background:#f8f9fb;border:1px solid #e2e8f0;border-radius:10px;padding:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+                            <div>
+                                <p style="margin:0;font-size:13px;font-weight:700;color:#0f172a;">Voice Dictation</p>
+                                <p style="margin:2px 0 0;font-size:11px;color:#64748b;">Hands-free — speak your notes and they auto-fill above</p>
+                            </div>
+                            <button type="button" id="svVoiceBtn" onclick="toggleSiteVisitVoice()" style="padding:10px 18px;background:#dc2626;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                                <span id="svVoiceIcon">●</span>
+                                <span id="svVoiceLabel">Start Recording</span>
+                            </button>
+                        </div>
+                        <p id="svVoiceStatus" style="margin:8px 0 0;font-size:12px;color:#64748b;display:none;"></p>
+                    </div>
+
+                    <!-- Photo upload -->
+                    <div>
+                        <label style="font-size:12px;font-weight:600;color:#475569;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Photos</label>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+                            <label class="btn-secondary cursor-pointer inline-block" style="margin:0;padding:9px 14px;font-size:13px;">
+                                Choose from Library
+                                <input type="file" accept="image/*" multiple class="hidden" onchange="handleSiteVisitPhotos(event)">
+                            </label>
+                            <label class="btn-secondary cursor-pointer inline-block" style="margin:0;padding:9px 14px;font-size:13px;background:#dbeafe;color:#1e40af;border-color:#93c5fd;">
+                                Take Photo
+                                <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleSiteVisitPhotos(event)">
+                            </label>
+                        </div>
+                        <div id="svPhotosGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;"></div>
+                    </div>
+
+                    <div class="flex gap-3" style="margin-top:20px;">
+                        <button type="submit" class="btn-primary flex-1">Save Visit</button>
+                        <button type="button" id="svDeleteBtn" class="btn-danger" style="display:none;padding:11px 18px;" onclick="deleteSiteVisit()">Delete</button>
+                        <button type="button" class="btn-secondary" onclick="closeModal('siteVisitModal')">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── PHOTO LIGHTBOX ── -->
+    <div id="photoLightbox" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;" onclick="closePhotoLightbox()">
+        <img id="lightboxImg" src="" alt="" style="max-width:95vw;max-height:95vh;object-fit:contain;border-radius:8px;">
+        <button onclick="event.stopPropagation();closePhotoLightbox()" style="position:absolute;top:20px;right:20px;background:#fff;color:#000;border:none;width:44px;height:44px;border-radius:50%;font-size:20px;font-weight:800;cursor:pointer;">×</button>
     </div>
 
     <div id="scheduleModal" class="modal">
@@ -4180,6 +4471,7 @@
         // Global Data
         var appData = {
             customers: [],
+            siteVisits: [],
             estimates: [],
             invoices: [],
             contracts: [],
@@ -5047,7 +5339,7 @@
                 cfg.settings.logo = '';
                 batch.set(base.collection('config').doc('main'), cfg, { merge: true });
 
-                [['customers',appData.customers],['estimates',appData.estimates],
+                [['customers',appData.customers],['siteVisits',appData.siteVisits||[]],['estimates',appData.estimates],
                  ['invoices',appData.invoices],['materials',appData.materials],
                  ['templates',appData.templates],['terms',appData.terms],
                  ['contracts',appData.contracts]
@@ -5125,7 +5417,7 @@
         var _listeners     = [];
         var dataLoaded     = false;
         var _colsLoaded    = {};
-        var _COLS_NEEDED   = ['config','customers','estimates','invoices','materials','templates','terms','contracts'];
+        var _COLS_NEEDED   = ['config','customers','siteVisits','estimates','invoices','materials','templates','terms','contracts'];
 
         function _onAllLoaded() {
             _restoreImages(appData); // put photos back from localStorage
@@ -5174,7 +5466,7 @@
             }, function(err){ console.error('config listener:',err); _colLoaded('config'); }));
 
             // Record collection listeners
-            ['customers','estimates','invoices','materials','templates','terms','contracts'].forEach(function(colName) {
+            ['customers','siteVisits','estimates','invoices','materials','templates','terms','contracts'].forEach(function(colName) {
                 _listeners.push(base.collection(colName).onSnapshot(function(snap) {
                     var arr = [];
                     snap.forEach(function(d){ arr.push(d.data()); });
@@ -6173,6 +6465,9 @@
             if (srcEl2) srcEl2.value = '';
             document.getElementById('customerModalTitle').textContent = 'Add Customer';
             document.getElementById('custSubmitBtn').textContent = 'Add Customer';
+            // Hide site visits section for new customers (no ID yet)
+            var svSection = document.getElementById('custSiteVisitsSection');
+            if (svSection) svSection.style.display = 'none';
             openModal('customerModal');
         }
 
@@ -6188,8 +6483,296 @@
             if (srcEl) srcEl.value = c.source || '';
             document.getElementById('customerModalTitle').textContent = 'Edit Customer';
             document.getElementById('custSubmitBtn').textContent = 'Save Changes';
+            // Show Site Visits section + render existing visits
+            document.getElementById('custSiteVisitsSection').style.display = '';
+            _renderCustomerSiteVisits(id);
             openModal('customerModal');
         }
+
+        // ── SITE VISITS ────────────────────────────────────────────────────
+        var _siteVisitPhotos = [];      // current modal photos buffer
+        var _siteVisitRecognition = null; // SpeechRecognition instance
+        var _siteVisitListening = false;
+
+        function _renderCustomerSiteVisits(customerId) {
+            var container = document.getElementById('custSiteVisitsList');
+            if (!container) return;
+            var visits = (appData.siteVisits || []).filter(function(v){ return v.customerId === customerId; });
+            visits.sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+
+            if (visits.length === 0) {
+                container.innerHTML = '<p style="color:#94a3b8;font-size:13px;text-align:center;padding:20px;">No site visits yet. Add your first one to keep notes and photos for this customer.</p>';
+                return;
+            }
+
+            var typeLabels = {
+                initial: 'Initial Estimate',
+                measurement: 'Measurement',
+                walkthrough: 'Walk-Through',
+                followup: 'Follow-Up',
+                inspection: 'Inspection',
+                other: 'Other'
+            };
+
+            container.innerHTML = visits.map(function(v) {
+                var photoCount = (v.photos || []).length;
+                var photoStrip = photoCount > 0
+                    ? '<div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">' +
+                        (v.photos || []).slice(0, 5).map(function(p, i) {
+                            return '<img src="' + p.dataUrl + '" alt="" style="width:48px;height:48px;object-fit:cover;border-radius:6px;border:1px solid #e5e5e5;cursor:zoom-in;" onclick="event.stopPropagation();openPhotoLightbox(\'' + p.dataUrl.replace(/'/g, "\\'") + '\')">';
+                        }).join('') +
+                        (photoCount > 5 ? '<div style="width:48px;height:48px;border-radius:6px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#64748b;">+' + (photoCount - 5) + '</div>' : '') +
+                      '</div>'
+                    : '';
+                var notesPreview = (v.notes || '').slice(0, 120);
+                if ((v.notes || '').length > 120) notesPreview += '...';
+                return '<div onclick="editSiteVisit(\'' + v.id + '\')" style="padding:12px;background:#fff;border:1px solid #e5e5e5;border-radius:10px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor=\'#ff6b35\';this.style.boxShadow=\'0 2px 8px rgba(0,0,0,0.08)\'" onmouseout="this.style.borderColor=\'#e5e5e5\';this.style.boxShadow=\'none\'">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">' +
+                        '<span style="font-weight:700;font-size:13px;color:#0f172a;">' + (typeLabels[v.type] || 'Visit') + '</span>' +
+                        '<span style="font-size:12px;color:#64748b;font-weight:600;">' + (v.date || '') + '</span>' +
+                    '</div>' +
+                    (notesPreview ? '<p style="margin:0;font-size:13px;color:#475569;line-height:1.4;">' + notesPreview + '</p>' : '<p style="margin:0;font-size:12px;color:#94a3b8;font-style:italic;">No notes</p>') +
+                    photoStrip +
+                '</div>';
+            }).join('');
+        }
+
+        function openSiteVisitModal() {
+            var customerId = document.getElementById('custEditId').value;
+            if (!customerId) {
+                toast('Save the customer first, then add visits');
+                return;
+            }
+            _siteVisitPhotos = [];
+            document.getElementById('svEditId').value = '';
+            document.getElementById('svCustomerId').value = customerId;
+            document.getElementById('svDate').value = new Date().toISOString().slice(0, 10);
+            document.getElementById('svType').value = 'initial';
+            document.getElementById('svNotes').value = '';
+            document.getElementById('siteVisitModalTitle').textContent = 'New Site Visit';
+            document.getElementById('svDeleteBtn').style.display = 'none';
+            _renderSiteVisitPhotos();
+            openModal('siteVisitModal');
+        }
+
+        function editSiteVisit(visitId) {
+            var v = (appData.siteVisits || []).find(function(x){ return x.id === visitId; });
+            if (!v) return;
+            _siteVisitPhotos = (v.photos || []).slice();
+            document.getElementById('svEditId').value = visitId;
+            document.getElementById('svCustomerId').value = v.customerId;
+            document.getElementById('svDate').value = v.date || new Date().toISOString().slice(0, 10);
+            document.getElementById('svType').value = v.type || 'initial';
+            document.getElementById('svNotes').value = v.notes || '';
+            document.getElementById('siteVisitModalTitle').textContent = 'Edit Site Visit';
+            document.getElementById('svDeleteBtn').style.display = '';
+            _renderSiteVisitPhotos();
+            openModal('siteVisitModal');
+        }
+
+        function deleteSiteVisit() {
+            var visitId = document.getElementById('svEditId').value;
+            if (!visitId) return;
+            kdrConfirm(
+                'Delete this site visit?',
+                'All notes and photos for this visit will be permanently removed.',
+                'Delete',
+                function() {
+                    var customerId = document.getElementById('svCustomerId').value;
+                    appData.siteVisits = (appData.siteVisits || []).filter(function(v){ return v.id !== visitId; });
+                    saveData();
+                    closeModal('siteVisitModal');
+                    if (customerId) _renderCustomerSiteVisits(customerId);
+                    toast('Site visit deleted');
+                }
+            );
+        }
+
+        function handleSiteVisitPhotos(event) {
+            var files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+            files.forEach(function(file) {
+                if (file.size > 8 * 1024 * 1024) { toast('Photo too large (max 8MB): ' + file.name); return; }
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var maxW = 1400, maxH = 1400;
+                        var w = img.width, h = img.height;
+                        if (w > maxW) { h = h * (maxW / w); w = maxW; }
+                        if (h > maxH) { w = w * (maxH / h); h = maxH; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        var resized = canvas.toDataURL('image/jpeg', 0.85);
+                        _siteVisitPhotos.push({
+                            id: 'photo_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                            dataUrl: resized,
+                            name: file.name,
+                            addedAt: new Date().toISOString()
+                        });
+                        _renderSiteVisitPhotos();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+            event.target.value = ''; // reset to allow re-uploading same file
+        }
+
+        function _renderSiteVisitPhotos() {
+            var grid = document.getElementById('svPhotosGrid');
+            if (!grid) return;
+            if (_siteVisitPhotos.length === 0) {
+                grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#94a3b8;font-size:12px;padding:14px;border:1px dashed #cbd5e1;border-radius:8px;">No photos yet</p>';
+                return;
+            }
+            grid.innerHTML = _siteVisitPhotos.map(function(p, idx) {
+                return '<div style="position:relative;aspect-ratio:1;">' +
+                    '<img src="' + p.dataUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid #e5e5e5;cursor:zoom-in;" onclick="openPhotoLightbox(\'' + p.dataUrl.replace(/'/g, "\\'") + '\')">' +
+                    '<button type="button" onclick="_removeSiteVisitPhoto(' + idx + ')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.7);color:#fff;border:none;width:24px;height:24px;border-radius:50%;font-size:14px;cursor:pointer;line-height:1;">×</button>' +
+                '</div>';
+            }).join('');
+        }
+
+        function _removeSiteVisitPhoto(idx) {
+            _siteVisitPhotos.splice(idx, 1);
+            _renderSiteVisitPhotos();
+        }
+
+        function openPhotoLightbox(src) {
+            document.getElementById('lightboxImg').src = src;
+            var lb = document.getElementById('photoLightbox');
+            lb.style.display = 'flex';
+        }
+        function closePhotoLightbox() {
+            document.getElementById('photoLightbox').style.display = 'none';
+        }
+
+        // Voice dictation using browser SpeechRecognition API
+        function toggleSiteVisitVoice() {
+            var btn = document.getElementById('svVoiceBtn');
+            var label = document.getElementById('svVoiceLabel');
+            var icon = document.getElementById('svVoiceIcon');
+            var status = document.getElementById('svVoiceStatus');
+
+            if (_siteVisitListening) {
+                if (_siteVisitRecognition) _siteVisitRecognition.stop();
+                _siteVisitListening = false;
+                label.textContent = 'Start Recording';
+                btn.style.background = '#dc2626';
+                icon.style.color = '#fff';
+                status.style.display = 'none';
+                return;
+            }
+
+            // Check browser support
+            var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) {
+                toast('Voice dictation not supported on this browser. Try Chrome or Safari.');
+                return;
+            }
+
+            _siteVisitRecognition = new SR();
+            _siteVisitRecognition.continuous = true;
+            _siteVisitRecognition.interimResults = true;
+            _siteVisitRecognition.lang = navigator.language || 'en-US';
+
+            var notesEl = document.getElementById('svNotes');
+            var startingValue = notesEl.value;
+            var finalTranscript = '';
+
+            _siteVisitRecognition.onresult = function(event) {
+                var interim = '';
+                for (var i = event.resultIndex; i < event.results.length; i++) {
+                    var transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        finalTranscript += transcript;
+                    } else {
+                        interim += transcript;
+                    }
+                }
+                var separator = startingValue && !startingValue.endsWith('\n') ? '\n' : '';
+                notesEl.value = startingValue + separator + finalTranscript + interim;
+            };
+
+            _siteVisitRecognition.onerror = function(event) {
+                console.error('Voice recognition error:', event.error);
+                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                    status.textContent = 'Microphone permission denied. Enable mic access in browser settings.';
+                } else if (event.error === 'no-speech') {
+                    status.textContent = 'No speech detected. Try speaking closer to the mic.';
+                } else {
+                    status.textContent = 'Voice error: ' + event.error;
+                }
+                status.style.display = '';
+                _siteVisitListening = false;
+                label.textContent = 'Start Recording';
+                btn.style.background = '#dc2626';
+            };
+
+            _siteVisitRecognition.onend = function() {
+                if (_siteVisitListening) {
+                    // restart if we wanted to keep going
+                    try { _siteVisitRecognition.start(); } catch(e) {}
+                }
+            };
+
+            try {
+                _siteVisitRecognition.start();
+                _siteVisitListening = true;
+                label.textContent = 'Stop Recording';
+                btn.style.background = '#0f172a';
+                icon.style.color = '#ef4444';
+                status.textContent = 'Listening... speak your notes';
+                status.style.display = '';
+            } catch (e) {
+                toast('Could not start voice recognition');
+                console.error(e);
+            }
+        }
+
+        // Save site visit form
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('siteVisitForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    var editId = document.getElementById('svEditId').value;
+                    var customerId = document.getElementById('svCustomerId').value;
+
+                    var visitData = {
+                        id: editId || 'sv_' + Date.now(),
+                        customerId: customerId,
+                        date: document.getElementById('svDate').value,
+                        type: document.getElementById('svType').value,
+                        notes: document.getElementById('svNotes').value,
+                        photos: _siteVisitPhotos.slice(),
+                        createdAt: new Date().toISOString()
+                    };
+
+                    if (!appData.siteVisits) appData.siteVisits = [];
+                    if (editId) {
+                        var idx = appData.siteVisits.findIndex(function(v){ return v.id === editId; });
+                        if (idx >= 0) appData.siteVisits[idx] = visitData;
+                    } else {
+                        appData.siteVisits.push(visitData);
+                    }
+
+                    saveData();
+                    closeModal('siteVisitModal');
+
+                    // Stop voice if still recording
+                    if (_siteVisitListening && _siteVisitRecognition) {
+                        _siteVisitListening = false;
+                        _siteVisitRecognition.stop();
+                    }
+
+                    if (customerId) _renderCustomerSiteVisits(customerId);
+                    toast(editId ? 'Visit updated' : 'Visit saved');
+                });
+            }
+        });
 
         function _searchCustomers(query) {
             var div = document.getElementById('custSuggest');
@@ -8850,6 +9433,11 @@
             if (appData.settings.logo) {
                 displayLogoPreview(appData.settings.logo);
             }
+
+            // Generate website embed code (uses current settings)
+            if (typeof generateEmbedCode === 'function' && currentUserId) {
+                try { generateEmbedCode(); } catch (e) { console.warn(e); }
+            }
         }
 
         function handleDragOver(e) {
@@ -8941,125 +9529,123 @@
             document.getElementById('logoPreview').innerHTML = '';
         }
 
-        // ── LEAD CAPTURE: handle management ───────────────────────────────
-        function saveLeadHandle() {
-            var handleEl = document.getElementById('settingsLeadHandle');
-            var handle = (handleEl.value || '').toLowerCase().replace(/[^a-z0-9-]/g, '').trim();
-            if (!handle || handle.length < 3) {
-                _showHandleStatus('URL must be at least 3 characters', '#dc2626');
-                return;
-            }
-            if (handle.length > 40) {
-                _showHandleStatus('URL too long (max 40 chars)', '#dc2626');
-                return;
-            }
-            // Check availability — does another contractor own this handle?
-            db.collection('lead_handles').doc(handle).get().then(function(doc) {
-                if (doc.exists && doc.data().ownerId !== currentUserId) {
-                    _showHandleStatus('That URL is taken. Try another.', '#dc2626');
-                    return;
-                }
-                // Reserve / update the handle
-                db.collection('lead_handles').doc(handle).set({
-                    ownerId: currentUserId,
-                    businessName: appData.settings.businessName || '',
-                    phone: appData.settings.phone || '',
-                    email: appData.settings.email || '',
-                    brandColor: appData.settings.brandColor || '#ff6b35',
-                    slogan: appData.settings.slogan || '',
-                    logo: appData.settings.logo || '',
-                    license: appData.settings.license || '',
-                    updatedAt: new Date().toISOString()
-                }).then(function() {
-                    // Delete old handle if user changed it
-                    var oldHandle = appData.settings.leadHandle;
-                    if (oldHandle && oldHandle !== handle) {
-                        db.collection('lead_handles').doc(oldHandle).delete().catch(function(){});
-                    }
-                    appData.settings.leadHandle = handle;
-                    saveData();
-                    _showHandleStatus('URL saved ✓', '#16a34a');
-                    _renderLeadCaptureBlock(handle);
-                }).catch(function(err) {
-                    _showHandleStatus('Save failed: ' + err.message, '#dc2626');
-                });
-            }).catch(function(err) {
-                _showHandleStatus('Check failed: ' + err.message, '#dc2626');
-            });
-        }
+        // ── LEAD CAPTURE: WEBSITE EMBED CODE ──────────────────────────────
+        // Generates a self-contained HTML snippet contractors paste on their site.
+        // The form writes directly to Firestore — no server, no API, no fees.
 
-        function _showHandleStatus(msg, color) {
-            var el = document.getElementById('handleStatus');
-            if (!el) return;
-            el.textContent = msg;
-            el.style.color = color;
-            el.style.display = '';
-            if (color === '#16a34a') {
-                setTimeout(function(){ el.style.display = 'none'; }, 3000);
-            }
-        }
+        function generateEmbedCode() {
+            var s = appData.settings || {};
+            var bizName  = (s.businessName || 'Get an Estimate').replace(/"/g, '&quot;');
+            var bizColor = s.brandColor || '#ff6b35';
+            var slogan   = (s.slogan || '').replace(/"/g, '&quot;');
+            var phone    = (s.phone || '').replace(/"/g, '&quot;');
+            var ownerId  = currentUserId || '';
 
-        function _renderLeadCaptureBlock(handle) {
-            if (!handle) {
-                document.getElementById('leadCaptureBlock').style.display = 'none';
-                return;
-            }
-            var fullUrl = window.location.origin + window.location.pathname + '?lead=' + handle;
-            document.getElementById('leadPublicUrl').value = fullUrl;
-            // Embed code
-            var embedCode = '<iframe src="' + fullUrl + '" width="100%" height="700" frameborder="0" style="border:none;border-radius:12px;max-width:560px;"></iframe>';
-            document.getElementById('leadEmbedCode').value = embedCode;
-            document.getElementById('leadCaptureBlock').style.display = '';
-        }
+            // Firebase config — must match what KDRSYSTEMS uses
+            var firebaseConfig = {
+                apiKey: 'AIzaSyDcuPhAFmaNJBdSnY9KO1lOJ5sZsCY-WIY',
+                authDomain: 'kdrsystems-c269c.firebaseapp.com',
+                projectId: 'kdrsystems-c269c'
+            };
 
-        function copyLeadUrl() {
-            var input = document.getElementById('leadPublicUrl');
-            input.select(); input.setSelectionRange(0, 99999);
-            try {
-                navigator.clipboard.writeText(input.value).then(function() { toast('URL copied ✓'); });
-            } catch (e) {
-                document.execCommand('copy');
-                toast('URL copied ✓');
-            }
-        }
+            // Auto-contrast for header text
+            var headerText = (typeof _textOn === 'function') ? _textOn(bizColor) : '#000';
 
-        function openLeadUrl() {
-            var url = document.getElementById('leadPublicUrl').value;
-            window.open(url, '_blank');
+            // Build the self-contained embed code
+            var code = '<!-- KDRSYSTEMS Lead Form — paste this anywhere on your website -->\n' +
+'<div id="kdr-lead-form" style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.08);border:1px solid #e5e5e5;">\n' +
+'  <div style="background:' + bizColor + ';padding:28px 24px;text-align:center;">\n' +
+'    <h2 style="color:' + headerText + ';margin:0;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;">' + bizName + '</h2>\n' +
+(slogan ? '    <p style="color:' + headerText + ';margin:6px 0 0;font-size:13px;font-weight:600;font-style:italic;opacity:0.9;">' + slogan + '</p>\n' : '') +
+'  </div>\n' +
+'  <div style="padding:24px;">\n' +
+'    <h3 style="font-size:18px;font-weight:800;color:#0f172a;margin:0 0 6px;">Get a Free Estimate</h3>\n' +
+'    <p style="font-size:13px;color:#64748b;margin:0 0 18px;">We will respond within 24 hours.</p>\n' +
+'    <form onsubmit="return kdrSubmitLead(event)">\n' +
+'      <div style="margin-bottom:14px;">\n' +
+'        <input type="text" name="name" required placeholder="Your Name *" style="width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;box-sizing:border-box;font-family:inherit;">\n' +
+'      </div>\n' +
+'      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">\n' +
+'        <input type="tel" name="phone" required placeholder="Phone *" style="padding:12px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;box-sizing:border-box;font-family:inherit;">\n' +
+'        <input type="email" name="email" placeholder="Email" style="padding:12px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;box-sizing:border-box;font-family:inherit;">\n' +
+'      </div>\n' +
+'      <div style="margin-bottom:14px;">\n' +
+'        <input type="text" name="address" placeholder="Service Address" style="width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;box-sizing:border-box;font-family:inherit;">\n' +
+'      </div>\n' +
+'      <div style="margin-bottom:14px;">\n' +
+'        <textarea name="message" rows="3" placeholder="Tell us about your project" style="width:100%;padding:12px 14px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;box-sizing:border-box;font-family:inherit;resize:vertical;"></textarea>\n' +
+'      </div>\n' +
+'      <button type="submit" id="kdr-submit-btn" style="width:100%;background:' + bizColor + ';color:' + headerText + ';border:none;padding:14px;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;">Get My Free Estimate</button>\n' +
+'    </form>\n' +
+'    <div id="kdr-lead-success" style="display:none;text-align:center;padding:24px;">\n' +
+'      <div style="width:56px;height:56px;background:#dcfce7;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:28px;color:#16a34a;">✓</div>\n' +
+'      <h3 style="font-size:18px;font-weight:800;color:#166534;margin:0 0 6px;">Thank You!</h3>\n' +
+'      <p style="font-size:13px;color:#475569;margin:0;">' + bizName + ' will be in touch shortly.</p>\n' +
+(phone ? '      <p style="font-size:12px;color:#94a3b8;margin:14px 0 0;">Need to call us? <strong style="color:#0f172a;">' + phone + '</strong></p>\n' : '') +
+'    </div>\n' +
+'  </div>\n' +
+'</div>\n' +
+'<script type="module">\n' +
+'  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";\n' +
+'  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";\n' +
+'  const app = initializeApp(' + JSON.stringify(firebaseConfig) + ');\n' +
+'  const db  = getFirestore(app);\n' +
+'  window.kdrSubmitLead = async function(e) {\n' +
+'    e.preventDefault();\n' +
+'    const btn = document.getElementById("kdr-submit-btn");\n' +
+'    btn.disabled = true; btn.textContent = "Submitting...";\n' +
+'    const f = e.target;\n' +
+'    const lead = {\n' +
+'      id: "lead_" + Date.now() + "_" + Math.random().toString(36).slice(2,8),\n' +
+'      name:    f.name.value.trim(),\n' +
+'      phone:   f.phone.value.trim(),\n' +
+'      email:   f.email.value.trim(),\n' +
+'      address: f.address.value.trim(),\n' +
+'      message: f.message.value.trim(),\n' +
+'      source:  "Website",\n' +
+'      status:  "new",\n' +
+'      createdAt: new Date().toISOString()\n' +
+'    };\n' +
+'    try {\n' +
+'      await setDoc(doc(db, "users", "' + ownerId + '", "leads", lead.id), lead);\n' +
+'      f.style.display = "none";\n' +
+'      document.getElementById("kdr-lead-success").style.display = "block";\n' +
+'    } catch(err) {\n' +
+'      console.error(err); alert("Could not submit. Please call us directly.");\n' +
+'      btn.disabled = false; btn.textContent = "Get My Free Estimate";\n' +
+'    }\n' +
+'    return false;\n' +
+'  };\n' +
+'</' + 'script>\n' +
+'<!-- end KDRSYSTEMS Lead Form -->';
+
+            document.getElementById('leadEmbedCode').value = code;
         }
 
         function copyEmbedCode() {
+            generateEmbedCode(); // regenerate in case settings changed
             var input = document.getElementById('leadEmbedCode');
             input.select(); input.setSelectionRange(0, 99999);
             try {
-                navigator.clipboard.writeText(input.value).then(function() { toast('Code copied ✓'); });
+                navigator.clipboard.writeText(input.value).then(function() { toast('Code copied — paste it on your website ✓'); });
             } catch (e) {
                 document.execCommand('copy');
                 toast('Code copied ✓');
             }
         }
 
-        function showLeadQR() {
-            var url = document.getElementById('leadPublicUrl').value;
-            if (!url) return;
-            // Use Google Charts API for QR (no library needed)
-            var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=' + encodeURIComponent(url);
-
-            var modal = document.createElement('div');
-            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
-            modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
-            modal.innerHTML = '<div style="background:#fff;border-radius:16px;padding:32px;max-width:440px;width:100%;text-align:center;box-shadow:0 25px 80px rgba(0,0,0,0.3);">' +
-                '<h3 style="margin:0 0 8px;font-size:20px;font-weight:800;color:#0f172a;">Your QR Code</h3>' +
-                '<p style="font-size:13px;color:#64748b;margin:0 0 20px;">Print this on business cards, flyers, or yard signs. Customers scan to open your lead form.</p>' +
-                '<img src="' + qrUrl + '" alt="QR Code" style="width:100%;max-width:300px;border:1px solid #e2e8f0;border-radius:12px;padding:16px;background:#fff;">' +
-                '<div style="display:flex;gap:8px;margin-top:16px;justify-content:center;flex-wrap:wrap;">' +
-                    '<a href="' + qrUrl + '" download="lead-qr-code.png" style="padding:10px 20px;background:#0f172a;color:#fff;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;">Download PNG</a>' +
-                    '<button onclick="this.closest(\'.qr-modal\').remove()" style="padding:10px 20px;background:#e2e8f0;color:#0f172a;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">Close</button>' +
-                '</div>' +
-                '<p style="font-size:11px;color:#94a3b8;margin:14px 0 0;font-family:monospace;word-break:break-all;">' + url + '</p>' +
-            '</div>';
-            modal.className = 'qr-modal';
-            document.body.appendChild(modal);
+        function previewEmbed() {
+            generateEmbedCode();
+            var code = document.getElementById('leadEmbedCode').value;
+            // Open in new tab as a full HTML page
+            var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Lead Form Preview</title>' +
+                '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+                '<style>body{margin:0;padding:40px 16px;background:#f3f4f6;min-height:100vh;}</style>' +
+                '</head><body>' + code + '</body></html>';
+            var blob = new Blob([html], { type: 'text/html' });
+            var url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+            setTimeout(function(){ URL.revokeObjectURL(url); }, 60000);
         }
 
         function saveSettings() {
