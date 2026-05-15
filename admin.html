@@ -7,9 +7,19 @@
     <style>
         * { font-family: 'Inter', -apple-system, sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #0f172a; min-height: 100vh; color: #e2e8f0; }
-        input { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px 14px; width: 100%; color: #e2e8f0; font-size: 15px; }
-        input:focus { outline: none; border-color: #ff6b35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
-        input::placeholder { color: #475569; }
+        h1, h2, h3, h4, h5, h6, p, span, div, label, td, th, li, a { color: inherit; }
+        a { color: #7dd3fc; }
+        a:hover { color: #93c5fd; }
+        input, select, textarea { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px 14px; width: 100%; color: #e2e8f0 !important; font-size: 15px; font-family: inherit; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #ff6b35; box-shadow: 0 0 0 3px rgba(255,107,53,0.15); }
+        input::placeholder, textarea::placeholder { color: #475569; }
+        select option { background: #0f172a; color: #e2e8f0; }
+        button { font-family: inherit; }
+        label { color: #cbd5e1; }
+        strong { color: #f1f5f9; }
+        code { background: #1e293b; padding: 2px 6px; border-radius: 4px; color: #7dd3fc; font-family: 'Courier New', monospace; font-size: 0.9em; }
+        ol, ul { color: #cbd5e1; }
+        pre { color: #cbd5e1 !important; }
         .btn-orange { background: linear-gradient(135deg,#ff6b35,#e85d2c); color: #fff; border: none; padding: 13px 20px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; width: 100%; }
         .btn-slate { background: #1e293b; color: #94a3b8; border: 1px solid #334155; padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
         .btn-slate:hover { background: #334155; color: #e2e8f0; }
@@ -203,11 +213,59 @@
             </div>
         </div>
 
+        <!-- STRIPE PRICING GUIDE -->
+        <div style="margin-top:20px;background:#1e293b;border:1px solid #334155;border-radius:14px;padding:24px;">
+            <h3 style="color:#e2e8f0;font-size:16px;font-weight:800;margin:0 0 6px;">How to Change Subscription Pricing</h3>
+            <p style="color:#94a3b8;font-size:12px;margin:0 0 16px;line-height:1.6;">Changing the price has TWO parts. You must do BOTH for the change to take effect.</p>
+
+            <div style="background:#0f172a;border-left:4px solid #ff6b35;border-radius:8px;padding:16px;margin-bottom:12px;">
+                <p style="color:#ff6b35;font-size:13px;font-weight:800;margin:0 0 8px;">PART 1 — In this Admin Panel (above)</p>
+                <p style="color:#cbd5e1;font-size:13px;line-height:1.6;margin:0;">
+                    1. Change the &quot;Subscription Price&quot; field above (e.g., 49 to 79)<br>
+                    2. Click &quot;Save Settings&quot;<br>
+                    3. This updates what NEW signups see in the app
+                </p>
+            </div>
+
+            <div style="background:#0f172a;border-left:4px solid #3b82f6;border-radius:8px;padding:16px;margin-bottom:12px;">
+                <p style="color:#3b82f6;font-size:13px;font-weight:800;margin:0 0 8px;">PART 2 — In Stripe Dashboard</p>
+                <p style="color:#cbd5e1;font-size:13px;line-height:1.6;margin:0;">
+                    The price the Admin Panel shows is just the DISPLAY price. The actual money Stripe charges is set in Stripe's dashboard. To update it:
+                </p>
+                <ol style="color:#cbd5e1;font-size:13px;line-height:1.8;margin:10px 0 0;padding-left:20px;">
+                    <li>Go to <a href="https://dashboard.stripe.com/payment-links" target="_blank" style="color:#7dd3fc;text-decoration:underline;">dashboard.stripe.com/payment-links</a></li>
+                    <li>Find your existing $49 payment link → click the &quot;...&quot; menu → <strong style="color:#fff;">Archive</strong> it (don't delete — keeps history)</li>
+                    <li>Click <strong style="color:#fff;">+ New</strong> to create a fresh payment link</li>
+                    <li>Set the new price (e.g., $79/month, subscription)</li>
+                    <li>Make sure it&#39;s set to <strong style="color:#fff;">Recurring → Monthly</strong></li>
+                    <li>Set the success URL to: <code style="background:#1e293b;padding:2px 6px;border-radius:4px;color:#7dd3fc;font-size:11px;">https://kdrsystems.net?paid=1</code></li>
+                    <li>Click &quot;Create link&quot; → copy the URL</li>
+                    <li>Come BACK to this admin panel → paste new link into &quot;Stripe Payment Link&quot; field above → Save</li>
+                </ol>
+                <p style="color:#fbbf24;font-size:12px;margin:12px 0 0;font-style:italic;">⚠️ Existing customers stay on their old price unless YOU manually migrate them in Stripe. New signups get the new price.</p>
+            </div>
+
+            <div style="background:#0f172a;border-left:4px solid #22c55e;border-radius:8px;padding:16px;">
+                <p style="color:#22c55e;font-size:13px;font-weight:800;margin:0 0 8px;">PART 3 — Update Webhook (only if making big changes)</p>
+                <p style="color:#cbd5e1;font-size:13px;line-height:1.6;margin:0;">
+                    If you changed the price, the webhook still works automatically — Stripe sends the new amount, the worker just records what was paid. No changes needed unless you set up a NEW Stripe account entirely.
+                </p>
+            </div>
+        </div>
+
         <!-- Firestore rules reminder -->
         <div style="margin-top:20px;background:#1e293b;border:1px solid #334155;border-radius:12px;padding:18px 20px;">
-            <p style="color:#ff6b35;font-size:13px;font-weight:700;margin:0 0 8px;">Required Firestore Rules</p>
-            <pre style="background:#0f172a;color:#94a3b8;padding:14px;border-radius:8px;font-size:11px;overflow-x:auto;">match /subscriptions/{userId} {
-  allow read, write: if request.auth != null;
+            <h3 style="color:#ff6b35;font-size:13px;font-weight:700;margin:0 0 8px;">Required Firestore Rules</h3>
+            <p style="color:#cbd5e1;font-size:12px;margin:0 0 8px;">Make sure these are deployed at <a href="https://console.firebase.google.com" target="_blank" style="color:#7dd3fc;text-decoration:underline;">console.firebase.google.com</a> → Firestore → Rules:</p>
+            <pre style="background:#0f172a;color:#94a3b8;padding:14px;border-radius:8px;font-size:11px;overflow-x:auto;line-height:1.5;">match /subscriptions/{userId} {
+  allow read: if request.auth != null;
+  allow write: if request.auth != null
+              && request.auth.token.email == 'kdrfencing@gmail.com';
+}
+match /app_settings/{docId} {
+  allow read: if true;
+  allow write: if request.auth != null
+              && request.auth.token.email == 'kdrfencing@gmail.com';
 }</pre>
         </div>
     </div>
