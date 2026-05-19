@@ -8,6 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#ff6b35">
     <title>KDRSYSTEMS - Business Management</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23ff6b35'/%3E%3Ctext x='50' y='68' font-family='Arial' font-size='60' font-weight='900' fill='white' text-anchor='middle'%3EK%3C/text%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -792,17 +793,24 @@
         .calendar-event {
             background: #ff6b35;
             color: white;
-            padding: 3px 6px;
-            border-radius: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
             font-size: 11px;
-            font-weight: 500;
+            font-weight: 600;
             margin-top: 4px;
             cursor: pointer;
             transition: all 0.15s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+            letter-spacing: 0.02em;
         }
-        
+
         .calendar-event:hover {
-            background: #e85d2c;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
         }
         
         .notification-badge {
@@ -2690,12 +2698,15 @@
                                 <div>
                                 <div>
                                     <label class="block mb-2">Logo Size on Estimates &amp; Invoices</label>
-                                    <select id="settingsLogoSize" style="margin-bottom:12px;">
-                                        <option value="small">Small (60px tall)</option>
-                                        <option value="medium">Medium (100px tall)</option>
-                                        <option value="large" selected>Large (140px tall)</option>
-                                        <option value="xl">Extra Large (180px tall)</option>
+                                    <select id="settingsLogoSize" style="margin-bottom:12px;" onchange="_previewLogoSize(this.value)">
+                                        <option value="small">Small (50px)</option>
+                                        <option value="medium">Medium (90px)</option>
+                                        <option value="large" selected>Large (140px)</option>
+                                        <option value="xl">Extra Large (200px)</option>
                                     </select>
+                                    <div id="logoSizePreview" style="margin-top:8px;padding:12px;background:#f8f9fb;border:1px solid #e2e8f0;border-radius:8px;text-align:center;min-height:60px;display:flex;align-items:center;justify-content:center;">
+                                        <span style="font-size:11px;color:#94a3b8;font-weight:600;">Save your logo first to preview size</span>
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block mb-2">Your Website URL</label>
@@ -3187,14 +3198,19 @@
                         <label class="block mb-2">Property / Job Photos (optional)</label>
                         <div id="estPhotosPreview" class="flex flex-wrap gap-2 mb-2"></div>
                         <div class="flex flex-wrap gap-2 items-center">
-                        <label class="btn-secondary text-sm cursor-pointer inline-block">
-                            Add Photos
-                            <input type="file" accept="image/*" multiple class="hidden" onchange="handleEstPhotos(event)">
-                        </label>
-                        <button type="button" class="btn-secondary text-sm" onclick="openLayoutForEstimate()">📐 Draw Layout</button>
+                            <label class="btn-secondary text-sm cursor-pointer inline-block">
+                                Choose Photos
+                                <input type="file" accept="image/*" multiple class="hidden" onchange="handleEstPhotos(event)">
+                            </label>
+                            <label class="btn-secondary text-sm cursor-pointer inline-block" style="background:#dbeafe;color:#1e40af;border-color:#93c5fd;">
+                                Take Photo
+                                <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleEstPhotos(event)">
+                            </label>
+                            <button type="button" class="btn-secondary text-sm" onclick="openLayoutForEstimate()">Draw Layout</button>
+                            <button type="button" class="btn-secondary text-sm" id="importFromVisitsBtn" onclick="importFromSiteVisits()" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0;display:none;">Use Site Visit Photos</button>
                         </div>
                         <div id="estLayoutThumbs" class="flex flex-wrap gap-2 mt-2"></div>
-                        <p class="text-xs text-gray-700 mt-1">Upload up to 5 photos · draw fence layout diagrams</p>
+                        <p class="text-xs text-gray-700 mt-1">Photos shown to customer on estimate · max 10 photos · use camera on mobile</p>
                     </div>
                     
                     <div class="flex gap-3">
@@ -4033,12 +4049,13 @@
         // ─────────────────────────────────────────────────────────────────────
 
         // ── Firebase init ─────────────────────────────────────────────────
-        var auth, db;
+        var auth, db, storage;
         try {
             if (typeof firebase === 'undefined') throw new Error('Firebase SDK not loaded.');
             firebase.initializeApp(firebaseConfig);
             auth = firebase.auth();
             db = firebase.firestore();
+            if (firebase.storage) storage = firebase.storage();
         } catch(e) {
             console.error('Firebase init error:', e);
             document.addEventListener('DOMContentLoaded', function() {
@@ -4840,25 +4857,32 @@
 
             var signSection = '';
             if (alreadySigned) {
-                signSection = '<div style="margin-top:30px;padding:30px;background:#f0fdf4;border:2px solid #22c55e;border-radius:12px;text-align:center;">' +
-                    '<p style="font-size:20px;font-weight:700;color:#15803d;margin:0 0 8px;">Estimate Approved</p>' +
-                    '<p style="color:#333;font-size:14px;margin:0;">Signed by ' + (est.signedBy || 'Customer') + ' on ' + (est.signedDate || 'N/A') + '</p>' +
+                signSection = '<div style="margin-top:30px;padding:30px;background:#f0fdf4 !important;border:2px solid #22c55e;border-radius:12px;text-align:center;">' +
+                    '<p style="font-size:20px;font-weight:700;color:#15803d !important;margin:0 0 8px;">Estimate Approved</p>' +
+                    '<p style="color:#333 !important;font-size:14px;margin:0;">Signed by ' + (est.signedBy || 'Customer') + ' on ' + (est.signedDate || 'N/A') + '</p>' +
+                '</div>';
+            } else if (est.declined) {
+                signSection = '<div style="margin-top:30px;padding:30px;background:#fef2f2 !important;border:2px solid #ef4444;border-radius:12px;text-align:center;">' +
+                    '<p style="font-size:20px;font-weight:700;color:#991b1b !important;margin:0 0 8px;">Estimate Declined</p>' +
+                    '<p style="color:#333 !important;font-size:14px;margin:0;">Declined on ' + (est.declinedDate || 'N/A') + '</p>' +
+                    (est.declineReason ? '<p style="color:#666 !important;font-size:13px;margin:8px 0 0;font-style:italic;">"' + est.declineReason + '"</p>' : '') +
                 '</div>';
             } else {
-                signSection = '<div style="margin-top:30px;padding:30px;background:#fff;border:2px solid ' + brandCol + ';border-radius:12px;">' +
-                    '<h3 style="font-size:20px;font-weight:700;color:#222;margin:0 0 20px;text-align:center;">Approve This Estimate</h3>' +
+                signSection = '<div style="margin-top:30px;padding:30px;background:#ffffff !important;border:3px solid ' + brandCol + ';border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.08);">' +
+                    '<h3 style="font-size:22px;font-weight:800;color:#000000 !important;margin:0 0 20px;text-align:center;">Approve This Estimate</h3>' +
                     '<div style="margin-bottom:16px;">' +
-                        '<label style="display:block;margin-bottom:6px;font-size:14px;color:#222;font-weight:600;">Your Full Name</label>' +
-                        '<input type="text" id="publicSignName" placeholder="Type your full name" style="background:#fff;border:2px solid #ddd;border-radius:10px;padding:14px;width:100%;color:#222;font-size:16px;box-sizing:border-box;">' +
+                        '<label style="display:block;margin-bottom:6px;font-size:14px;color:#000000 !important;font-weight:600;">Your Full Name</label>' +
+                        '<input type="text" id="publicSignName" placeholder="Type your full name" style="background:#ffffff !important;border:2px solid #ddd !important;border-radius:10px;padding:14px;width:100%;color:#222 !important;font-size:16px;box-sizing:border-box;">' +
                     '</div>' +
                     '<div style="margin-bottom:16px;">' +
-                        '<label style="display:block;margin-bottom:6px;font-size:14px;color:#222;font-weight:600;">Draw Your Signature</label>' +
-                        '<canvas id="publicSigCanvas" width="500" height="180" style="touch-action:none;background:white;border:2px solid #ddd;border-radius:10px;width:100%;cursor:crosshair;"></canvas>' +
+                        '<label style="display:block;margin-bottom:6px;font-size:14px;color:#000000 !important;font-weight:600;">Draw Your Signature</label>' +
+                        '<canvas id="publicSigCanvas" width="500" height="180" style="touch-action:none;background:#ffffff !important;border:2px solid #ddd !important;border-radius:10px;width:100%;cursor:crosshair;display:block;"></canvas>' +
+                        '<button type="button" style="margin-top:8px;padding:8px 16px;background:#f5f5f5 !important;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-size:13px;color:#666 !important;" onclick="clearPublicSigCanvas()">Clear Signature</button>' +
                     '</div>' +
-                    '<div style="display:flex;gap:12px;margin-bottom:16px;">' +
-                        '<button style="flex:1;padding:12px;background:#f5f5f5;border:1px solid #ddd;border-radius:10px;cursor:pointer;font-size:14px;color:#333;" onclick="clearPublicSigCanvas()">Clear Signature</button>' +
-                    '</div>' +
-                    '<button style="width:100%;padding:16px;background:' + brandCol + ';color:white;border:none;border-radius:10px;font-size:18px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:1px;" onclick="submitPublicSignature(\'' + token + '\')">Approve & Sign</button>' +
+                    // BIG ACTION BUTTONS — make these impossible to miss
+                    '<button type="button" id="approveSignBtn" style="display:block !important;width:100%;padding:18px;background:' + brandCol + ' !important;color:#000000 !important;border:none;border-radius:10px;font-size:18px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" onclick="submitPublicSignature(\'' + token + '\')">✓ Approve &amp; Sign Estimate</button>' +
+                    '<button type="button" id="declineBtn" style="display:block !important;width:100%;padding:14px;background:#ffffff !important;color:#666 !important;border:2px solid #e5e5e5;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;" onclick="declinePublicEstimate(\'' + token + '\')">Decline Estimate</button>' +
+                    '<p style="font-size:11px;color:#666 !important;text-align:center;margin:14px 0 0;">By signing, you agree to the terms of this estimate.</p>' +
                 '</div>';
             }
 
@@ -4866,7 +4890,7 @@
             var html = '' +
                 // Orange Header Bar with centered logo and BLACK text
                 '<div style="background:' + brandCol + ';border-radius:16px 16px 0 0;padding:30px;text-align:center;">' +
-                    (est.businessLogo ? (function(){ var sz={small:60,medium:100,large:140,xl:180}[est.logoSize||'large']||140; return '<img src="' + est.businessLogo + '" alt="" style="max-height:' + sz + 'px;max-width:' + (sz*2) + 'px;margin:0 auto 16px;display:block;">'; })() : '') +
+                    (est.businessLogo ? (function(){ var sz={small:50,medium:90,large:140,xl:200}[est.logoSize||'large']||140; return '<img src="' + est.businessLogo + '" alt="" style="max-height:' + sz + 'px;max-width:' + (sz*2) + 'px;margin:0 auto 16px;display:block;">'; })() : '') +
                     '<h1 style="color:#000000;margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + (est.businessName || 'KDRSYSTEMS') + '</h1>' +
                     (est.slogan ? '<p style="color:#000;margin:6px 0 0;font-size:12px;font-weight:600;letter-spacing:1px;">' + est.slogan + '</p>' : '') +
                     '<div style="margin-top:10px;">' +
@@ -4919,7 +4943,8 @@
                     (hasSections ? '<p style="color:#94a3b8;font-size:12px;text-align:right;margin:6px 0 0;">* Total updates as you toggle sections above</p>' : '') +
                     (est.notes ? '<div style="margin-top:24px;padding:16px;background:#f9f9f9;border-left:4px solid ' + brandCol + ';border-radius:4px;"><p style="margin:0;font-size:14px;color:#333;"><strong>Notes:</strong> ' + est.notes + '</p></div>' : '') +
                     (est.terms ? '<div style="margin-top:16px;padding:16px;border:1px solid #eee;border-radius:8px;"><p style="font-size:13px;font-weight:700;color:#222;margin:0 0 6px;text-transform:uppercase;">Terms & Conditions</p><p style="font-size:12px;color:#333;margin:0;white-space:pre-wrap;">' + est.terms + '</p></div>' : '') +
-                    (est.layoutImages && est.layoutImages.length ? '<div style="margin-top:24px;padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:' + brandCol + ';margin:0 0 12px;">Job Layout / Sketch</p>' + est.layoutImages.map(function(l){return '<div style="margin-bottom:10px;"><img src="'+l.dataUrl+'" alt="Layout" style="max-width:100%;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#999;margin:4px 0 0;">'+l.name+'</p></div>';}).join('') + '</div>' : '') +
+                    (est.layoutImages && est.layoutImages.length ? '<div style="margin-top:24px;padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:' + brandCol + ';margin:0 0 12px;text-transform:uppercase;letter-spacing:1px;">Job Layout / Sketch</p>' + est.layoutImages.map(function(l){return '<div style="margin-bottom:10px;"><img src="'+l.dataUrl+'" alt="Layout" style="max-width:100%;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#999;margin:4px 0 0;">'+l.name+'</p></div>';}).join('') + '</div>' : '') +
+                    (est.photos && est.photos.length ? '<div style="margin-top:24px;padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;"><p style="font-size:13px;font-weight:700;color:' + brandCol + ';margin:0 0 12px;text-transform:uppercase;letter-spacing:1px;">Project Photos</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;">' + est.photos.map(function(p){var src = (typeof p === "string") ? p : (p.dataUrl || ""); return '<img src="'+src+'" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid #eee;cursor:pointer;" onclick="window.open(this.src)">';}).join('') + '</div></div>' : '') +
                     signSection +
                     // Footer
                     '<div style="margin-top:30px;padding-top:20px;border-top:1px solid #eee;text-align:center;">' +
@@ -5123,13 +5148,13 @@
             var c = document.getElementById('publicSigCanvas');
             var sigData = c.toDataURL('image/png');
             var signedDate = new Date().toLocaleDateString();
-            
-            // Disable button to prevent double submit
-            var btn = document.querySelector('#signPageContent button:last-child');
-            if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; btn.style.opacity = '0.6'; }
 
-            // Save signature ONLY to public_estimates (customer is not logged in, cannot write to users collection)
-            // The owner's app will pick this up via background sync
+            // Disable the approve button specifically (not Decline)
+            var btn = document.getElementById('approveSignBtn');
+            if (btn) { btn.disabled = true; btn.textContent = 'Saving...'; btn.style.opacity = '0.6'; }
+            var declBtn = document.getElementById('declineBtn');
+            if (declBtn) declBtn.disabled = true;
+
             db.collection('public_estimates').doc(token).set({
                 signature: sigData,
                 signedBy: name,
@@ -5155,7 +5180,42 @@
                     errMsg += '\n\n' + (err.message || err.code || 'Unknown error');
                 }
                 alert(errMsg);
-                if (btn) { btn.disabled = false; btn.textContent = 'Approve & Sign'; btn.style.opacity = '1'; }
+                if (btn) { btn.disabled = false; btn.textContent = '✓ Approve & Sign Estimate'; btn.style.opacity = '1'; }
+                if (declBtn) declBtn.disabled = false;
+            });
+        }
+
+        function declinePublicEstimate(token) {
+            var reason = prompt('Why are you declining? (optional)\n\nLet ' + 'us know so we can improve our quote:');
+            if (reason === null) return; // user cancelled
+            reason = (reason || '').trim();
+
+            var declinedDate = new Date().toLocaleDateString();
+            var btn = document.getElementById('declineBtn');
+            if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; btn.style.opacity = '0.6'; }
+            var apBtn = document.getElementById('approveSignBtn');
+            if (apBtn) apBtn.disabled = true;
+
+            db.collection('public_estimates').doc(token).set({
+                declined: true,
+                declineReason: reason,
+                declinedDate: declinedDate,
+                declinedAt: new Date().toISOString(),
+                status: 'declined'
+            }, { merge: true })
+            .then(function() {
+                document.getElementById('signPageContent').innerHTML =
+                    '<div style="background:#fff;border-radius:16px;padding:60px 30px;text-align:center;max-width:500px;margin:40px auto;box-shadow:0 4px 20px rgba(0,0,0,0.08);">' +
+                        '<div style="width:70px;height:70px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;border:3px solid #ef4444;"><span style="font-size:32px;color:#ef4444;font-weight:900;">×</span></div>' +
+                        '<h2 style="color:#222;font-size:24px;font-weight:700;margin:0 0 10px;">Estimate Declined</h2>' +
+                        '<p style="color:#333;font-size:14px;margin:0;">Thank you for your feedback.</p>' +
+                    '</div>';
+            })
+            .catch(function(err) {
+                console.error(err);
+                alert('Could not submit. Please try again or contact the contractor directly.');
+                if (btn) { btn.disabled = false; btn.textContent = 'Decline Estimate'; btn.style.opacity = '1'; }
+                if (apBtn) apBtn.disabled = false;
             });
         }
 
@@ -5593,6 +5653,26 @@
                         estimateId: docType === 'estimate' ? pubDoc.id : null,
                         contractId: docType === 'contract' ? pubDoc.id : null
                     });
+
+                    // ── AUTO-CONVERT lead → customer when their estimate signs ──
+                    // Find a lead matching this customer's name/email/phone and convert
+                    try {
+                        var matchingLead = (appData.leads || []).find(function(l) {
+                            if (l.autoConvertedAt) return false;
+                            if (pubDoc.customerEmail && l.email === pubDoc.customerEmail) return true;
+                            if (pubDoc.customerPhone && l.phone === pubDoc.customerPhone) return true;
+                            return false;
+                        });
+                        if (matchingLead && typeof _autoConvertLeadIfNew === 'function') {
+                            _autoConvertLeadIfNew(matchingLead);
+                            matchingLead.status = 'converted';
+                            if (lead && lead._firebaseId && currentUserId && db) {
+                                db.collection('users').doc(currentUserId).collection('leads').doc(matchingLead._firebaseId).update({
+                                    status: 'converted'
+                                }).catch(function(e){ console.warn(e); });
+                            }
+                        }
+                    } catch(e) { console.warn('Lead auto-convert on sign:', e); }
                     // Send email alert to contractor
                     _sendContractorAlert(
                         docType === 'estimate' ? 'Estimate Signed!' : 'Contract Signed!',
@@ -6049,8 +6129,19 @@
                 jobsForDay.forEach(function(job) {
                     const eventDiv = document.createElement('div');
                     eventDiv.className = 'calendar-event calendar-event-' + (job.type || 'job');
-                    eventDiv.textContent = job.time + ' ' + job.title;
-                    eventDiv.title = (job.type||'job').toUpperCase() + ': ' + job.title + ' (' + job.customerName + ')';
+                    // Display: TIME — CUSTOMER NAME — TITLE
+                    var parts = [];
+                    if (job.time) parts.push(job.time);
+                    if (job.customerName) parts.push(job.customerName);
+                    if (job.title) parts.push(job.title);
+                    eventDiv.textContent = parts.join(' · ');
+                    // Tooltip with full details
+                    var tip = (job.type||'job').toUpperCase() + ': ' + (job.title || '(no title)');
+                    if (job.customerName) tip += '\nCustomer: ' + job.customerName;
+                    if (job.time) tip += '\nTime: ' + job.time;
+                    if (job.duration) tip += '\nDuration: ' + job.duration + ' hr';
+                    if (job.notes) tip += '\nNotes: ' + job.notes;
+                    eventDiv.title = tip;
                     eventDiv.onclick = function(e) {
                         e.stopPropagation();
                         viewJob(job.id);
@@ -7036,6 +7127,103 @@
 
         // Estimate photos
         var currentEstPhotos = [];
+        function importFromSiteVisits() {
+            var custId = document.getElementById('estCustomer').value;
+            if (!custId) { toast('Pick a customer first'); return; }
+            var visits = (appData.siteVisits || []).filter(function(v){ return v.customerId === custId; });
+            if (visits.length === 0) { toast('No site visits found for this customer'); return; }
+
+            // Collect ALL photos from all visits for this customer
+            var allPhotos = [];
+            visits.forEach(function(v) {
+                (v.photos || []).forEach(function(p) {
+                    if (p.dataUrl) allPhotos.push(p);
+                });
+            });
+            if (allPhotos.length === 0) { toast('No photos in this customer\'s site visits'); return; }
+
+            // Pick photos modal
+            var existing = document.getElementById('importPhotosModal');
+            if (existing) existing.remove();
+
+            var modal = document.createElement('div');
+            modal.id = 'importPhotosModal';
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+
+            var photosHtml = allPhotos.map(function(p, idx) {
+                return '<label style="position:relative;cursor:pointer;aspect-ratio:1;">' +
+                    '<input type="checkbox" class="import-photo-cb" data-idx="' + idx + '" style="position:absolute;top:6px;right:6px;width:22px;height:22px;cursor:pointer;z-index:2;accent-color:#ff6b35;">' +
+                    '<img src="' + p.dataUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid #e5e5e5;">' +
+                '</label>';
+            }).join('');
+
+            modal.innerHTML = '<div style="background:#fff;border-radius:16px;max-width:560px;width:100%;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;">' +
+                '<div style="padding:20px 24px;border-bottom:1px solid #e5e5e5;">' +
+                    '<h3 style="margin:0;font-size:18px;font-weight:800;color:#0f172a;">Import from Site Visits</h3>' +
+                    '<p style="margin:4px 0 0;font-size:13px;color:#64748b;">Select photos from this customer\'s site visits to include in the estimate</p>' +
+                '</div>' +
+                '<div style="padding:16px 24px;overflow-y:auto;flex:1;">' +
+                    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;">' + photosHtml + '</div>' +
+                '</div>' +
+                '<div style="padding:14px 24px;border-top:1px solid #e5e5e5;background:#f8f9fb;display:flex;gap:8px;justify-content:space-between;align-items:center;">' +
+                    '<button onclick="_selectAllImportPhotos()" style="padding:8px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#475569;">Select All</button>' +
+                    '<div style="display:flex;gap:8px;">' +
+                        '<button onclick="document.getElementById(\'importPhotosModal\').remove()" style="padding:8px 18px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#475569;">Cancel</button>' +
+                        '<button onclick="_confirmImportPhotos()" class="btn-primary" style="padding:8px 18px;font-size:13px;">Add Selected</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+            window._importPhotosPool = allPhotos;
+            document.body.appendChild(modal);
+        }
+
+        function _selectAllImportPhotos() {
+            document.querySelectorAll('.import-photo-cb').forEach(function(cb){ cb.checked = true; });
+        }
+
+        function _confirmImportPhotos() {
+            var pool = window._importPhotosPool || [];
+            var selected = [];
+            document.querySelectorAll('.import-photo-cb:checked').forEach(function(cb) {
+                var idx = parseInt(cb.dataset.idx);
+                if (pool[idx]) selected.push(pool[idx].dataUrl);
+            });
+            if (selected.length === 0) {
+                toast('Select at least one photo');
+                return;
+            }
+            // Append to current estimate photos (avoid duplicates)
+            selected.forEach(function(p) {
+                if (currentEstPhotos.indexOf(p) === -1) currentEstPhotos.push(p);
+            });
+            // Update preview
+            var container = document.getElementById('estPhotosPreview');
+            if (container) {
+                container.innerHTML = currentEstPhotos.map(function(p, i) {
+                    return '<div style="position:relative;">' +
+                        '<img src="' + p + '" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid #e5e5e5;">' +
+                        '<button type="button" onclick="removeEstPhoto(' + i + ')" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:14px;cursor:pointer;line-height:1;">×</button>' +
+                    '</div>';
+                }).join('');
+            }
+            document.getElementById('importPhotosModal').remove();
+            toast('Added ' + selected.length + ' photo' + (selected.length===1?'':'s') + ' from site visits');
+        }
+
+        // Show the "Use Site Visit Photos" button when a customer is selected
+        // and that customer has site visit photos
+        function _updateSiteVisitImportBtn() {
+            var btn = document.getElementById('importFromVisitsBtn');
+            if (!btn) return;
+            var custId = (document.getElementById('estCustomer') || {}).value;
+            if (!custId) { btn.style.display = 'none'; return; }
+            var hasPhotos = (appData.siteVisits || []).some(function(v) {
+                return v.customerId === custId && v.photos && v.photos.length > 0;
+            });
+            btn.style.display = hasPhotos ? '' : 'none';
+        }
+
         function handleEstPhotos(event) {
             var files = Array.from(event.target.files);
             var remaining = 5 - currentEstPhotos.length;
@@ -7904,8 +8092,14 @@
             document.getElementById('estLaborTotal').textContent = '$' + laborTotal.toFixed(2);
 
             var grandTotal = materialsTotal + laborTotal;
-            var profit     = materialsTotal - materialsCostRaw;
-            var margin     = grandTotal > 0 ? (profit / grandTotal * 100) : 0;
+            // True profit = (material markup) + (labor billed minus actual labor cost)
+            var matMarkupProfit  = materialsTotal - materialsCostRaw;
+            var teamCostPH       = appData.calculator.teamCostPerHour || 0;
+            var totalBilledHours = laborHrs + estSections.reduce(function(s, sec) { return s + (sec.laborHrs || 0); }, 0);
+            var laborTeamCost    = totalBilledHours * teamCostPH;
+            var laborPureProfit  = laborTotal - laborTeamCost;
+            var profit           = matMarkupProfit + laborPureProfit;
+            var margin           = grandTotal > 0 ? (profit / grandTotal * 100) : 0;
 
             document.getElementById('estSubtotal').textContent   = '$' + materialsTotal.toFixed(2);
             document.getElementById('estLaborCost').textContent  = '$' + laborTotal.toFixed(2);
@@ -7913,14 +8107,10 @@
             document.getElementById('estProfit').textContent     = '$' + profit.toFixed(2) + ' profit';
             document.getElementById('estMargin').textContent     = margin.toFixed(1) + '% margin';
 
-            // Real profit breakdown
-            var matMarkupProfit  = materialsTotal - materialsCostRaw;
+            // Detailed profit breakdown — matches top profit number now
             var laborBilled      = laborTotal;
-            var teamCostPH       = appData.calculator.teamCostPerHour || 0;
-            var laborTeamCost    = laborHrs * teamCostPH;
-            var laborPureProfit  = laborBilled - laborTeamCost;
-            var totalPureProfit  = matMarkupProfit + laborPureProfit;
-            var pureMargin       = grandTotal > 0 ? (totalPureProfit / grandTotal * 100) : 0;
+            var totalPureProfit  = profit; // same number, just clearly labeled
+            var pureMargin       = margin;
 
             if (document.getElementById('estMatMarkupProfit')) document.getElementById('estMatMarkupProfit').textContent = '$' + matMarkupProfit.toFixed(2);
             if (document.getElementById('estLaborBilled'))     document.getElementById('estLaborBilled').textContent     = '$' + laborBilled.toFixed(2);
@@ -8403,6 +8593,7 @@
                 sections: _safe(doc.sections, []),
                 services: _safe(doc.services, []),
                 layoutImages: layoutImages || [],
+                photos: _safe(doc.photos, []),
                 status: 'sent',
                 signature: null,
                 signedBy: null,
@@ -8493,7 +8684,7 @@
 
                         // ── HEADER: Big logo + business name + slogan + contact ──
                         '<tr><td style="background:' + bizColor + ';padding:40px 30px;text-align:center;">' +
-                            (s.logo ? (function(){ var sz={small:60,medium:100,large:140,xl:180}[s.logoSize||'large']||140; return '<img src="' + s.logo + '" alt="" style="max-height:' + sz + 'px;max-width:' + (sz*2) + 'px;margin:0 auto 16px;display:block;">'; })() : '') +
+                            (s.logo ? (function(){ var sz={small:50,medium:90,large:140,xl:200}[s.logoSize||'large']||140; return '<img src="' + s.logo + '" alt="" style="max-height:' + sz + 'px;max-width:' + (sz*2) + 'px;margin:0 auto 16px;display:block;">'; })() : '') +
                             '<h1 style="color:' + headerText + ';margin:0;font-size:26px;font-weight:900;text-transform:uppercase;letter-spacing:3px;font-family:Arial,sans-serif;">' + bizName + '</h1>' +
                             (s.slogan ? '<p style="color:' + headerText + ';margin:8px 0 0;font-size:13px;font-weight:600;letter-spacing:1px;font-family:Arial,sans-serif;font-style:italic;">' + s.slogan + '</p>' : '') +
                             '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top:16px;"><tr><td align="center">' +
@@ -9388,6 +9579,21 @@
         }
 
         // Settings
+        function _previewLogoSize(size) {
+            var sizes = { small: 50, medium: 90, large: 140, xl: 200 };
+            var px = sizes[size] || 140;
+            var preview = document.getElementById('logoSizePreview');
+            if (!preview) return;
+            var logo = appData.settings && appData.settings.logo;
+            if (logo) {
+                preview.innerHTML = '<img src="' + logo + '" alt="" style="max-height:' + px + 'px;max-width:' + (px*2) + 'px;display:block;">';
+                preview.style.minHeight = (px + 24) + 'px';
+            } else {
+                preview.innerHTML = '<div style="background:#0f172a;color:#fff;display:flex;align-items:center;justify-content:center;border-radius:6px;font-weight:800;letter-spacing:1px;text-transform:uppercase;height:' + px + 'px;width:' + (px*2) + 'px;font-size:' + Math.max(12, px/4) + 'px;">YOUR LOGO</div>';
+                preview.style.minHeight = (px + 24) + 'px';
+            }
+        }
+
         function populateSettings() {
             document.getElementById('settingsBusinessName').value = appData.settings.businessName || '';
             document.getElementById('settingsEmail').value = appData.settings.email || '';
@@ -9402,7 +9608,10 @@
             var slEl = document.getElementById('settingsSlogan');
             if (slEl) slEl.value = appData.settings.slogan || '';
             var lsEl = document.getElementById('settingsLogoSize');
-            if (lsEl) lsEl.value = appData.settings.logoSize || 'large';
+            if (lsEl) {
+                lsEl.value = appData.settings.logoSize || 'large';
+                _previewLogoSize(lsEl.value);
+            }
             var eaEl = document.getElementById('settingsEmailAlerts');
             if (eaEl) eaEl.checked = !appData.settings.emailAlertsOff;
             var licEl = document.getElementById('settingsLicense');
@@ -9493,6 +9702,16 @@
                     // Upload to Firebase Storage so logo is a real URL
                     canvas.toBlob(function(blob) {
                         if (!blob) { toast('Logo processing failed'); return; }
+                        if (!storage) {
+                            // Storage not available — fallback to base64 (works but bloats Firestore)
+                            console.warn('Firebase Storage not loaded; saving logo as base64');
+                            var dataUrl = canvas.toDataURL('image/png', 0.9);
+                            appData.settings.logo = dataUrl;
+                            displayLogoPreview(dataUrl);
+                            saveData();
+                            toast('Logo saved ✓');
+                            return;
+                        }
                         var storageRef = storage.ref('logos/' + currentUserId + '/logo.png');
                         storageRef.put(blob).then(function(snap) {
                             return snap.ref.getDownloadURL();
@@ -10432,14 +10651,69 @@
         function updateLeadStatus(leadId, newStatus) {
             var lead = appData.leads.find(function(l) { return l.id === leadId; });
             if (!lead) return;
+            var oldStatus = lead.status;
             lead.status = newStatus;
-            
+
             // Update Firebase
             if (currentUserId && db && lead._firebaseId) {
                 db.collection('users').doc(currentUserId).collection('leads').doc(lead._firebaseId).update({ status: newStatus });
             }
             renderLeads();
             updateLeadCounts();
+
+            // Auto-convert lead → customer ONLY when an estimate is signed
+            // (handled in the signed-doc listener — not here).
+        }
+
+        function _autoConvertLeadIfNew(lead) {
+            // Check if customer with same email or phone already exists (avoid duplicates)
+            var exists = appData.customers.find(function(c) {
+                if (lead.email && c.email === lead.email) return true;
+                if (lead.phone && c.phone === lead.phone) return true;
+                return false;
+            });
+            if (exists) {
+                // Already a customer — just mark the lead as linked, don't re-create
+                lead.autoConvertedAt = new Date().toISOString();
+                lead.linkedCustomerId = exists.id;
+                if (currentUserId && db && lead._firebaseId) {
+                    db.collection('users').doc(currentUserId).collection('leads').doc(lead._firebaseId).update({
+                        autoConvertedAt: lead.autoConvertedAt,
+                        linkedCustomerId: exists.id
+                    }).catch(function(e){ console.warn(e); });
+                }
+                toast('Linked to existing customer: ' + exists.name);
+                return;
+            }
+
+            // Create new customer from lead
+            var newCust = {
+                id: 'cust_' + Date.now(),
+                name:    lead.name    || 'New Customer',
+                email:   lead.email   || '',
+                phone:   lead.phone   || '',
+                address: lead.address || '',
+                source:  lead.source  || 'Website',
+                notes:   (lead.service ? 'Service: ' + lead.service + '\n' : '') + (lead.message || ''),
+                createdAt: new Date().toISOString(),
+                fromLeadId: lead.id
+            };
+            appData.customers.push(newCust);
+            if (typeof saveCustomer === 'function') saveCustomer(newCust);
+
+            // Mark lead so we don't auto-convert again if user re-drags
+            lead.autoConvertedAt = new Date().toISOString();
+            lead.linkedCustomerId = newCust.id;
+            if (currentUserId && db && lead._firebaseId) {
+                db.collection('users').doc(currentUserId).collection('leads').doc(lead._firebaseId).update({
+                    autoConvertedAt: lead.autoConvertedAt,
+                    linkedCustomerId: newCust.id
+                }).catch(function(e){ console.warn(e); });
+            }
+
+            renderCustomers();
+            updateDashboard();
+            toast('Customer added: ' + newCust.name);
         }
         
         function convertLeadToCustomer(leadId) {
