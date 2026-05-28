@@ -47,8 +47,6 @@
         body.dark-mode .vt-btn.active { background: #1e293b; color: #f1f5f9; }
 
         /* ── PREMIUM TYPOGRAPHY ── */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        
         * {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             -webkit-font-smoothing: antialiased;
@@ -793,17 +791,15 @@
         .calendar-event {
             background: #ff6b35;
             color: white;
-            padding: 4px 8px;
+            padding: 5px 8px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 600;
             margin-top: 4px;
             cursor: pointer;
             transition: all 0.15s;
-            white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.3;
+            line-height: 1.25;
             box-shadow: 0 1px 2px rgba(0,0,0,0.08);
             letter-spacing: 0.02em;
         }
@@ -3120,23 +3116,34 @@
                         <p id="estEmptyMsg" class="text-xs text-gray-700 text-center py-4">Select a template or add a custom line to start</p>
                     </div>
                     
-                    <!-- Labor Section -->
+                    <!-- Labor Section — what you ACTUALLY pay your crew -->
                     <div class="border rounded-lg p-4" style="background:#fef7f4;">
-                        <h4 class="font-semibold text-orange mb-3">Labor</h4>
-                        <div class="grid grid-cols-3 gap-3">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-semibold text-orange" style="margin:0;">Labor / Crew</h4>
+                            <button type="button" class="btn-secondary text-xs py-1 px-3" onclick="addLaborWorker()">+ Add Worker</button>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-3" style="margin-top:-6px;">Enter what you actually pay each person. This is your real cost.</p>
+                        <div id="laborWorkersList"></div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #fed7c5;margin-top:10px;padding-top:10px;">
+                            <span style="font-size:13px;font-weight:700;color:#9a3412;">Total Labor Cost</span>
+                            <span class="font-bold text-lg text-orange" id="estLaborTotal">$0.00</span>
+                        </div>
+                        <!-- Hidden legacy fields kept so existing code doesn't break -->
+                        <input type="hidden" id="estLaborHours" value="0">
+                        <input type="hidden" id="estLaborRate" value="0">
+                        <p style="display:none;" id="estLaborRateHint"></p>
+                    </div>
+
+                    <!-- What you CHARGE the customer for labor -->
+                    <div class="border rounded-lg p-4" style="background:#f0f9ff;">
+                        <h4 class="font-semibold mb-2" style="color:#0369a1;">Labor Charged to Customer</h4>
+                        <p class="text-xs text-gray-600 mb-3" style="margin-top:-4px;">What you bill the customer for labor. Mark it up from your crew cost to make profit.</p>
+                        <div class="grid grid-cols-2 gap-3 items-end">
                             <div>
-                                <label class="block mb-1 text-xs">Hours</label>
-                                <input type="number" id="estLaborHours" placeholder="0" step="0.5" value="" onchange="calculateEstimate()">
+                                <label class="block mb-1 text-xs">Labor Price to Customer ($)</label>
+                                <input type="number" id="estLaborCharge" placeholder="0" step="0.01" value="" onchange="calculateEstimate()" oninput="calculateEstimate()">
                             </div>
-                            <div>
-                                <label class="block mb-1 text-xs">Rate/Hr</label>
-                                <input type="number" id="estLaborRate" placeholder="0" step="0.01" value="" onchange="calculateEstimate()">
-                                <p class="text-xs text-gray-700 mt-1" id="estLaborRateHint">From Overhead Calculator</p>
-                            </div>
-                            <div>
-                                <label class="block mb-1 text-xs">Labor Total</label>
-                                <p class="font-bold text-lg text-orange mt-2" id="estLaborTotal">$0.00</p>
-                            </div>
+                            <button type="button" class="btn-secondary text-xs py-2" onclick="autoMarkupLabor()">Auto: crew cost + 40%</button>
                         </div>
                     </div>
                     
@@ -3148,13 +3155,13 @@
                                 <p style="color:#fff;font-size:20px;font-weight:700;margin:4px 0 0;" id="estSubtotal">$0.00</p>
                             </div>
                             <div>
-                                <p style="color:#94a3b8;font-size:12px;margin:0;">Labor</p>
+                                <p style="color:#94a3b8;font-size:12px;margin:0;">Labor (charged)</p>
                                 <p style="color:#fff;font-size:20px;font-weight:700;margin:4px 0 0;" id="estLaborCost">$0.00</p>
                             </div>
                         </div>
                         <div style="border-top:1px solid #1e293b;margin-top:12px;padding-top:12px;display:flex;justify-content:space-between;align-items:center;">
                             <div>
-                                <p style="color:#94a3b8;font-size:12px;margin:0;">Customer Sees</p>
+                                <p style="color:#94a3b8;font-size:12px;margin:0;">Customer Pays</p>
                                 <p style="color:#ff6b35;font-size:28px;font-weight:800;margin:0;" id="estTotal">$0.00</p>
                             </div>
                             <div style="text-align:right;">
@@ -3164,30 +3171,29 @@
                         </div>
                         <!-- Owner-only profit breakdown -->
                         <div style="border-top:1px solid #1e293b;margin-top:12px;padding-top:12px;">
-                            <p style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px;">Your Profit Breakdown <span style="color:#334155;font-weight:400;">(owner only)</span></p>
+                            <p style="color:#94a3b8;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin:0 0 10px;">Profit Breakdown <span style="color:#334155;font-weight:400;">(only you see this)</span></p>
+
+                            <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+                                <span style="color:#cbd5e1;font-size:13px;font-weight:600;">Customer pays (total)</span>
+                                <span style="color:#fff;font-size:13px;font-weight:700;" id="estPLTotal">$0.00</span>
+                            </div>
+                            <div style="height:1px;background:#1e293b;margin:8px 0;"></div>
                             <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                                <span style="color:#94a3b8;font-size:12px;">Material Markup</span>
-                                <span style="color:#22c55e;font-size:12px;font-weight:600;" id="estMatMarkupProfit">$0.00</span>
+                                <span style="color:#94a3b8;font-size:12px;">− Material cost (what you pay)</span>
+                                <span style="color:#ef4444;font-size:12px;font-weight:600;" id="estPLMatCost">-$0.00</span>
                             </div>
                             <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                                <span style="color:#94a3b8;font-size:12px;">Labor Billed</span>
-                                <span style="color:#fff;font-size:12px;font-weight:600;" id="estLaborBilled">$0.00</span>
+                                <span style="color:#94a3b8;font-size:12px;">− Crew cost (what you pay workers)</span>
+                                <span style="color:#ef4444;font-size:12px;font-weight:600;" id="estPLLaborCost">-$0.00</span>
                             </div>
-                            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                                <span style="color:#94a3b8;font-size:12px;">Labor Team Cost</span>
-                                <span style="color:#ef4444;font-size:12px;font-weight:600;" id="estLaborCostOwner">-$0.00</span>
-                            </div>
-                            <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                                <span style="color:#94a3b8;font-size:12px;">Labor Profit</span>
-                                <span style="color:#22c55e;font-size:12px;font-weight:600;" id="estLaborProfit">$0.00</span>
-                            </div>
-                            <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid #334155;margin-top:4px;">
-                                <span style="color:#fff;font-size:13px;font-weight:700;">Total Pure Profit</span>
-                                <span style="color:#22c55e;font-size:15px;font-weight:800;" id="estTotalProfit">$0.00</span>
+                            <div style="height:1px;background:#334155;margin:8px 0;"></div>
+                            <div style="display:flex;justify-content:space-between;align-items:center;">
+                                <span style="color:#fff;font-size:14px;font-weight:800;">YOUR PROFIT</span>
+                                <span style="color:#22c55e;font-size:18px;font-weight:900;" id="estPLProfit">$0.00</span>
                             </div>
                             <div style="display:flex;justify-content:space-between;margin-top:4px;">
-                                <span style="color:#64748b;font-size:11px;">Profit Margin</span>
-                                <span style="color:#22c55e;font-size:11px;font-weight:700;" id="estProfitMarginPct">0%</span>
+                                <span style="color:#64748b;font-size:11px;">Profit margin</span>
+                                <span style="color:#22c55e;font-size:11px;font-weight:700;" id="estPLMargin">0%</span>
                             </div>
                         </div>
                     </div>
@@ -3633,7 +3639,7 @@
                     <!-- Customer (shown for customer contracts) -->
                     <div id="contractPartyCustomer">
                         <label class="block mb-2 font-semibold">Customer <span class="text-red-500">*</span></label>
-                        <select id="contractCustomer">
+                        <select id="contractCustomer" onchange="_updateContractSiteVisitBtn()">
                             <option value="">Select customer...</option>
                         </select>
                     </div>
@@ -3787,22 +3793,44 @@
 
                     <!-- Standard Terms — fully editable -->
                     <div style="background:#f8f9fb;border:1px solid #e2e8f0;border-radius:10px;padding:18px;">
-                        <div class="flex justify-between items-center mb-3">
-                            <h4 class="font-bold" style="font-size:15px;color:#1e293b;">📄 Standard Terms & Conditions</h4>
-                            <button type="button" class="btn-secondary text-xs py-1 px-3" onclick="resetContractTerms()">Reset to Default</button>
-                        </div>
-                        <p class="text-xs text-gray-500 mb-3">These appear at the bottom of the contract the customer sees. Edit freely for each job.</p>
-                        <textarea id="contractTerms" rows="10" style="font-size:13px;line-height:1.6;font-family:monospace;"></textarea>
+                        <details open>
+                            <summary style="cursor:pointer;font-weight:700;font-size:15px;color:#1e293b;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;list-style:none;">
+                                <span>Standard Terms &amp; Conditions <span style="font-weight:400;color:#64748b;font-size:12px;">(click to expand/collapse)</span></span>
+                                <button type="button" class="btn-secondary text-xs py-1 px-3" onclick="event.preventDefault();resetContractTerms()">Reset to Default</button>
+                            </summary>
+                            <p class="text-xs text-gray-500 mb-2" style="margin-top:8px;">All terms below appear on the contract the customer sees. Edit freely per job.</p>
+                            <textarea id="contractTerms" rows="14" style="font-size:13px;line-height:1.7;font-family:inherit;width:100%;"></textarea>
+                        </details>
                     </div>
 
                     <!-- Layout Attachment -->
                     <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:14px;">
                         <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-bold" style="font-size:14px;color:#0369a1;">📐 Job Layout / Sketch</h4>
+                            <h4 class="font-bold" style="font-size:14px;color:#0369a1;">Job Layout / Sketch</h4>
                             <button type="button" class="btn-secondary text-xs py-1 px-3" onclick="openLayoutModal('contract', document.getElementById('contractEditId').value)">Open Drawing Tool</button>
                         </div>
                         <div id="contractLayoutThumbs" class="flex flex-wrap gap-2"></div>
-                        <p class="text-xs text-gray-500 mt-1">Draw fence lines, gate positions, property corners — attaches to the contract PDF the customer sees.</p>
+                        <p class="text-xs text-gray-500 mt-1">Draw fence lines, gate positions, property corners — attaches to the contract the customer sees.</p>
+                    </div>
+
+                    <!-- Photo Attachments -->
+                    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px;">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold" style="font-size:14px;color:#15803d;">Job Site Photos</h4>
+                        </div>
+                        <div id="contractPhotosPreview" class="flex flex-wrap gap-2 mb-2"></div>
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <label class="btn-secondary text-sm cursor-pointer inline-block">
+                                Choose Photos
+                                <input type="file" accept="image/*" multiple class="hidden" onchange="handleContractPhotos(event)">
+                            </label>
+                            <label class="btn-secondary text-sm cursor-pointer inline-block" style="background:#dbeafe;color:#1e40af;border-color:#93c5fd;">
+                                Take Photo
+                                <input type="file" accept="image/*" capture="environment" class="hidden" onchange="handleContractPhotos(event)">
+                            </label>
+                            <button type="button" class="btn-secondary text-sm" id="contractImportFromVisitsBtn" onclick="importContractFromSiteVisits()" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0;display:none;">Use Site Visit Photos</button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Up to 10 photos. Attached to the contract the customer sees.</p>
                     </div>
 
                     <div class="flex gap-3 pt-2">
@@ -5414,12 +5442,34 @@
                 batch.commit()
                     .then(function() { _done=true; clearTimeout(_t); showSaveStatus('saved'); })
                     .catch(function(err) { _done=true; clearTimeout(_t); console.error('Save failed:',err.code,err.message); showSaveStatus('error', err.code); });
-            }, 2000); // 2 second debounce — reduces write frequency dramatically
+            }, 1000); // 1 second debounce — fast enough to feel real-time
         }
 
-        document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') { _lsSave(); } });
-        window.addEventListener('pagehide',    function() { _lsSave(); });
-        window.addEventListener('beforeunload', function() { _lsSave(); });
+        // Immediate save of config doc (scheduledJobs, settings, etc.)
+        // Bypasses the debounce timer — use when you need to flush NOW
+        function _flushConfigNow() {
+            if (!currentUserId || !db) return;
+            try {
+                var cfg = {
+                    settings: JSON.parse(JSON.stringify(appData.settings || {})),
+                    calculator: appData.calculator || {},
+                    teamMembers: appData.teamMembers || [],
+                    expenses: appData.expenses || [],
+                    notifications: appData.notifications || [],
+                    scheduledJobs: appData.scheduledJobs || []
+                };
+                cfg.settings.logo = '';
+                db.collection('users').doc(currentUserId).collection('config').doc('main')
+                  .set(cfg, { merge: true })
+                  .catch(function(e){ console.error('Flush config failed:', e); });
+            } catch(e) {
+                console.error('Flush config error:', e);
+            }
+        }
+
+        document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') { _lsSave(); _flushConfigNow(); } });
+        window.addEventListener('pagehide',    function() { _lsSave(); _flushConfigNow(); });
+        window.addEventListener('beforeunload', function() { _lsSave(); _flushConfigNow(); });
         window.addEventListener('online', function() { if (currentUserId) { loadData(); } });
 
         function showSaveStatus(status, detail) {
@@ -6129,13 +6179,22 @@
                 jobsForDay.forEach(function(job) {
                     const eventDiv = document.createElement('div');
                     eventDiv.className = 'calendar-event calendar-event-' + (job.type || 'job');
-                    // Display: TIME — CUSTOMER NAME — TITLE
-                    var parts = [];
-                    if (job.time) parts.push(job.time);
-                    if (job.customerName) parts.push(job.customerName);
-                    if (job.title) parts.push(job.title);
-                    eventDiv.textContent = parts.join(' · ');
-                    // Tooltip with full details
+                    // Top line: TIME · CUSTOMER
+                    var topParts = [];
+                    if (job.time) topParts.push(job.time);
+                    if (job.customerName) topParts.push(job.customerName);
+                    var topLine = '<div style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (topParts.join(' · ') || 'Event') + '</div>';
+                    // Title line
+                    var titleLine = job.title ? '<div style="font-size:10px;opacity:0.95;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + job.title + '</div>' : '';
+                    // Notes preview (first ~40 chars)
+                    var notesLine = '';
+                    if (job.notes && job.notes.trim()) {
+                        var notePreview = job.notes.trim().slice(0, 40);
+                        if (job.notes.trim().length > 40) notePreview += '…';
+                        notesLine = '<div style="font-size:9px;opacity:0.85;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;">' + notePreview + '</div>';
+                    }
+                    eventDiv.innerHTML = topLine + titleLine + notesLine;
+                    // Full tooltip on hover (desktop)
                     var tip = (job.type||'job').toUpperCase() + ': ' + (job.title || '(no title)');
                     if (job.customerName) tip += '\nCustomer: ' + job.customerName;
                     if (job.time) tip += '\nTime: ' + job.time;
@@ -6204,6 +6263,7 @@
                     kdrConfirm('Cancel this ' + (job.type || 'event') + '?', 'This will permanently remove it from your schedule.', 'Yes, Cancel It', function() {
                         appData.scheduledJobs = appData.scheduledJobs.filter(function(j){ return j.id !== _editingJobId; });
                         saveData();
+                        _flushConfigNow();
                         closeModal('scheduleModal');
                         renderCalendar();
                         toast('Removed from schedule');
@@ -6249,6 +6309,7 @@
                     existing.type         = (document.getElementById('schedType')||{}).value || 'job';
                     existing.updatedAt    = new Date().toISOString();
                     saveData();
+                    _flushConfigNow();
                     closeModal('scheduleModal');
                     renderCalendar();
                     toast('Updated ✓');
@@ -6273,6 +6334,8 @@
             };
             appData.scheduledJobs.push(job);
             saveData();
+            // IMMEDIATE save to Firestore — don't wait for debounced batch
+            _flushConfigNow();
             this.reset();
             _resetScheduleForm();
             closeModal('scheduleModal');
@@ -7692,12 +7755,11 @@
                 });
             }
 
-            // Restore labor if present
-            var laborLine = (doc.ownerLineItems||doc.lineItems||[]).find(function(li){return li._laborHrs;});
-            if (laborLine) {
-                document.getElementById('estLaborHours').value = laborLine._laborHrs || '';
-                document.getElementById('estLaborRate').value  = laborLine._laborRate || '';
-            }
+            // Restore crew workers + labor charge
+            estWorkers = (doc.workers && doc.workers.length) ? JSON.parse(JSON.stringify(doc.workers)) : [];
+            renderLaborWorkers();
+            var lcEl = document.getElementById('estLaborCharge');
+            if (lcEl) lcEl.value = doc.laborCharge || '';
 
             // Restore photos preview
             renderEstPhotoPreview();
@@ -7722,6 +7784,9 @@
             document.getElementById('estimateForm').reset();
             estServices = [];
             estSections = [];
+            estWorkers = [];
+            renderLaborWorkers();
+            var _lcReset = document.getElementById('estLaborCharge'); if (_lcReset) _lcReset.value = '';
             var container = document.getElementById('estimateServices');
             if (container) container.innerHTML = '';
             var emptyMsg = document.getElementById('estEmptyMsg');
@@ -8049,6 +8114,77 @@
             renderEstimateServices();
         }
 
+        // ── LABOR CREW SYSTEM — what you actually pay each worker ──────────
+        var estWorkers = [];  // [{ id, name, payType:'hourly'|'daily', rate, qty }]
+
+        function addLaborWorker() {
+            estWorkers.push({
+                id: 'w_' + Date.now() + '_' + Math.random().toString(36).slice(2,5),
+                name: '',
+                payType: 'hourly',
+                rate: 0,
+                qty: 0
+            });
+            renderLaborWorkers();
+        }
+
+        function removeLaborWorker(id) {
+            estWorkers = estWorkers.filter(function(w){ return w.id !== id; });
+            renderLaborWorkers();
+            calculateEstimate();
+        }
+
+        function updateWorker(id, field, value) {
+            var w = estWorkers.find(function(x){ return x.id === id; });
+            if (!w) return;
+            if (field === 'rate' || field === 'qty') w[field] = parseFloat(value) || 0;
+            else w[field] = value;
+            calculateEstimate();
+        }
+
+        function renderLaborWorkers() {
+            var container = document.getElementById('laborWorkersList');
+            if (!container) return;
+            if (estWorkers.length === 0) {
+                container.innerHTML = '<p style="font-size:12px;color:#9ca3af;text-align:center;padding:10px;border:1px dashed #fed7c5;border-radius:8px;">No workers added. Click "+ Add Worker" to start.</p>';
+                return;
+            }
+            container.innerHTML = estWorkers.map(function(w) {
+                var unitLabel = w.payType === 'daily' ? 'days' : 'hours';
+                var lineCost = (w.rate || 0) * (w.qty || 0);
+                return '<div style="background:#fff;border:1px solid #fed7c5;border-radius:8px;padding:10px;margin-bottom:8px;">' +
+                    '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px;">' +
+                        '<input type="text" placeholder="Worker name (optional)" value="' + (w.name||'') + '" oninput="updateWorker(\'' + w.id + '\',\'name\',this.value)" style="flex:1;font-size:13px;padding:7px 10px;">' +
+                        '<button type="button" onclick="removeLaborWorker(\'' + w.id + '\')" style="background:#fee2e2;color:#dc2626;border:none;border-radius:6px;width:30px;height:30px;font-size:16px;cursor:pointer;flex-shrink:0;">×</button>' +
+                    '</div>' +
+                    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;align-items:center;">' +
+                        '<select onchange="updateWorker(\'' + w.id + '\',\'payType\',this.value)" style="font-size:12px;padding:7px;">' +
+                            '<option value="hourly"' + (w.payType==='hourly'?' selected':'') + '>Per Hour</option>' +
+                            '<option value="daily"' + (w.payType==='daily'?' selected':'') + '>Per Day</option>' +
+                        '</select>' +
+                        '<input type="number" placeholder="Rate $" value="' + (w.rate||'') + '" step="0.01" oninput="updateWorker(\'' + w.id + '\',\'rate\',this.value)" style="font-size:12px;padding:7px;" title="What you pay them">' +
+                        '<input type="number" placeholder="' + unitLabel + '" value="' + (w.qty||'') + '" step="0.5" oninput="updateWorker(\'' + w.id + '\',\'qty\',this.value)" style="font-size:12px;padding:7px;" title="How many ' + unitLabel + '">' +
+                        '<span style="font-size:13px;font-weight:700;color:#9a3412;white-space:nowrap;min-width:60px;text-align:right;">$' + lineCost.toFixed(2) + '</span>' +
+                    '</div>' +
+                    '<p style="font-size:10px;color:#9ca3af;margin:4px 0 0;">' + (w.rate||0) + '/' + (w.payType==='daily'?'day':'hr') + ' × ' + (w.qty||0) + ' ' + unitLabel + '</p>' +
+                '</div>';
+            }).join('');
+        }
+
+        function _totalCrewCost() {
+            return estWorkers.reduce(function(sum, w) {
+                return sum + ((w.rate || 0) * (w.qty || 0));
+            }, 0);
+        }
+
+        function autoMarkupLabor() {
+            var crewCost = _totalCrewCost();
+            if (crewCost === 0) { toast('Add workers first'); return; }
+            var charge = crewCost * 1.4; // crew cost + 40%
+            document.getElementById('estLaborCharge').value = charge.toFixed(2);
+            calculateEstimate();
+        }
+
         function calculateEstimate() {
             var materialsTotal = 0, materialsCostRaw = 0;
             estServices.forEach(function(svc) {
@@ -8065,60 +8201,45 @@
                 }
             });
 
-            // Global labor (base, no section)
-            var laborHrs  = parseFloat(document.getElementById('estLaborHours').value) || 0;
-            // Labor rate: use what's typed, OR fall back to calculator default (display only)
-            var typedRate = document.getElementById('estLaborRate').value;
-            var laborRate = parseFloat(typedRate) || 0;
-            if (!typedRate && appData.calculator.hourlyRate > 0) {
-                // Show the calculator rate as PLACEHOLDER (gray hint) only, don't set the actual value
-                laborRate = appData.calculator.hourlyRate;
-                document.getElementById('estLaborRate').placeholder = laborRate.toFixed(0);
-            }
-            if (appData.calculator.hourlyRate > 0) {
-                document.getElementById('estLaborRateHint').textContent = 'Overhead: $' + appData.calculator.hourlyRate.toFixed(0) + '/hr';
-            }
-            var globalLaborTotal = laborHrs * laborRate;
+            // ── LABOR ─────────────────────────────────────────────────────
+            // Two separate numbers:
+            //   1. crewCost = what you ACTUALLY pay your workers (from worker list)
+            //   2. laborCharge = what you BILL the customer for labor
+            var crewCost    = _totalCrewCost();
+            var laborCharge = parseFloat((document.getElementById('estLaborCharge')||{}).value) || 0;
 
-            var laborTotal = globalLaborTotal; // Single global labor, split proportionally in section display
+            // Keep hidden legacy fields synced (other code reads them)
+            var lhEl = document.getElementById('estLaborHours'); if (lhEl) lhEl.value = '0';
+            var lrEl = document.getElementById('estLaborRate');  if (lrEl) lrEl.value = '0';
 
-            // Add section-specific labor to grand total
-            var sectionLaborSum = 0;
-            estSections.forEach(function(sec) {
-                var rate = sec.laborRate || laborRate || appData.calculator.hourlyRate || 0;
-                sectionLaborSum += (sec.laborHrs || 0) * rate;
-            });
-            laborTotal += sectionLaborSum;
-            document.getElementById('estLaborTotal').textContent = '$' + laborTotal.toFixed(2);
+            var laborTotal = laborCharge; // what customer sees for labor
+            document.getElementById('estLaborTotal').textContent = '$' + crewCost.toFixed(2);
 
-            var grandTotal = materialsTotal + laborTotal;
-            // True profit = (material markup) + (labor billed minus actual labor cost)
-            var matMarkupProfit  = materialsTotal - materialsCostRaw;
-            var teamCostPH       = appData.calculator.teamCostPerHour || 0;
-            var totalBilledHours = laborHrs + estSections.reduce(function(s, sec) { return s + (sec.laborHrs || 0); }, 0);
-            var laborTeamCost    = totalBilledHours * teamCostPH;
-            var laborPureProfit  = laborTotal - laborTeamCost;
-            var profit           = matMarkupProfit + laborPureProfit;
-            var margin           = grandTotal > 0 ? (profit / grandTotal * 100) : 0;
+            var grandTotal = materialsTotal + laborCharge;
+
+            // ── PROFIT (simple, honest P&L) ─────────────────────────────────
+            // Customer pays:  grandTotal (materials billed + labor charged)
+            // Your costs:     materialsCostRaw + crewCost
+            // Your profit:    grandTotal − costs
+            var yourCosts = materialsCostRaw + crewCost;
+            var profit    = grandTotal - yourCosts;
+            var margin    = grandTotal > 0 ? (profit / grandTotal * 100) : 0;
 
             document.getElementById('estSubtotal').textContent   = '$' + materialsTotal.toFixed(2);
-            document.getElementById('estLaborCost').textContent  = '$' + laborTotal.toFixed(2);
+            document.getElementById('estLaborCost').textContent  = '$' + laborCharge.toFixed(2);
             document.getElementById('estTotal').textContent      = '$' + grandTotal.toFixed(2);
             document.getElementById('estProfit').textContent     = '$' + profit.toFixed(2) + ' profit';
             document.getElementById('estMargin').textContent     = margin.toFixed(1) + '% margin';
 
-            // Detailed profit breakdown — matches top profit number now
-            var laborBilled      = laborTotal;
-            var totalPureProfit  = profit; // same number, just clearly labeled
-            var pureMargin       = margin;
+            // Clear P&L breakdown
+            function _set(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+            _set('estPLTotal',      '$' + grandTotal.toFixed(2));
+            _set('estPLMatCost',    '-$' + materialsCostRaw.toFixed(2));
+            _set('estPLLaborCost',  '-$' + crewCost.toFixed(2));
+            _set('estPLProfit',     '$' + profit.toFixed(2));
+            _set('estPLMargin',     margin.toFixed(1) + '%');
 
-            if (document.getElementById('estMatMarkupProfit')) document.getElementById('estMatMarkupProfit').textContent = '$' + matMarkupProfit.toFixed(2);
-            if (document.getElementById('estLaborBilled'))     document.getElementById('estLaborBilled').textContent     = '$' + laborBilled.toFixed(2);
-            if (document.getElementById('estLaborCostOwner'))  document.getElementById('estLaborCostOwner').textContent  = '-$' + laborTeamCost.toFixed(2);
-            if (document.getElementById('estLaborProfit'))     document.getElementById('estLaborProfit').textContent     = '$' + laborPureProfit.toFixed(2);
-            if (document.getElementById('estTotalProfit'))     document.getElementById('estTotalProfit').textContent     = '$' + totalPureProfit.toFixed(2);
-            if (document.getElementById('estProfitMarginPct')) document.getElementById('estProfitMarginPct').textContent = pureMargin.toFixed(1) + '%';
-
+            renderLaborWorkers(); // refresh line costs
         }
 
         document.getElementById('estimateForm').addEventListener('submit', function(e) {
@@ -8154,12 +8275,11 @@
                 }
             });
             
-            // Add labor
-            var laborHrs = parseFloat(document.getElementById('estLaborHours').value) || 0;
-            var laborRate = parseFloat(document.getElementById('estLaborRate').value) || appData.calculator.hourlyRate || 0;
-            if (laborHrs > 0 && laborRate > 0) {
-                var laborAmt = (laborHrs * laborRate).toFixed(2);
-                var laborLine = { description: 'Labor', quantity: 1, rate: laborAmt, markup: 0, amount: laborAmt, _laborHrs: laborHrs, _laborRate: laborRate };
+            // Add labor — what customer is charged (single line)
+            var laborCharge = parseFloat((document.getElementById('estLaborCharge')||{}).value) || 0;
+            if (laborCharge > 0) {
+                var laborAmt = laborCharge.toFixed(2);
+                var laborLine = { description: 'Labor', quantity: 1, rate: laborAmt, markup: 0, amount: laborAmt };
                 customerLines.push(laborLine);
                 ownerLines.push(laborLine);
             }
@@ -8189,12 +8309,17 @@
                 status: 'pending',
                 sentDate: null,
                 reminderSent: false,
-                photos: currentEstPhotos.slice()
+                photos: currentEstPhotos.slice(),
+                workers: JSON.parse(JSON.stringify(estWorkers)),
+                laborCharge: parseFloat((document.getElementById('estLaborCharge')||{}).value) || 0,
+                crewCost: _totalCrewCost()
             };
             
             // Check if editing existing
             var editId = document.getElementById('estEditId').value;
-            if (editId) {
+            // If editId is actually a temp draft ID, treat as NEW (so layouts transfer + real ID assigned)
+            var isTempDraft = editId && editId.indexOf('tmp_') === 0;
+            if (editId && !isTempDraft) {
                 var existingIdx = appData.estimates.findIndex(function(e){return e.id===editId;});
                 if (existingIdx>=0) {
                     // Preserve existing fields not in the form
@@ -8215,17 +8340,19 @@
                 }
                 document.getElementById('estEditId').value = '';
             } else {
-                // New estimate — check if there was a temp draft with layouts
-                if (window._tempEstId) {
-                    var tmpEst = (appData.estimates||[]).find(function(e){return e.id===window._tempEstId;});
+                // New estimate (or temp draft being finalized) — transfer layouts from temp
+                var tempId = isTempDraft ? editId : window._tempEstId;
+                if (tempId) {
+                    var tmpEst = (appData.estimates||[]).find(function(e){return e.id===tempId;});
                     if (tmpEst && tmpEst.layouts && tmpEst.layouts.length) {
                         estimate.layouts = tmpEst.layouts.slice();
                     }
                     // Remove temp draft from memory AND Firestore
-                    appData.estimates = appData.estimates.filter(function(e){return e.id!==window._tempEstId;});
-                    _deleteRecord('estimates', window._tempEstId); // delete from Firestore too
+                    appData.estimates = appData.estimates.filter(function(e){return e.id!==tempId;});
+                    _deleteRecord('estimates', tempId);
                     window._tempEstId = null;
                 }
+                document.getElementById('estEditId').value = '';
                 appData.estimates.push(estimate);
             }
             saveData();
@@ -8802,14 +8929,81 @@
                 });
             }
             // Save to Firestore then show share modal
-            if (doc.type === 'estimate') {
-                db.collection('public_estimates').doc(signToken).set(_deepClean(pubDoc))
-                    .then(finishSend).catch(function(err) { console.error(err); finishSend(); });
-            } else {
-                // For invoices save to public_estimates too so customer can view it
-                db.collection('public_estimates').doc(signToken).set(_deepClean(pubDoc))
-                    .then(finishSend).catch(function(err) { console.error(err); finishSend(); });
+            // Photos can make the doc exceed Firestore's 1MB limit — check size first
+            var _cleanPub = _deepClean(pubDoc);
+            var _docSize = JSON.stringify(_cleanPub).length;
+
+            function _doPublicSave(docToSave) {
+                db.collection('public_estimates').doc(signToken).set(docToSave)
+                    .then(finishSend)
+                    .catch(function(err) {
+                        console.error('Public doc save failed:', err);
+                        if (err.code === 'invalid-argument' || (err.message && err.message.indexOf('longer than') >= 0) || _docSize > 900000) {
+                            // Too big — retry without photos but keep everything else
+                            var slim = JSON.parse(JSON.stringify(docToSave));
+                            slim.photos = [];
+                            slim.layoutImages = [];
+                            db.collection('public_estimates').doc(signToken).set(slim)
+                                .then(function() {
+                                    toast('Sent — but photos too large to include. Compress them smaller.');
+                                    finishSend();
+                                })
+                                .catch(function(e2) {
+                                    console.error('Slim save also failed:', e2);
+                                    toast('Could not send: ' + (e2.message || e2.code));
+                                });
+                        } else {
+                            toast('Could not send: ' + (err.message || err.code || 'unknown'));
+                        }
+                    });
             }
+
+            if (_docSize > 900000) {
+                // Doc likely too big — proactively compress photos before first try
+                console.warn('Public doc is ' + Math.round(_docSize/1024) + 'KB — compressing photos');
+                _compressPubPhotos(_cleanPub).then(function(compressed) {
+                    _doPublicSave(compressed);
+                });
+            } else {
+                _doPublicSave(_cleanPub);
+            }
+        }
+
+        // Re-compress photos in a public doc to fit under Firestore's 1MB limit
+        function _compressPubPhotos(pubDoc) {
+            return new Promise(function(resolve) {
+                var photos = pubDoc.photos || [];
+                if (photos.length === 0) { resolve(pubDoc); return; }
+                var compressed = [];
+                var pending = photos.length;
+                photos.forEach(function(dataUrl, idx) {
+                    var src = (typeof dataUrl === 'string') ? dataUrl : (dataUrl.dataUrl || '');
+                    if (!src) { compressed[idx] = src; if(--pending===0) finish(); return; }
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var maxDim = 700;
+                        var w = img.width, h = img.height;
+                        if (w > maxDim) { h = h * maxDim / w; w = maxDim; }
+                        if (h > maxDim) { w = w * maxDim / h; h = maxDim; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        compressed[idx] = canvas.toDataURL('image/jpeg', 0.45);
+                        if (--pending === 0) finish();
+                    };
+                    img.onerror = function() { compressed[idx] = src; if(--pending===0) finish(); };
+                    img.src = src;
+                });
+                function finish() {
+                    pubDoc.photos = compressed.filter(Boolean);
+                    // If still too big, drop photos entirely
+                    if (JSON.stringify(pubDoc).length > 950000) {
+                        console.warn('Still too big after compression — dropping photos');
+                        pubDoc.photos = [];
+                    }
+                    resolve(pubDoc);
+                }
+            });
         }
 
         function _showShareModal(url, doc, docType, docNum, bizName) {
@@ -11166,43 +11360,21 @@
 
         function handleTextTool(e) {
             var pos = _getPos(e, _layoutCanvas);
-            var inp = document.getElementById('layoutTextInput');
-            var wrap = document.getElementById('layoutCanvasWrap');
-            if (!inp || !wrap || !_layoutCanvas) return;
-            // Position the input relative to the wrap container
-            var canvasR = _layoutCanvas.getBoundingClientRect();
-            var wrapR   = wrap.getBoundingClientRect();
-            var scaleX  = _layoutCanvas.width  / canvasR.width;
-            var scaleY  = _layoutCanvas.height / canvasR.height;
-            var screenX = pos.x / scaleX;  // canvas pixel → screen pixel
-            var screenY = pos.y / scaleY;
-            var left = canvasR.left - wrapR.left + screenX;
-            var top  = canvasR.top  - wrapR.top  + screenY - 20;
-            inp.style.left    = Math.max(4, Math.min(left, wrap.offsetWidth - 180)) + 'px';
-            inp.style.top     = Math.max(4, top) + 'px';
-            inp.style.color   = _layoutColor;
-            var fSize = Math.max(12, Math.round((_layoutStroke + 1) * 4 + 10));
-            inp.style.fontSize= fSize + 'px';
-            inp.style.display = 'block';
-            inp.value = ''; inp.focus();
-            var _textPos = { x: pos.x, y: pos.y };
-            inp.onkeydown = function(ev) {
-                ev.stopPropagation();
-                if (ev.key === 'Enter') {
-                    var txt = inp.value.trim();
-                    inp.style.display = 'none';
-                    if (!txt || !_layoutCtx) return;
-                    _layoutCtx.save();
-                    _layoutCtx.font = 'bold ' + fSize + 'px Inter, Arial, sans-serif';
-                    _layoutCtx.fillStyle = _layoutColor;
-                    _layoutCtx.textBaseline = 'middle';
-                    _layoutCtx.fillText(txt, _textPos.x, _textPos.y);
-                    _layoutCtx.restore();
-                    _pushLayoutHistory();
-                }
-                if (ev.key === 'Escape') inp.style.display = 'none';
-            };
-            inp.onblur = function() { setTimeout(function(){ inp.style.display='none'; }, 200); };
+            if (!_layoutCtx) return;
+            // Use a prompt — works reliably on iPad, iPhone, desktop (the inline
+            // input box was getting dismissed by the mobile keyboard).
+            var txt = prompt('Enter text label:');
+            if (txt === null) return;
+            txt = txt.trim();
+            if (!txt) return;
+            var fSize = Math.max(14, Math.round((_layoutStroke + 1) * 4 + 10));
+            _layoutCtx.save();
+            _layoutCtx.font = 'bold ' + fSize + 'px Inter, Arial, sans-serif';
+            _layoutCtx.fillStyle = _layoutColor;
+            _layoutCtx.textBaseline = 'middle';
+            _layoutCtx.fillText(txt, pos.x, pos.y);
+            _layoutCtx.restore();
+            _pushLayoutHistory();
         }
 
         function uploadJobsitePhoto(event) {
@@ -12159,6 +12331,8 @@
             document.getElementById('contractModalTitle').textContent = 'New Contract';
             document.getElementById('contractDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('depositBreakdown').innerHTML = '';
+            currentContractPhotos = [];  // reset photo buffer
+            _renderContractPhotosPreview();
             populateCustomerSelect('contractCustomer');
             setContractType('customer'); // default to customer, sets terms too
 
@@ -12195,6 +12369,13 @@
                     document.getElementById('contractWarranty').value   = c.warranty  || '1 year';
                     document.getElementById('contractNotes').value      = c.notes     || '';
                     document.getElementById('contractTerms').value      = c.terms     || (c.contractType === 'subcontractor' ? DEFAULT_SUB_TERMS : DEFAULT_CONTRACT_TERMS);
+                    // Load existing photos
+                    currentContractPhotos = (c.photos || []).slice();
+                    _renderContractPhotosPreview();
+                    // Show layouts already attached to this contract
+                    updateContractLayoutThumbs(c.id);
+                    // Show site visit import button if customer has visits with photos
+                    _updateContractSiteVisitBtn();
                     recalcContractDeposits();
                     if (c.deposits && c.deposits.length) {
                         var schedule = c.paySchedule;
@@ -12215,6 +12396,127 @@
                 recalcContractDeposits();
             }
             openModal('contractModal');
+        }
+
+        // ── CONTRACT PHOTOS ─────────────────────────────────────────────
+        var currentContractPhotos = [];
+
+        function handleContractPhotos(event) {
+            var files = Array.from(event.target.files || []);
+            if (files.length === 0) return;
+            var remaining = 10 - currentContractPhotos.length;
+            if (remaining <= 0) { toast('Max 10 photos'); return; }
+            files.slice(0, remaining).forEach(function(file) {
+                if (file.size > 8 * 1024 * 1024) { toast('Photo too large (max 8MB): ' + file.name); return; }
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var img = new Image();
+                    img.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var maxW = 1400, maxH = 1400;
+                        var w = img.width, h = img.height;
+                        if (w > maxW) { h = h * (maxW / w); w = maxW; }
+                        if (h > maxH) { w = w * (maxH / h); h = maxH; }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        var resized = canvas.toDataURL('image/jpeg', 0.85);
+                        currentContractPhotos.push(resized);
+                        _renderContractPhotosPreview();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+            event.target.value = ''; // allow re-uploading same file
+        }
+
+        function _renderContractPhotosPreview() {
+            var container = document.getElementById('contractPhotosPreview');
+            if (!container) return;
+            container.innerHTML = currentContractPhotos.map(function(p, i) {
+                return '<div style="position:relative;">' +
+                    '<img src="' + p + '" alt="" style="width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid #e5e5e5;cursor:zoom-in;" onclick="openPhotoLightbox(\'' + p.replace(/\'/g, "\\'") + '\')">' +
+                    '<button type="button" onclick="removeContractPhoto(' + i + ')" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:#ef4444;color:#fff;border:none;font-size:14px;cursor:pointer;line-height:1;">×</button>' +
+                '</div>';
+            }).join('');
+        }
+
+        function removeContractPhoto(idx) {
+            currentContractPhotos.splice(idx, 1);
+            _renderContractPhotosPreview();
+        }
+
+        function importContractFromSiteVisits() {
+            var custId = document.getElementById('contractCustomer').value;
+            if (!custId) { toast('Pick a customer first'); return; }
+            var visits = (appData.siteVisits || []).filter(function(v){ return v.customerId === custId; });
+            if (visits.length === 0) { toast('No site visits for this customer'); return; }
+            var allPhotos = [];
+            visits.forEach(function(v) { (v.photos || []).forEach(function(p){ if (p.dataUrl) allPhotos.push(p); }); });
+            if (allPhotos.length === 0) { toast('No photos in this customer\'s site visits'); return; }
+
+            var existing = document.getElementById('importContractPhotosModal');
+            if (existing) existing.remove();
+            var modal = document.createElement('div');
+            modal.id = 'importContractPhotosModal';
+            modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+            modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
+
+            var photosHtml = allPhotos.map(function(p, idx) {
+                return '<label style="position:relative;cursor:pointer;aspect-ratio:1;">' +
+                    '<input type="checkbox" class="import-cphoto-cb" data-idx="' + idx + '" style="position:absolute;top:6px;right:6px;width:22px;height:22px;cursor:pointer;z-index:2;accent-color:#ff6b35;">' +
+                    '<img src="' + p.dataUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid #e5e5e5;">' +
+                '</label>';
+            }).join('');
+
+            modal.innerHTML = '<div style="background:#fff;border-radius:16px;max-width:560px;width:100%;max-height:80vh;display:flex;flex-direction:column;overflow:hidden;">' +
+                '<div style="padding:20px 24px;border-bottom:1px solid #e5e5e5;">' +
+                    '<h3 style="margin:0;font-size:18px;font-weight:800;color:#0f172a;">Import from Site Visits</h3>' +
+                    '<p style="margin:4px 0 0;font-size:13px;color:#64748b;">Select photos to include in the contract</p>' +
+                '</div>' +
+                '<div style="padding:16px 24px;overflow-y:auto;flex:1;">' +
+                    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;">' + photosHtml + '</div>' +
+                '</div>' +
+                '<div style="padding:14px 24px;border-top:1px solid #e5e5e5;background:#f8f9fb;display:flex;gap:8px;justify-content:space-between;align-items:center;">' +
+                    '<button onclick="_selectAllContractImport()" style="padding:8px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#475569;">Select All</button>' +
+                    '<div style="display:flex;gap:8px;">' +
+                        '<button onclick="document.getElementById(\'importContractPhotosModal\').remove()" style="padding:8px 18px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#475569;">Cancel</button>' +
+                        '<button onclick="_confirmContractImport()" class="btn-primary" style="padding:8px 18px;font-size:13px;">Add Selected</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+            window._contractImportPool = allPhotos;
+            document.body.appendChild(modal);
+        }
+        function _selectAllContractImport() {
+            document.querySelectorAll('.import-cphoto-cb').forEach(function(cb){ cb.checked = true; });
+        }
+        function _confirmContractImport() {
+            var pool = window._contractImportPool || [];
+            var added = 0;
+            document.querySelectorAll('.import-cphoto-cb:checked').forEach(function(cb) {
+                var idx = parseInt(cb.dataset.idx);
+                if (pool[idx] && pool[idx].dataUrl && currentContractPhotos.indexOf(pool[idx].dataUrl) === -1) {
+                    if (currentContractPhotos.length < 10) {
+                        currentContractPhotos.push(pool[idx].dataUrl);
+                        added++;
+                    }
+                }
+            });
+            _renderContractPhotosPreview();
+            document.getElementById('importContractPhotosModal').remove();
+            toast(added > 0 ? 'Added ' + added + ' photo' + (added===1?'':'s') : 'No new photos added');
+        }
+
+        function _updateContractSiteVisitBtn() {
+            var btn = document.getElementById('contractImportFromVisitsBtn');
+            if (!btn) return;
+            var custId = (document.getElementById('contractCustomer') || {}).value;
+            if (!custId) { btn.style.display = 'none'; return; }
+            var hasPhotos = (appData.siteVisits || []).some(function(v) {
+                return v.customerId === custId && v.photos && v.photos.length > 0;
+            });
+            btn.style.display = hasPhotos ? '' : 'none';
         }
 
         function saveContract(e) {
@@ -12273,6 +12575,7 @@
                 terms:         document.getElementById('contractTerms').value,
                 deposits:      getDepositData(),
                 layouts:       prev.layouts   || [],
+                photos:        currentContractPhotos.slice(),
                 status:        prev.status    || 'pending',
                 signature:     prev.signature || null,
                 signedBy:      prev.signedBy  || null,
@@ -12545,16 +12848,15 @@
             var c = (appData.contracts || []).find(function(x){ return x.id === id; });
             if (!c) return;
 
-            var pubKey = appData.settings.emailjsPublicKey;
-            var serviceId = appData.settings.emailjsServiceId;
-            var templateId = appData.settings.emailjsTemplateId;
-
-            if (!pubKey || !serviceId || !templateId) { toast('Set up email in Settings first'); return; }
-            if (!c.customerEmail) { toast('No email on file for this customer'); return; }
+            if (!c.customerEmail) {
+                toast('Add a customer email to this contract first');
+                return;
+            }
 
             var s = appData.settings;
-            var bizName = s.businessName || 'KDRSYSTEMS';
-            var siteUrl = window.location.origin + window.location.pathname;
+            var bizName  = s.businessName || 'KDRSYSTEMS';
+            var bizColor = s.brandColor   || '#ff6b35';
+            var siteUrl  = window.location.origin + window.location.pathname;
             var signToken = c.id + '_contract_' + Date.now();
 
             var price = parseFloat(c.price || 0);
@@ -12565,16 +12867,28 @@
                 'custom': 'See notes'
             }[c.paySchedule] || c.paySchedule;
 
+            // Build layout images array (drawings stored in appData.layouts)
+            var layoutImages = [];
+            if (c.layouts && c.layouts.length) {
+                c.layouts.forEach(function(lid) {
+                    var lay = (appData.layouts || []).find(function(x){ return x.id === lid; });
+                    if (lay && lay.dataUrl) layoutImages.push({ name: lay.name || '', dataUrl: lay.dataUrl });
+                });
+            }
+
             var pubDoc = {
                 id: c.id,
-                ownerId: currentUserId,
+                ownerId: currentUserId || '',
                 businessName: bizName,
                 businessEmail: s.email || '',
                 businessPhone: s.phone || '',
                 businessAddress: s.address || '',
                 businessLogo: s.logo || '',
-                customerName: c.customerName,
-                customerEmail: c.customerEmail,
+                brandColor: bizColor,
+                slogan: s.slogan || '',
+                license: s.license || '',
+                customerName: c.customerName || '',
+                customerEmail: c.customerEmail || '',
                 customerPhone: c.customerPhone || '',
                 address: c.address || '',
                 date: c.date || '',
@@ -12587,15 +12901,19 @@
                 scope: c.scope || '',
                 price: price,
                 paySchedule: c.paySchedule || '',
-                payScheduleText: payScheduleText,
+                payScheduleText: payScheduleText || '',
                 startDate: c.startDate || '',
                 endDate: c.endDate || '',
                 warranty: c.warranty || '',
                 notes: c.notes || '',
+                terms: c.terms || '',
+                layoutImages: layoutImages,
+                photos: (c.photos || []).slice(),
                 status: 'sent',
                 signature: null,
                 signedBy: null,
-                signedDate: null
+                signedDate: null,
+                sentAt: new Date().toISOString()
             };
 
             db.collection('public_contracts').doc(signToken).set(pubDoc).then(function() {
@@ -12606,40 +12924,71 @@
                 renderContracts();
 
                 var signLink = siteUrl + '?contract=' + signToken;
-                var emailBody = '' +
-                '<div style="max-width:600px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;padding:20px 0;">' +
-                '<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">' +
-                    '<div style="background:#1e293b;padding:28px 30px;text-align:center;">' +
-                        (s.logo ? '<img src="' + s.logo + '" alt="' + bizName + '" style="max-height:60px;margin:0 auto 10px;display:block;border-radius:8px;">' : '') +
-                        '<h1 style="color:#ff6b35;margin:0;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + bizName + '</h1>' +
-                        '<p style="color:rgba(255,255,255,0.5);margin:6px 0 0;font-size:12px;">FENCE INSTALLATION CONTRACT</p>' +
-                        '<p style="color:rgba(255,255,255,0.7);margin:8px 0 0;font-size:13px;">' + (s.phone||'') + (s.phone&&s.email?' | ':'') + (s.email||'') + '</p>' +
-                    '</div>' +
-                    '<div style="background:#fff;padding:28px 30px;">' +
-                        '<p style="font-size:16px;color:#222;font-weight:600;margin:0 0 6px;">Hi ' + c.customerName + ',</p>' +
-                        '<p style="font-size:14px;color:#555;margin:0 0 20px;">Your fence installation contract is ready for review and signature. Please click below to read the full contract and sign digitally.</p>' +
-                        '<div style="margin-bottom:20px;padding:16px;background:#f9f9f9;border-radius:10px;border-left:4px solid #ff6b35;">' +
-                            '<table style="width:100%;font-size:13px;border-collapse:collapse;">' +
-                                '<tr><td style="padding:4px 0;color:#555;width:40%;">Contract #:</td><td style="font-weight:700;color:#222;">' + c.id.slice(-6) + '</td></tr>' +
-                                (c.fenceType ? '<tr><td style="padding:4px 0;color:#555;">Fence Type:</td><td style="font-weight:700;color:#222;">' + c.fenceType + '</td></tr>' : '') +
-                                (c.address ? '<tr><td style="padding:4px 0;color:#555;">Job Site:</td><td style="font-weight:700;color:#222;">' + c.address + '</td></tr>' : '') +
-                                '<tr><td style="padding:4px 0;color:#555;">Total Price:</td><td style="font-weight:800;color:#ff6b35;font-size:15px;">$' + price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td></tr>' +
-                            '</table>' +
-                        '</div>' +
-                        '<div style="text-align:center;margin:28px 0;padding:24px;background:#f8f9fb;border-radius:10px;border:2px solid #1e293b;">' +
-                            '<p style="font-size:17px;font-weight:700;color:#222;margin:0 0 8px;">Ready to approve this contract?</p>' +
-                            '<p style="font-size:13px;color:#555;margin:0 0 20px;">Click below to review the full contract and sign digitally</p>' +
-                            '<a href="' + signLink + '" style="display:inline-block;background:#ff6b35;color:#fff;padding:16px 44px;border-radius:8px;text-decoration:none;font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:1px;">REVIEW & SIGN CONTRACT</a>' +
-                        '</div>' +
-                        '<p style="font-size:12px;color:#94a3b8;text-align:center;margin:0;">If the button does not work, copy this link: ' + signLink + '</p>' +
-                    '</div>' +
-                '</div></div>';
+                var headerText = (typeof _textOn === 'function') ? _textOn(bizColor) : '#ffffff';
+                var emailHtml = '' +
+                    '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,Helvetica,sans-serif;">' +
+                    '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f5f5f5;padding:20px 0;">' +
+                    '<tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;">' +
+                    '<tr><td style="background:' + bizColor + ';padding:32px 30px;text-align:center;">' +
+                        (s.logo ? '<img src="' + s.logo + '" alt="" style="max-height:60px;margin:0 auto 10px;display:block;">' : '') +
+                        '<h1 style="color:' + headerText + ';margin:0;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">' + bizName + '</h1>' +
+                        '<p style="color:' + headerText + ';opacity:0.85;margin:8px 0 0;font-size:12px;font-weight:600;">CONTRACT FOR REVIEW</p>' +
+                    '</td></tr>' +
+                    '<tr><td style="padding:32px 30px;">' +
+                        '<p style="font-size:17px;color:#0f172a;font-weight:600;margin:0 0 8px;">Hi ' + (c.customerName || 'there') + ',</p>' +
+                        '<p style="font-size:14px;color:#475569;line-height:1.6;margin:0 0 24px;">Your contract is ready to review and sign. Click the button below to view the full contract and sign digitally.</p>' +
+                        '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f9fafb;border-radius:10px;border-left:4px solid ' + bizColor + ';margin-bottom:24px;">' +
+                            '<tr><td style="padding:18px 20px;">' +
+                                '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size:13px;">' +
+                                    '<tr><td style="padding:4px 0;color:#475569;width:40%;">Contract #:</td><td style="font-weight:700;color:#0f172a;">' + c.id.slice(-6).toUpperCase() + '</td></tr>' +
+                                    (c.address ? '<tr><td style="padding:4px 0;color:#475569;">Job Site:</td><td style="font-weight:700;color:#0f172a;">' + c.address + '</td></tr>' : '') +
+                                    '<tr><td style="padding:4px 0;color:#475569;">Total:</td><td style="font-weight:800;color:' + bizColor + ';font-size:16px;">$' + price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</td></tr>' +
+                                '</table>' +
+                            '</td></tr>' +
+                        '</table>' +
+                        '<table cellpadding="0" cellspacing="0" border="0" width="100%" style="text-align:center;margin:24px 0;">' +
+                            '<tr><td style="padding:24px;background:#fff8f0;border-radius:10px;border:2px solid ' + bizColor + ';text-align:center;">' +
+                                '<p style="font-size:16px;font-weight:700;color:#0f172a;margin:0 0 12px;">Ready to sign?</p>' +
+                                '<a href="' + signLink + '" style="display:inline-block;background:' + bizColor + ';color:' + headerText + ';padding:16px 44px;border-radius:8px;text-decoration:none;font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:1px;">Review &amp; Sign Contract</a>' +
+                            '</td></tr>' +
+                        '</table>' +
+                        '<p style="font-size:11px;color:#94a3b8;text-align:center;margin:14px 0 0;">If the button does not work, copy this link:<br>' + signLink + '</p>' +
+                    '</td></tr>' +
+                    '<tr><td style="background:#fafafa;padding:16px 30px;text-align:center;border-top:1px solid #f1f5f9;">' +
+                        '<p style="margin:0;font-size:12px;color:#64748b;">' + (s.phone || '') + (s.phone && s.email ? ' · ' : '') + (s.email || '') + '</p>' +
+                    '</td></tr>' +
+                    '</table></td></tr></table></body></html>';
 
-                // Show share modal for contract link
-                _showShareModal(signLink, { customerName: c.customerName, customerEmail: c.customerEmail||'' }, 'Contract', '#' + c.id.slice(-6).toUpperCase(), bizName);
+                // Send email via Cloudflare Worker → Resend
+                fetch('https://kdr-send.kdrsystemsnet.workers.dev/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to:      c.customerEmail,
+                        replyTo: s.email || '',
+                        from:    bizName + ' <noreply@kdrsystems.net>',
+                        subject: 'Contract from ' + bizName + ' — Ready to Sign',
+                        html:    emailHtml
+                    })
+                })
+                .then(function(r){ return r.json(); })
+                .then(function(data) {
+                    if (data && data.success) {
+                        toast('Contract sent to ' + c.customerEmail + ' ✓');
+                    } else {
+                        // Email failed but link was saved — show share modal as backup
+                        toast('Email failed — share link manually');
+                        _showShareModal(signLink, { customerName: c.customerName, customerEmail: c.customerEmail||'' }, 'Contract', '#' + c.id.slice(-6).toUpperCase(), bizName);
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Contract email error:', err);
+                    toast('Email failed — share link manually');
+                    _showShareModal(signLink, { customerName: c.customerName, customerEmail: c.customerEmail||'' }, 'Contract', '#' + c.id.slice(-6).toUpperCase(), bizName);
+                });
             }).catch(function(err) {
-                console.error('Firestore error', err);
-                toast('Error saving contract link');
+                console.error('Contract save error:', err);
+                toast('Could not save contract: ' + (err.message || err.code || 'unknown error'));
             });
         }
 
@@ -12728,15 +13077,15 @@
                 '</div>';
             } else {
                 signSection = '<div style="margin-top:30px;padding:24px;background:#fff;border:2px solid #ff6b35;border-radius:12px;">' +
-                    '<h3 style="font-size:18px;font-weight:700;color:#222;margin:0 0 20px;text-align:center;">Sign This Contract</h3>' +
-                    '<div style="margin-bottom:14px;"><label style="display:block;margin-bottom:6px;font-size:14px;font-weight:600;">Your Full Name</label>' +
-                    '<input type="text" id="pubContractName" placeholder="Type your full name" style="background:#fff;border:2px solid #ddd;border-radius:10px;padding:14px;width:100%;font-size:16px;box-sizing:border-box;"></div>' +
-                    '<div style="margin-bottom:14px;"><label style="display:block;margin-bottom:6px;font-size:14px;font-weight:600;">Draw Your Signature</label>' +
-                    '<canvas id="pubContractCanvas" width="500" height="180" style="touch-action:none;background:white;border:2px solid #ddd;border-radius:10px;width:100%;cursor:crosshair;"></canvas></div>' +
-                    '<div style="display:flex;gap:12px;">' +
-                        '<button style="flex:1;padding:12px;background:#f5f5f5;border:1px solid #ddd;border-radius:10px;cursor:pointer;font-size:14px;color:#333;" onclick="clearPubContractCanvas()">Clear</button>' +
-                        '<button style="flex:1;padding:14px;background:#ff6b35;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:16px;font-weight:700;" onclick="submitPublicContractSignature(\'' + token + '\')">Sign & Approve Contract</button>' +
-                    '</div>' +
+                    '<h3 style="font-size:22px;font-weight:800;color:#000000 !important;margin:0 0 20px;text-align:center;">Sign This Contract</h3>' +
+                    '<div style="margin-bottom:14px;"><label style="display:block;margin-bottom:6px;font-size:14px;color:#000000 !important;font-weight:600;">Your Full Name</label>' +
+                    '<input type="text" id="pubContractName" placeholder="Type your full name" style="background:#ffffff !important;border:2px solid #ddd !important;border-radius:10px;padding:14px;width:100%;font-size:16px;color:#222 !important;box-sizing:border-box;"></div>' +
+                    '<div style="margin-bottom:14px;"><label style="display:block;margin-bottom:6px;font-size:14px;color:#000000 !important;font-weight:600;">Draw Your Signature</label>' +
+                    '<canvas id="pubContractCanvas" width="500" height="180" style="touch-action:none;background:#ffffff !important;border:2px solid #ddd !important;border-radius:10px;width:100%;cursor:crosshair;display:block;"></canvas>' +
+                    '<button type="button" style="margin-top:8px;padding:8px 16px;background:#f5f5f5 !important;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-size:13px;color:#666 !important;" onclick="clearPubContractCanvas()">Clear Signature</button></div>' +
+                    // BIG ACTION BUTTONS
+                    '<button type="button" id="approveContractBtn" style="display:block !important;width:100%;padding:18px;background:#ff6b35 !important;color:#000000 !important;border:none;border-radius:10px;font-size:18px;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" onclick="submitPublicContractSignature(\'' + token + '\')">&#10003; Sign &amp; Approve Contract</button>' +
+                    '<button type="button" id="declineContractBtn" style="display:block !important;width:100%;padding:14px;background:#ffffff !important;color:#666 !important;border:2px solid #e5e5e5;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;" onclick="declinePublicContract(\'' + token + '\')">Decline Contract</button>' +
                 '</div>';
             }
 
@@ -12781,14 +13130,15 @@
                         payBreakdown +
                     '</div>' +
                     (con.notes ? '<div style="padding:14px;background:#f9f9f9;border-left:4px solid #ff6b35;border-radius:4px;margin-bottom:16px;font-size:13px;color:#333;"><strong>Notes:</strong> ' + con.notes + '</div>' : '') +
-                    '<div style="padding:14px;border:1px solid #e5e5e5;border-radius:10px;font-size:12px;color:#64748b;margin-bottom:16px;">' +
-                        '<p style="font-weight:700;color:#333;font-size:13px;margin:0 0 8px;text-transform:uppercase;letter-spacing:0.5px;">Standard Terms</p>' +
-                        '<p style="margin:0 0 4px;">• Changes to scope require a signed Change Order before work begins.</p>' +
-                        '<p style="margin:0 0 4px;">• Contractor carries General Liability and Workers\' Compensation insurance.</p>' +
-                        '<p style="margin:0 0 4px;">• Customer is responsible for HOA approvals and utility locating (call 811).</p>' +
-                        '<p style="margin:0 0 4px;">• Final payment is due upon completion before final walkthrough.</p>' +
-                        '<p style="margin:0;">• Warranty covers workmanship defects only, not weather damage.</p>' +
-                    '</div>' +
+                    // LAYOUTS section
+                    (con.layoutImages && con.layoutImages.length ? '<div style="padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;margin-bottom:16px;"><p style="font-size:13px;font-weight:700;color:#0369a1;margin:0 0 12px;text-transform:uppercase;letter-spacing:1px;">Job Layout / Sketch</p>' + con.layoutImages.map(function(l){return '<div style="margin-bottom:10px;"><img src="'+l.dataUrl+'" alt="" style="max-width:100%;border-radius:8px;border:2px solid #eee;cursor:pointer;" onclick="window.open(this.src)"><p style="font-size:11px;color:#999;margin:4px 0 0;">'+(l.name||'')+'</p></div>';}).join('') + '</div>' : '') +
+                    // PHOTOS section
+                    (con.photos && con.photos.length ? '<div style="padding:20px;background:#f8f9fb;border-radius:12px;border:1px solid #e5e5e5;margin-bottom:16px;"><p style="font-size:13px;font-weight:700;color:#15803d;margin:0 0 12px;text-transform:uppercase;letter-spacing:1px;">Project Photos</p><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;">' + con.photos.map(function(p){var src = (typeof p === "string") ? p : (p.dataUrl || ""); return '<img src="'+src+'" alt="" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;border:1px solid #eee;cursor:pointer;" onclick="window.open(this.src)">';}).join('') + '</div></div>' : '') +
+                    // FULL terms from contractor's saved contractTerms field
+                    (con.terms ? '<div style="padding:20px;border:1px solid #e5e5e5;border-radius:10px;font-size:13px;color:#475569;margin-bottom:16px;line-height:1.7;background:#fafafa;">' +
+                        '<p style="font-weight:800;color:#0f172a;font-size:13px;margin:0 0 14px;text-transform:uppercase;letter-spacing:1px;">Terms &amp; Conditions</p>' +
+                        '<div style="white-space:pre-wrap;color:#334155;">' + con.terms.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' +
+                    '</div>' : '') +
                     signSection +
                     '<div style="margin-top:24px;padding-top:16px;border-top:1px solid #eee;text-align:center;">' +
                         '<p style="font-size:13px;font-weight:700;color:#ff6b35;margin:0;">' + (con.businessName||'') + '</p>' +
@@ -12829,14 +13179,48 @@
             if (can) { var ctx = can.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,can.width,can.height); }
         }
 
+        function declinePublicContract(token) {
+            var reason = prompt('Why are you declining this contract? (optional)');
+            if (reason === null) return;
+            reason = (reason || '').trim();
+
+            var btn = document.getElementById('declineContractBtn');
+            if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; btn.style.opacity = '0.6'; }
+            var apBtn = document.getElementById('approveContractBtn');
+            if (apBtn) apBtn.disabled = true;
+
+            db.collection('public_contracts').doc(token).set({
+                declined: true,
+                declineReason: reason,
+                declinedDate: new Date().toLocaleDateString(),
+                declinedAt: new Date().toISOString(),
+                status: 'declined'
+            }, { merge: true }).then(function() {
+                document.getElementById('signPageContent').innerHTML =
+                    '<div style="background:#fff;border-radius:16px;padding:60px 30px;text-align:center;max-width:500px;margin:40px auto;box-shadow:0 4px 20px rgba(0,0,0,0.08);">' +
+                        '<div style="width:70px;height:70px;background:#fef2f2;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;border:3px solid #ef4444;"><span style="font-size:32px;color:#ef4444;font-weight:900;">&times;</span></div>' +
+                        '<h2 style="color:#222;font-size:24px;font-weight:700;margin:0 0 10px;">Contract Declined</h2>' +
+                        '<p style="color:#333;font-size:14px;margin:0;">Thank you for your feedback.</p>' +
+                    '</div>';
+            }).catch(function(err) {
+                console.error(err);
+                alert('Could not submit. ' + (err.message || err.code));
+                if (btn) { btn.disabled = false; btn.textContent = 'Decline Contract'; btn.style.opacity = '1'; }
+                if (apBtn) apBtn.disabled = false;
+            });
+        }
+
         function submitPublicContractSignature(token) {
             var name = (document.getElementById('pubContractName')||{}).value;
             if (!name || !name.trim()) { toast('Please type your full name'); return; }
             var can = document.getElementById('pubContractCanvas');
             if (!can) return;
             var sig = can.toDataURL('image/png');
-            var btn = document.querySelector('#signPageContent button:last-child');
+            // Use specific button IDs (not :last-child which would catch wrong button)
+            var btn = document.getElementById('approveContractBtn');
             if (btn) { btn.disabled=true; btn.textContent='Saving...'; btn.style.opacity='0.6'; }
+            var declBtn = document.getElementById('declineContractBtn');
+            if (declBtn) declBtn.disabled = true;
             db.collection('public_contracts').doc(token).set({
                 signature: sig,
                 signedBy: name.trim(),
@@ -12853,8 +13237,9 @@
                     '</div>';
             }).catch(function(err) {
                 console.error(err);
-                alert('Error saving. ' + (err.code === 'permission-denied' ? 'Add Firestore rule:\n\nmatch /public_contracts/{id} {\n  allow read, write: if true;\n}' : err.message));
-                if (btn) { btn.disabled=false; btn.textContent='Sign & Approve Contract'; btn.style.opacity='1'; }
+                alert('Error saving signature.\n\n' + (err.message || err.code || 'Unknown error'));
+                if (btn) { btn.disabled=false; btn.textContent='✓ Sign &amp; Approve Contract'; btn.style.opacity='1'; }
+                if (declBtn) declBtn.disabled = false;
             });
         }
 
